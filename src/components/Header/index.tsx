@@ -52,14 +52,12 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 lg:hidden" href="/">
-            <Image
-              width={32}
-              height={32}
-              src={"/images/logo/icon.png"}
-              alt="Logo"
-            />
-          </Link>
+          <Image
+            width={32}
+            height={32}
+            src={"/images/logo/icon.png"}
+            alt="Logo"
+          />
         </div>
 
         <div className="hidden xl:block">
@@ -76,7 +74,7 @@ const Header = (props: {
             {/* <!-- Search Form --> */}
             {/* <SearchForm /> */}
             {/* <!-- Search Form --> */}
-            <AddUserButton />
+            {/* <AddUserButton /> */}
             {/* <!-- Dark Mode Toggle --> */}
             <DarkModeSwitcher />
             {/* <!-- Dark Mode Toggle --> */}

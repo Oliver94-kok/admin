@@ -60,12 +60,12 @@ const SalaryTable = () => {
   };
 
   return (
-    <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="w-[1280px] rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="px-4 py-6 md:px-6 xl:px-9">
         <h4 className="text-body-2xlg font-bold text-dark dark:text-white">User Salary</h4>
       </div>
 
-      <div className="grid grid-cols-6 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
           <p className="font-medium">Username</p>
         </div>
@@ -87,14 +87,14 @@ const SalaryTable = () => {
         <div className="col-span-1 flex items-center justify-center">
           <p className="font-medium">Total salary</p>
         </div>
-        <div className="col-span-1 flex items-center justify-end">
+        <div className="col-span-1 flex items-center justify-center">
           <p className="font-medium">Actions</p>
         </div>
       </div>
 
       {productData.map((product, key) => (
         <div
-          className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
+          className="grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
           key={key}
         >
           <div className="col-span-1 flex items-center justify-center">
@@ -153,7 +153,7 @@ const SalaryTable = () => {
               180
             </p>
           </div>
-          <div className="col-span-1 flex items-center justify-end space-x-3.5">
+          <div className="col-span-1 flex items-center justify-center space-x-3.5">
             <button
               onClick={handleConfirmOpen}
               className="hover:text-primary"

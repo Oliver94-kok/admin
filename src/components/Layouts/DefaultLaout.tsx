@@ -18,14 +18,14 @@ export default function DefaultLayout({
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Star ===== --> */}
-        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <div className="relative flex flex-1 flex-col overflow-y-hidden overflow-x-auto">
           {/* <!-- ===== Header Star ===== --> */}
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Star ===== --> */}
           <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <div className=" w-[1920px] h-[1080px] max-w-full p-4 md:p-6 2xl:p-10 overflow-auto">
               {children}
             </div>
           </main>
