@@ -51,7 +51,8 @@ const productData: Product[] = [
 const BranchTable = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-
+  const [isResetOpen, setIsResetOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const handleConfirmOpen = () => {
     setIsConfirmOpen(true);
@@ -65,6 +66,34 @@ const BranchTable = () => {
 
   const handleConfirm = () => {
     handleConfirmClose();
+  };
+
+  const handleResetOpen = () => {
+    setIsResetOpen(true);
+  };
+
+  const handleResetClose = () => {
+    setIsResetOpen(false);
+    // Reset current action if needed
+
+  };
+
+  const handleReset = () => {
+    handleResetClose();
+  };
+
+  const handleDeleteOpen = () => {
+    setIsDeleteOpen(true);
+  };
+
+  const handleDeleteClose = () => {
+    setIsDeleteOpen(false);
+    // Reset current action if needed
+
+  };
+
+  const handleDelete = () => {
+    handleDeleteClose();
   };
 
   return (
@@ -94,7 +123,7 @@ const BranchTable = () => {
         <div className="col-span-1 flex items-center justify-center">
           <p className="font-medium"></p>
         </div>
-        <div className="col-span-1 flex items-center justify-end">
+        <div className="col-span-1 flex items-center justify-center">
           <p className="font-medium">Actions</p>
         </div>
       </div>
@@ -151,8 +180,9 @@ const BranchTable = () => {
               Confirm
             </button>
           </div>
-          <div className="col-span-1 flex items-center justify-end space-x-3.5">
-            <button className="hover:text-primary">
+          <div className="col-span-1 flex items-center justify-center space-x-3.5">
+            <button onClick={handleResetOpen}
+              className="hover:text-primary">
               <svg xmlns="http://www.w3.org/2000/svg" className="fill-current"
                 width="20"
                 height="20"
@@ -168,7 +198,8 @@ const BranchTable = () => {
               </svg>
 
             </button>
-            <button className="hover:text-primary">
+            <button onClick={handleDeleteOpen}
+              className="hover:text-primary">
               <svg
                 className="fill-current"
                 width="20"
@@ -232,6 +263,56 @@ const BranchTable = () => {
               className="btn btn-primary bg-green-500 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
             >
               Confirm
+            </button>
+
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isResetOpen} onClose={handleResetClose}>
+        <div className="p-5">
+          <p className="mb-4 text-center justify-center">
+            Are you sure want to Reset this User Password?
+          </p>
+
+          {/* Buttons positioned at the bottom right */}
+          <div className="flex justify-end items-center space-x-4 mt-6">
+            <button
+              onClick={handleResetClose}
+              className="text-red-500 underline font-medium hover:text-red-600"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleReset}
+              className="btn btn-primary bg-green-500 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
+            >
+              Confirm
+            </button>
+
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isDeleteOpen} onClose={handleDeleteClose}>
+        <div className="p-5">
+          <p className="mb-4 text-center justify-center">
+            Are you sure want to Reset this User Password?
+          </p>
+
+          {/* Buttons positioned at the bottom right */}
+          <div className="flex justify-end items-center space-x-4 mt-6">
+            <button
+              onClick={handleDeleteClose}
+              className="text-black underline font-medium hover:text-black"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              className="btn btn-primary bg-red-600 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
+            >
+              Delete
             </button>
 
           </div>
