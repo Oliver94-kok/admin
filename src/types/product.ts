@@ -40,3 +40,16 @@ export type Branch = {
   setclockout: string;
   starton: string;
 };
+
+export type Invoice = {
+  name: string;
+  username: string;
+  branches: string;
+  workinghours: number;
+  bday: number;
+  bmonth: number;
+  totalday: number;
+  late: number;
+  totalsal: number;
+  allowance: number;
+};

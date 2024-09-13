@@ -5,7 +5,7 @@ import LeaveTable from "@/components/Tables/LeaveTable";
 
 
 export const metadata: Metadata = {
-  title: "Admin Page",
+  title: "Leave Page",
 };
 
 const Leave = () => {

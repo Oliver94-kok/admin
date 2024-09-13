@@ -73,6 +73,7 @@ const menuGroups = [
           { label: "Branches", route: "/usersetting/branches" },
           { label: "User Salary", route: "/usersetting/salary" },
           { label: "User Leave", route: "/usersetting/leave" },
+          // { label: "Invoice", route: "/invoice" },
         ],
       },
     ],

@@ -4,7 +4,7 @@ import React from "react";
 import BranchTable from "@/components/Tables/BranchTable";
 
 export const metadata: Metadata = {
-  title: "Admin Page",
+  title: "Branches Page",
 };
 
 const Branches = () => {

@@ -4,7 +4,7 @@ import React from "react";
 import SalaryTable from "@/components/Tables/SalaryTable";
 
 export const metadata: Metadata = {
-  title: "Admin Page",
+  title: "Salary Page",
 };
 
 const Salary = () => {
