@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
 import Link from "next/link";
+import { SignInAction } from "@/action/signInAction";
 
 export default function SigninWithPassword() {
   // const [data, setData] = useState({
@@ -12,12 +13,13 @@ export default function SigninWithPassword() {
   const handleSignIn = () => {
     // Handle any logic before navigating (e.g., form validation, authentication)
     console.log(11111);
+    SignInAction()
     // Navigate to the Dashboard page
-    router.push("/usersetting/adduser"); // Route to the dashboard page
+    router.push("/dashboard"); // Route to the dashboard page
   };
 
   return (
-    <form>
+    <form >
       <div className="mb-4">
         <label
           htmlFor="Username"
