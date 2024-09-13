@@ -18,7 +18,7 @@ export default function DefaultLayout({
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Star ===== --> */}
-        <div className="relative flex flex-1 flex-col overflow-y-hidden overflow-x-auto">
+        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-auto">
           {/* <!-- ===== Header Star ===== --> */}
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           {/* <!-- ===== Header End ===== --> */}

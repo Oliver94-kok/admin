@@ -2,21 +2,72 @@
 "use client"
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Product } from '@/types/product';
+import { Salary } from '@/types/product';
 import ButtonPopup from '../Buttons/plusButton'; // Adjust the path as needed
 import PopupForm from '../Form/PopupForm'; // Adjust the path as needed
 import MultiSelect from '../Form/MultiSelect'; // Adjust the path as needed
 import Modal from '../modal';
 
-const productData: Product[] = [
+const salaryData: Salary[] = [
   {
     image: "/images/product/product-03.png",
-    name: "001",
-    category: "Electronics",
-    price: 296,
-    sold: 22,
-    active: 45,
-    confirm: 45,
+    name: "tester",
+    username: "001",
+    bday: 70,
+    bmonth: 296,
+    totalday: 22,
+    late: -50,
+    totalsal: 45,
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "tester",
+    username: "003",
+    bday: 90,
+    bmonth: 600,
+    totalday: 10,
+    late: -100,
+    totalsal: 500,
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "tester",
+    username: "002",
+    bday: 2220,
+    bmonth: 600,
+    totalday: 80,
+    late: -40,
+    totalsal: 600,
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "tester",
+    username: "001",
+    bday: 70,
+    bmonth: 296,
+    totalday: 22,
+    late: -50,
+    totalsal: 45,
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "tester",
+    username: "003",
+    bday: 500,
+    bmonth: 200,
+    totalday: 10,
+    late: -100,
+    totalsal: 500,
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "tester",
+    username: "002",
+    bday: 2220,
+    bmonth: 600,
+    totalday: 80,
+    late: -40,
+    totalsal: 600,
   },
   // ... other products
 ];
@@ -26,6 +77,49 @@ const SalaryTable = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
+  const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
+  const itemsPerPage = 10;
+
+
+
+
+
+  // Function to handle sorting
+  const handleSort = (column: string) => {
+    const newSortOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortColumn(column);
+    setSortOrder(newSortOrder);
+  };
+
+  // Sort the filtered data
+  const sortedData = [...salaryData].sort((a, b) => {
+    if (!sortColumn) return 0;
+    const aValue = a[sortColumn as keyof Salary] as unknown as number;
+    const bValue = b[sortColumn as keyof Salary] as unknown as number;
+
+    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  // Paginate the data
+  const filteredData = sortedData.filter(salary =>
+    salary.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    salary.bday.toString().includes(searchQuery) ||
+    salary.bmonth.toString().includes(searchQuery) ||
+    salary.totalday.toString().includes(searchQuery) ||
+    salary.late.toString().includes(searchQuery) ||
+    salary.totalsal.toString().includes(searchQuery)
+  );
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
 
   const handleConfirmOpen = () => {
 
@@ -60,80 +154,142 @@ const SalaryTable = () => {
   };
 
   return (
-    <div className="w-[1280px] rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <div className="px-4 py-6 md:px-6 xl:px-9">
-        <h4 className="text-body-2xlg font-bold text-dark dark:text-white">User Salary</h4>
+    <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+      <div className="flex justify-between mb-5">
+        <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
+          User Salary
+        </h4>
+        <div className="relative mb-5 z-20 w-full max-w-[414px]">
+          <input
+            className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+            placeholder="Search here..."
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button className="absolute right-0 top-0 flex h-11.5 w-11.5 items-center justify-center rounded-r-md bg-primary text-white">
+            <svg
+              className="fill-current"
+              width={18}
+              height={18}
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M8.25 3C5.3505 3 3 5.3505 3 8.25C3 11.1495 5.3505 13.5 8.25 13.5C11.1495 13.5 13.5 11.1495 13.5 8.25C13.5 5.3505 11.1495 3 8.25 3ZM1.5 8.25C1.5 4.52208 4.52208 1.5 8.25 1.5C11.9779 1.5 15 4.52208 15 8.25C15 11.9779 11.9779 15 8.25 15C4.52208 15 1.5 11.9779 1.5 8.25Z"
+                fill=""
+              />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M11.958 11.957C12.2508 11.6641 12.7257 11.6641 13.0186 11.957L16.2811 15.2195C16.574 15.5124 16.574 15.9872 16.2811 16.2801C15.9882 16.573 15.5133 16.573 15.2205 16.2801L11.958 13.0176C11.6651 12.7247 11.6651 12.2499 11.958 11.957Z"
+                fill=""
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Username</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Username</h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('bday')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Basic Salary<br></br>(Day)</h5>
+          {sortColumn === 'bday' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
+        </div>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('bmonth')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Basic Salary<br></br>(Month)</h5>
+          {sortColumn === 'bmonth' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
+        </div>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('totalday')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Total Working Days</h5>
+          {sortColumn === 'totalday' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
+        </div>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('late')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Late</h5>
+          {sortColumn === 'late' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Basic Salary<br></br>(Day)</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">OT</h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('totalsal')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Total salary</h5>
+          {sortColumn === 'totalsal' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Basic Salary<br></br>(Month)</p>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Total Working Days</p>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Late</p>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">OT</p>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Total salary</p>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Actions</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
         </div>
       </div>
 
-      {productData.map((product, key) => (
+      {currentData.map((salary, key) => (
         <div
-          className="grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
-          key={key}
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
+            }`} key={key}
         >
-          <div className="col-span-1 flex items-center justify-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div
-                className="h-12.5 w-15 rounded-md"
-                style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(product.image)}
-              >
-                <Image
-                  src={product.image}
-                  width={60}
-                  height={50}
-                  alt="Product"
-                />
-              </div>
-              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-                {product.name}
+          <div className="flex items-center gap-3.5 px-2 py-4">
+            <div
+              className="h-12.5 w-15 rounded-md"
+              style={{ position: "relative", paddingBottom: "20%" }}
+              onClick={() => setSelectedImage(salary.image)}
+            >
+              <Image
+                src={salary.image}
+                width={60}
+                height={50}
+                alt="leave"
+              />
+            </div>
+            <div className="flex flex-col">
+              <p className="flex font-medium text-dark dark:text-white sm:block">
+                {salary.name}
+              </p>
+              <p className="flex text-gray-500 text-sm sm:block">
+                {salary.username}
               </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              70
+              {salary.bday}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              280
+              {salary.bmonth}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              4
+              {salary.totalday}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-              - 100
+              {salary.late}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -150,7 +306,7 @@ const SalaryTable = () => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              180
+              {salary.totalsal}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
@@ -192,6 +348,39 @@ const SalaryTable = () => {
           </div>
         </div>
       ))}
+
+      {/* Pagination */}
+      <div className="flex justify-between px-7.5 py-7">
+        <div className="flex items-center">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+          >
+            Next
+          </button>
+        </div>
+        <p className="font-medium">
+          Showing {currentPage} of {totalPages} pages
+        </p>
+      </div>
 
       {/* Render the image modal */}
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>

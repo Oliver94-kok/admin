@@ -2,26 +2,196 @@
 "use client"
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Product } from '@/types/product';
+import { Leave } from '@/types/product';
 import Modal from '../modal';
 
-const productData: Product[] = [
+const leaveData: Leave[] = [
   {
     image: "/images/product/product-03.png",
-    name: "001",
-    category: "Electronics",
-    price: 296,
-    sold: 22,
-    active: 45,
-    confirm: 45,
+    name: "tester",
+    username: "001",
+    branch: "perling",
+    leavetype: "MC",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
   },
-  // ... other products
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "002",
+    branch: "perling",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "003",
+    branch: "austin",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "002",
+    branch: "perling",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "003",
+    branch: "austin",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "002",
+    branch: "perling",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "003",
+    branch: "austin",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "002",
+    branch: "perling",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "003",
+    branch: "austin",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "002",
+    branch: "perling",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "003",
+    branch: "austin",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "002",
+    branch: "perling",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  {
+    image: "/images/product/product-03.png",
+    name: "test",
+    username: "003",
+    branch: "austin",
+    leavetype: "annual",
+    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
+    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
+    leaveimage: "",
+  },
+  // ... other leaves
 ];
 
 const LeaveTable = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
+  const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
+  const itemsPerPage = 10;
+
+
+
+
+
+  // Function to handle sorting
+  const handleSort = (column: string) => {
+    const newSortOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortColumn(column);
+    setSortOrder(newSortOrder);
+  };
+
+  // Sort the filtered data
+  const sortedData = [...leaveData].sort((a, b) => {
+    if (!sortColumn) return 0;
+
+    const aValue = a[sortColumn as keyof Leave];
+    const bValue = b[sortColumn as keyof Leave];
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortOrder === 'asc'
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+      return sortOrder === 'asc'
+        ? aValue - bValue
+        : bValue - aValue;
+    }
+    return 0;
+  });
+
+  // Paginate the data
+  const filteredData = sortedData.filter(leave =>
+    leave.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    leave.username.toString().includes(searchQuery) ||
+    leave.leavetype.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    leave.leavedate.toString().includes(searchQuery) ||
+    leave.branch.toString().includes(searchQuery)
+  );
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleConfirmOpen = (action: string) => {
     setCurrentAction(action);
@@ -44,94 +214,147 @@ const LeaveTable = () => {
   };
 
   return (
-    <div className="w-[1280px] rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <div className="px-4 py-6 md:px-6 xl:px-9">
-        <h4 className="text-body-2xlg font-bold text-dark dark:text-white">User Leave</h4>
+    <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+
+
+      {/* Search Input */}
+      <div className="flex justify-between mb-5">
+        <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
+          User Leave
+        </h4>
+        <div className="relative mb-5 z-20 w-full max-w-[414px]">
+          <input
+            className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+            placeholder="Search here..."
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button className="absolute right-0 top-0 flex h-11.5 w-11.5 items-center justify-center rounded-r-md bg-primary text-white">
+            <svg
+              className="fill-current"
+              width={18}
+              height={18}
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M8.25 3C5.3505 3 3 5.3505 3 8.25C3 11.1495 5.3505 13.5 8.25 13.5C11.1495 13.5 13.5 11.1495 13.5 8.25C13.5 5.3505 11.1495 3 8.25 3ZM1.5 8.25C1.5 4.52208 4.52208 1.5 8.25 1.5C11.9779 1.5 15 4.52208 15 8.25C15 11.9779 11.9779 15 8.25 15C4.52208 15 1.5 11.9779 1.5 8.25Z"
+                fill=""
+              />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M11.958 11.957C12.2508 11.6641 12.7257 11.6641 13.0186 11.957L16.2811 15.2195C16.574 15.5124 16.574 15.9872 16.2811 16.2801C15.9882 16.573 15.5133 16.573 15.2205 16.2801L11.958 13.0176C11.6651 12.7247 11.6651 12.2499 11.958 11.957Z"
+                fill=""
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Username</p>
+      <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Username</h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Leave Type</p>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('leavetype')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Leave Type</h5>
+          {sortColumn === 'leavetype' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Leave Date</p>
+        <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('branch')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Branch</h5>
+          {sortColumn === 'branch' && (
+            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
+              {sortOrder === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Leave Reason</p>
+        <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Leave Date</h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Image</p>
+        <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Leave Reason</h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Actions</p>
+        <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
+          <h5 className="text-sm font-medium uppercase xsm:text-base pl-5">Image</h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
+          <h5 className="text-sm font-medium uppercase xsm:text-base pl-20">Actions</h5>
         </div>
       </div>
 
-      {productData.map((product, key) => (
+      {currentData.map((leave, key) => (
         <div
-          className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
+          className="grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
           key={key}
         >
-          <div className="col-span-1 flex items-center justify-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div
-                className="h-12.5 w-15 rounded-md"
-                style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(product.image)}
-              >
-                <Image
-                  src={product.image}
-                  width={60}
-                  height={50}
-                  alt="Product"
-                />
-              </div>
-              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-                {product.name}
+          <div className="flex items-center gap-3.5 px-2 py-4">
+            <div
+              className="h-12.5 w-15 rounded-md"
+              style={{ position: "relative", paddingBottom: "20%" }}
+              onClick={() => setSelectedImage(leave.image)}
+            >
+              <Image
+                src={leave.image}
+                width={60}
+                height={50}
+                alt="leave"
+              />
+            </div>
+            <div className="flex flex-col">
+              <p className="flex font-medium text-dark dark:text-white sm:block">
+                {leave.name}
+              </p>
+              <p className="flex text-gray-500 text-sm sm:block">
+                {leave.username}
               </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              MC
+              {leave.leavetype}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              10/9/2025(08:00) <br></br> 13/09/2025(10:00)
+              {leave.branch}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
-            <div className="flex-col flex-1 transition-opacity duration-500 relative -mr-2 pr-2 h-28 overflow-y-auto">
+            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+              {leave.leavedate}
+            </p>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <div className="flex-col flex-1 transition-opacity duration-500 relative -mr-2 pr-2 pl-2 h-28 overflow-y-auto">
               <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-                123454654564 65465465465 123454654564 65456465465465 123454654564654 5646546546545 646545646
-                123454654564 65465465465 123454654564 65456465465465 123454654564654 5646546546545 646545646
-                123454654564 65465465465 123454654564 65456465465465 123454654564654 5646546546545 646545646
-                123454654564 65465465465 123454654564 65456465465465 123454654564654 5646546546545 646545646
-                123454654564 65465465465 123454654564 65456465465465 123454654564654 5646546546545 646545646
-              </p>
+                {leave.leavereason} </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div
-                className="h-12.5 w-15 rounded-md"
+                className="h-25 w-15 rounded-md pl-5"
                 style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(product.image)}
+                onClick={() => setSelectedImage(leave.image)}
               >
                 <Image
-                  src={product.image}
-                  width={60}
-                  height={50}
-                  alt="Product"
+                  src={leave.image}
+                  width={100}
+                  height={90}
+                  alt="leave"
                 />
               </div>
             </div>
           </div>
-          <div className="col-span-1 flex items-center justify-center">
+          <div className="col-span-1 flex items-center justify-center pl-20">
             <button
               onClick={() => handleConfirmOpen('Approve')}
               className="bg-green-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 hover:bg-green-600"
@@ -148,13 +371,46 @@ const LeaveTable = () => {
         </div>
       ))}
 
+      {/* Pagination */}
+      <div className="flex justify-between px-7.5 py-7">
+        <div className="flex items-center">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+          >
+            Next
+          </button>
+        </div>
+        <p className="font-medium">
+          Showing {currentPage} of {totalPages} pages
+        </p>
+      </div>
+
       {/* Render the image modal */}
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image
           src={selectedImage || ''}
           width={600}
           height={500}
-          alt="Product"
+          alt="leave"
         />
       </Modal>
 

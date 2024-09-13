@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Product } from "@/types/product";
+import { Branch } from "@/types/product";
 import React, { useState } from 'react';
 import Modal from "../modal";
 import BranchSelectGroup from "../Form/FormElements/MultiSelect/branchselect";
@@ -9,42 +9,51 @@ import ClockoutSelectGroup from "../Form/FormElements/MultiSelect/clockoutselect
 import DatePickerOne from "../Form/FormElements/DatePicker/DatePickerOne";
 
 
-const productData: Product[] = [
+const branchData: Branch[] = [
   {
     image: "/images/product/product-01.png",
-    name: "001",
-    category: "Electronics",
-    price: 296,
-    sold: 22,
-    active: 45,
-    confirm: 45,
+    username: "001",
+    name: "tester",
+    branches: "Electronics",
+    setclockin: "08:00",
+    setclockout: "16:00",
+    starton: "Sep 2, 2024"
   },
   {
-    image: "/images/product/product-02.png",
-    name: "002",
-    category: "Electronics",
-    price: 546,
-    sold: 12,
-    active: 45,
-    confirm: 45,
+    image: "/images/product/product-01.png",
+    username: "006",
+    name: "test",
+    branches: "Electronics",
+    setclockin: "08:00",
+    setclockout: "16:00",
+    starton: "Sep 2, 2024"
   },
   {
-    image: "/images/product/product-03.png",
-    name: "003",
-    category: "Electronics",
-    price: 443,
-    sold: 64,
-    active: 45,
-    confirm: 45,
+    image: "/images/product/product-01.png",
+    username: "005",
+    name: "tes",
+    branches: "Electronics",
+    setclockin: "08:00",
+    setclockout: "16:00",
+    starton: "Sep 2, 2024"
   },
   {
-    image: "/images/product/product-04.png",
-    name: "004",
-    category: "Electronics",
-    price: 499,
-    sold: 72,
-    active: 45,
-    confirm: 45,
+    image: "/images/product/product-01.png",
+    username: "004",
+    name: "tester",
+    branches: "Electronics",
+    setclockin: "08:00",
+    setclockout: "16:00",
+    starton: "Sep 2, 2024"
+  },
+  {
+    image: "/images/product/product-01.png",
+    username: "002",
+    name: "tester",
+    branches: "Electronics",
+    setclockin: "08:00",
+    setclockout: "16:00",
+    starton: "Sep 2, 2024"
   },
 ];
 
@@ -53,6 +62,21 @@ const BranchTable = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+
+  // Paginate the data
+  const filteredData = branchData.filter(branch =>
+    branch.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const currentData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleConfirmOpen = () => {
     setIsConfirmOpen(true);
@@ -97,56 +121,94 @@ const BranchTable = () => {
   };
 
   return (
-    <div className="w-[1280px] rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <div className="px-4 py-6 md:px-6 xl:px-9">
-        <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
+    <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+      <div className="flex justify-between mb-5">
+        <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           Perling
         </h4>
+        <div className="relative mb-5 z-20 w-full max-w-[414px]">
+          {/* <input
+            className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+            placeholder="Search here..."
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button className="absolute right-0 top-0 flex h-11.5 w-11.5 items-center justify-center rounded-r-md bg-primary text-white">
+            <svg
+              className="fill-current"
+              width={18}
+              height={18}
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M8.25 3C5.3505 3 3 5.3505 3 8.25C3 11.1495 5.3505 13.5 8.25 13.5C11.1495 13.5 13.5 11.1495 13.5 8.25C13.5 5.3505 11.1495 3 8.25 3ZM1.5 8.25C1.5 4.52208 4.52208 1.5 8.25 1.5C11.9779 1.5 15 4.52208 15 8.25C15 11.9779 11.9779 15 8.25 15C4.52208 15 1.5 11.9779 1.5 8.25Z"
+                fill=""
+              />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M11.958 11.957C12.2508 11.6641 12.7257 11.6641 13.0186 11.957L16.2811 15.2195C16.574 15.5124 16.574 15.9872 16.2811 16.2801C15.9882 16.573 15.5133 16.573 15.2205 16.2801L11.958 13.0176C11.6651 12.7247 11.6651 12.2499 11.958 11.957Z"
+                fill=""
+              />
+            </svg>
+          </button> */}
+        </div>
       </div>
 
       <div className="grid grid-cols-7 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Username</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Username</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Branches</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Branches</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Clock-In Time</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Clock-In<br></br> Time</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Clock-Out Time</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Clock-Out Time</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Start On</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Start On</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium"></p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base"></h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <p className="font-medium">Actions</p>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
         </div>
       </div>
 
-      {productData.map((product, key) => (
+      {currentData.map((branch, key) => (
         <div
-          className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
+          className={`grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
+            }`}
           key={key}
         >
-          <div className="col-span-1 flex items-center justify-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="h-12.5 w-15 rounded-md"
-                style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(product.image)} >
-                <Image
-                  src={product.image}
-                  width={60}
-                  height={50}
-                  alt="Product"
-                />
-              </div>
-              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-                {product.name}
+          <div className="flex items-center gap-3.5 px-2 py-4">
+            <div
+              className="h-12.5 w-15 rounded-md"
+              style={{ position: "relative", paddingBottom: "20%" }}
+              onClick={() => setSelectedImage(branch.image)}
+            >
+              <Image
+                src={branch.image}
+                width={60}
+                height={50}
+                alt="leave"
+              />
+            </div>
+            <div className="flex flex-col">
+              <p className="flex font-medium text-dark dark:text-white sm:block">
+                {branch.name}
+              </p>
+              <p className="flex text-gray-500 text-sm sm:block">
+                {branch.username}
               </p>
             </div>
           </div>
@@ -232,6 +294,38 @@ const BranchTable = () => {
 
         </div>
       ))}
+      {/* Pagination */}
+      <div className="flex justify-between px-7.5 py-7">
+        <div className="flex items-center">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+          >
+            Next
+          </button>
+        </div>
+        <p className="font-medium">
+          Showing {currentPage} of {totalPages} pages
+        </p>
+      </div>
 
       {/* Render the image modal */}
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
@@ -292,12 +386,13 @@ const BranchTable = () => {
 
           </div>
         </div>
+
       </Modal>
 
       <Modal isOpen={isDeleteOpen} onClose={handleDeleteClose}>
         <div className="p-5">
           <p className="mb-4 text-center justify-center">
-            Are you sure want to Reset this User Password?
+            Are you sure want to Delete this User?
           </p>
 
           {/* Buttons positioned at the bottom right */}
@@ -318,6 +413,8 @@ const BranchTable = () => {
           </div>
         </div>
       </Modal>
+
+
 
     </div>
   );
