@@ -15,7 +15,7 @@ const salaryData: Salary[] = [
     name: "tester",
     username: "001",
     bday: 70,
-    bmonth: 296,
+    ot: 10,
     totalday: 22,
     late: -50,
     totalsal: 45,
@@ -25,7 +25,7 @@ const salaryData: Salary[] = [
     name: "tester",
     username: "003",
     bday: 90,
-    bmonth: 600,
+    ot: 20,
     totalday: 10,
     late: -100,
     totalsal: 500,
@@ -34,8 +34,8 @@ const salaryData: Salary[] = [
     image: "/images/product/product-03.png",
     name: "tester",
     username: "002",
-    bday: 2220,
-    bmonth: 600,
+    bday: 60,
+    ot: 12,
     totalday: 80,
     late: -40,
     totalsal: 600,
@@ -45,7 +45,7 @@ const salaryData: Salary[] = [
     name: "tester",
     username: "001",
     bday: 70,
-    bmonth: 296,
+    ot: 14,
     totalday: 22,
     late: -50,
     totalsal: 45,
@@ -54,8 +54,8 @@ const salaryData: Salary[] = [
     image: "/images/product/product-03.png",
     name: "tester",
     username: "003",
-    bday: 500,
-    bmonth: 200,
+    bday: 100,
+    ot: 16,
     totalday: 10,
     late: -100,
     totalsal: 500,
@@ -65,7 +65,7 @@ const salaryData: Salary[] = [
     name: "tester",
     username: "002",
     bday: 2220,
-    bmonth: 600,
+    ot: 600,
     totalday: 80,
     late: -40,
     totalsal: 600,
@@ -73,16 +73,22 @@ const salaryData: Salary[] = [
   // ... other products
 ];
 
+export type SelectedItem = {
+  id: string;    // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
+  item: string;  // 'item' should also be a string.
+};
+
 const SalaryTable = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);;
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const itemsPerPage = 10;
+  const [id, setid] = useState('');
 
 
 
@@ -110,7 +116,7 @@ const SalaryTable = () => {
   const filteredData = sortedData.filter(salary =>
     salary.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
     salary.bday.toString().includes(searchQuery) ||
-    salary.bmonth.toString().includes(searchQuery) ||
+    salary.ot.toString().includes(searchQuery) ||
     salary.totalday.toString().includes(searchQuery) ||
     salary.late.toString().includes(searchQuery) ||
     salary.totalsal.toString().includes(searchQuery)
@@ -137,7 +143,8 @@ const SalaryTable = () => {
     handleConfirmClose();
   };
 
-  const handleOpenForm = () => {
+  const handleOpenForm = (id: string) => {
+    setid(id);
     setIsFormOpen(true);
   };
 
@@ -145,13 +152,26 @@ const SalaryTable = () => {
     setIsFormOpen(false);
   };
 
-  const handleAddItem = (item: string) => {
-    setSelectedItems((prevItems) => [...prevItems, item]);
+  const handleAddItem = (item: string, id: string) => {
+    // Check if the item already exists by its id
+    const itemExists = selectedItems.some((e) => e.id === id);
+
+    // If the item does not exist, add it to the selectedItems
+    if (!itemExists) {
+      const newItem = { id, item };
+      setSelectedItems((prevItems) => [...prevItems, newItem]);
+      console.log('New Item already exists:', newItem);
+    } else {
+      console.log('Item already exists:', item);
+    }
     handleCloseForm(); // Close the form after adding
   };
 
+
   const handleRemoveItem = (item: string) => {
-    setSelectedItems((prevItems) => prevItems.filter(i => i !== item));
+    setSelectedItems((prevItems) =>
+      prevItems.filter(i => i.id !== item) // Compare the 'item' property in each object
+    );
   };
 
   return (
@@ -206,9 +226,9 @@ const SalaryTable = () => {
             </span>
           )}
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('bmonth')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Basic Salary<br></br>(Month)</h5>
-          {sortColumn === 'bmonth' && (
+        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('ot')}>
+          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">OT<br></br>(Hours)</h5>
+          {sortColumn === 'ot' && (
             <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
               {sortOrder === 'asc' ? '▲' : '▼'}
             </span>
@@ -280,7 +300,7 @@ const SalaryTable = () => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.bmonth}
+              {salary.ot}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -298,10 +318,11 @@ const SalaryTable = () => {
               <MultiSelect
                 items={selectedItems}
                 onRemove={handleRemoveItem}
+                id={key}
               />
             </div>
             <ButtonPopup
-              onClick={handleOpenForm}
+              onClick={() => handleOpenForm(key.toString())}
               customClasses="border border-primary text-primary rounded-full rounded-[2px] px-5 py-1 lg:px-10 xl:px-5"
             />
           </div>
@@ -395,20 +416,21 @@ const SalaryTable = () => {
         isOpen={isFormOpen}
         onClose={handleCloseForm}
         onAddItem={handleAddItem}
+        id={id}
       />
 
       {/* Render the confirmation modal */}
       <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
         <div className="p-5">
           <p className="mb-4 text-center justify-center">
-            Are you sure you want to change this Basic Salary?
+            Are you sure you want to change this Basic Salary (Day)?
           </p>
 
           {/* Add a text field here */}
           <div className="flex justify-center">
             <input
               type="text"
-              placeholder="Enter new Basic Salary"
+              placeholder="Enter new Basic Salary (Day)"
               className="mb-4 w-full max-w-xs rounded-lg border border-gray-300 p-2 focus:outline-none focus:border-primary"
             />
           </div>

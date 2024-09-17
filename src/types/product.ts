@@ -3,7 +3,7 @@ export type Salary = {
   name: string;
   username: string;
   bday: number;
-  bmonth: number;
+  ot: number;
   totalday: number;
   late: number;
   totalsal: number;
@@ -47,7 +47,7 @@ export type Invoice = {
   branches: string;
   workinghours: number;
   bday: number;
-  bmonth: number;
+  ot: number;
   totalday: number;
   late: number;
   totalsal: number;

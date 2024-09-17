@@ -5,16 +5,20 @@ import Modal from '../modal'; // Make sure this path is correct
 interface PopupFormProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddItem: (item: string) => void;
+    onAddItem: (item: string, id: string) => void;
+    id: string;
 }
 
-const PopupForm: React.FC<PopupFormProps> = ({ isOpen, onClose, onAddItem }) => {
+const PopupForm: React.FC<PopupFormProps> = ({ isOpen, onClose, onAddItem, id }) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleAddItem = () => {
         if (inputValue.trim()) {
-            onAddItem(inputValue.trim());
-            setInputValue('');
+            const confirmAdd = window.confirm("Are you sure you want to add this?");
+            if (confirmAdd) {
+                onAddItem(inputValue.trim(), id);
+                setInputValue('');
+            }
         }
     };
 

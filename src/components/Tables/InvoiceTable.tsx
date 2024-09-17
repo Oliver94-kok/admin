@@ -10,7 +10,7 @@ const invoiceData: Invoice[] = [
     branches: "Perling",
     workinghours: 80,
     bday: 50,
-    bmonth: 500,
+    ot: 500,
     allowance: 150, // Added allowance
     totalday: 10,
     late: -100,
@@ -75,15 +75,15 @@ const InvoiceTable = () => {
                 <p className="text-right">${invoice.bday}</p>
               </div>
               <div className="flex justify-between">
-                <p>Basic Monthly Salary:</p>
-                <p className="text-right">${invoice.bmonth}</p> {/* Aligned right */}
-              </div>
-              <div className="flex justify-between">
                 <p>Allowance:</p>
                 <p className="text-right">${invoice.allowance}</p> {/* Aligned right */}
               </div>
               <div className="flex justify-between">
-                <p>Late Deduction:</p>
+                <p>Overtime:</p>
+                <p className="text-right">${invoice.ot}</p> {/* Aligned right */}
+              </div>
+              <div className="flex justify-between">
+                <p>Deduction:</p>
                 <p className="text-right">${invoice.late}</p> {/* Aligned right */}
               </div>
               <div className="border-t border-stroke mt-10 pt-4 flex justify-between font-bold"> {/* Divider added here */}
