@@ -3,23 +3,35 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
 import Link from "next/link";
 import { SignInAction } from "@/action/signInAction";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignInSchema } from "@/lib/schema";
+import { z } from 'zod'
 
 export default function SigninWithPassword() {
-  // const [data, setData] = useState({
-  //   remember: false,
-  // });
+  const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof SignInSchema>>({
+    resolver: zodResolver(SignInSchema)
+  })
   const router = useRouter(); // Initialize useRouter hook
-
-  const handleSignIn = () => {
+  const [error, setErrors] = useState("");
+  const OnSubmit = async (values: z.infer<typeof SignInSchema>) => {
     // Handle any logic before navigating (e.g., form validation, authentication)
-    console.log(11111);
-    SignInAction()
+
+    SignInAction(values).then((data) => {
+      if (data?.error) {
+        setErrors(data.error)
+        return
+      }
+      if (data.success) {
+        router.push("/dashboard");
+      }
+    })
     // Navigate to the Dashboard page
-    router.push("/dashboard"); // Route to the dashboard page
+    // router.push("/dashboard"); // Route to the dashboard page
   };
 
   return (
-    <form >
+    <form onSubmit={handleSubmit(OnSubmit)}>
       <div className="mb-4">
         <label
           htmlFor="Username"
@@ -29,9 +41,9 @@ export default function SigninWithPassword() {
         </label>
         <div className="relative">
           <input
-            type="Username"
+            type="text"
             placeholder="Enter your Username"
-            name="Username"
+            {...register('username', { required: true })}
             className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
 
@@ -51,6 +63,9 @@ export default function SigninWithPassword() {
 
             </svg>
           </span>
+          {errors.username?.message && <p className="text-red-600">{errors.username?.message}</p>}
+
+
         </div>
       </div>
 
@@ -64,9 +79,9 @@ export default function SigninWithPassword() {
         <div className="relative">
           <input
             type="password"
-            name="password"
+            {...register('password')}
             placeholder="Enter your password"
-            autoComplete="password"
+
             className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
 
@@ -93,18 +108,20 @@ export default function SigninWithPassword() {
               />
             </svg>
           </span>
+          {errors.password?.message && <p className="text-red-600" >{errors.password?.message}</p>}
         </div>
       </div>
 
       <div className="mb-4.5 mt-10">
         <button
-          // type="submit"
-          onClick={handleSignIn}
+          type="submit"
+
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
         >
           Sign In
         </button>
       </div>
+      {error && (<> <p className="text-red-600">{error}</p></>)}
     </form>
   );
 }
