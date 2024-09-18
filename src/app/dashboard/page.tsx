@@ -17,11 +17,12 @@ const getAllData = async () => {
     return data;
 }
 const Dashboard = async () => {
-    const attends = await getAllData()
+    // const attends = await getAllData()
     return (
         <>
             <DefaultLayout>
-                <DashTable data={attends} />
+                {/* <DashTable data={attends} />*/}
+                <DashTable />
             </DefaultLayout>
         </>
     );

@@ -56,7 +56,7 @@ const brandData: BRAND[] = [
 ];
 
 interface dashTableInterface {
-  data: AttendsInterface[]
+  data?: AttendsInterface[]
 }
 
 const DashTable = ({ data }: dashTableInterface) => {
@@ -75,12 +75,12 @@ const DashTable = ({ data }: dashTableInterface) => {
   };
 
   // Sort the filtered data
-  const sortedData = [...data].sort((a, b) => {
+  const sortedData = [...brandData].sort((a, b) => {
 
     if (!sortColumn) return 0;
 
-    const aValue = a[sortColumn as keyof AttendsInterface];
-    const bValue = b[sortColumn as keyof AttendsInterface];
+    const aValue = a[sortColumn as keyof BRAND];
+    const bValue = b[sortColumn as keyof BRAND];
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       return sortOrder === 'asc'
@@ -199,10 +199,10 @@ const DashTable = ({ data }: dashTableInterface) => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.userImg as string)}
+                onClick={() => setSelectedImage(brand.logo as string)}
               >
                 <Image
-                  src={brand.userImg ? brand.userImg : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
+                  src={brand.logo ? brand.logo : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
                   width={60}
                   height={50}
                   alt="leave"
@@ -220,13 +220,14 @@ const DashTable = ({ data }: dashTableInterface) => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white">
-                {brand.clockIn?.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: 'numeric' })}
+                {brand.clockin}
               </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-green-light-1">
-                {brand.clockOut?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })}
+                {/* {brand.clockin?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
+                {brand.clockin}
               </p>
             </div>
 
@@ -234,10 +235,10 @@ const DashTable = ({ data }: dashTableInterface) => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.img as string)}
+                onClick={() => setSelectedImage(brand.logo as string)}
               >
                 <Image
-                  src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
+                  src={brand.logo ? brand.logo : "/images/brand/brand-02.svg"}
                   width={60}
                   height={50}
                   alt="leave"
@@ -247,7 +248,7 @@ const DashTable = ({ data }: dashTableInterface) => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white uppercase ">
-                {brand.location}
+                {brand.workinghours}
               </p>
             </div>
           </div>

@@ -18,10 +18,10 @@ export default function SigninWithPassword() {
     // Handle any logic before navigating (e.g., form validation, authentication)
 
     SignInAction(values).then((data) => {
-      if (data?.error) {
-        setErrors(data.error)
-        return
-      }
+      // if (data?.error) {
+      //   setErrors(data.error)
+      //   return
+      // }
       if (data.success) {
         router.push("/dashboard");
       }

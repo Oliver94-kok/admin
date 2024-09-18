@@ -1,15 +1,12 @@
 import { checkClockIn } from "@/data/attend";
+import { AddSalary } from "@/data/salary";
 import { db } from "@/lib/db";
 import { checkWorkingHour, saveImage } from "@/lib/function";
 import { AttendsInterface } from "@/types/attendents";
 import { NextRequest } from "next/server";
 
 export const GET = async (req: Request) => {
-  let d =
-    await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img
-  FROM attends AS a
-  JOIN user AS u ON a.userId = u.id
-  WHERE date(a.clockIn) = CURDATE() OR date(a.clockOut) = CURDATE()`;
+  let d = await AddSalary("cm177r63b00078s0twal5wswj");
 
   return Response.json({ d }, { status: 200 });
 };

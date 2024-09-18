@@ -19,15 +19,16 @@ enum UserRole {
 }
 
 model User {
-  id       String    @id @default(cuid())
-  name     String
-  username String
-  password String
-  token    String?
-  userImg  String?
-  role     UserRole  @default(USER)
-  Attends  Attends[]
-  Salary   Salary[]
+  id           String         @id @default(cuid())
+  name         String
+  username     String
+  password     String
+  token        String?
+  userImg      String?
+  role         UserRole       @default(USER)
+  Attends      Attends[]
+  Salary       Salary[]
+  AttendBranch AttendBranch[]
 }
 
 model Attends {
@@ -43,13 +44,34 @@ model Attends {
 }
 
 model Salary {
-  id       String @id @default(cuid())
-  month    Int
-  year     Int
-  late     Float?
-  bonus    Float?
-  overTime Float?
-  salary   Json
+  id           String @id @default(cuid())
+  month        Int
+  year         Int
+  workingDay   Int
+  late         Float?
+  overTimeHour Float?
+  overTime     Float?
+  userId       String
+  users        User?  @relation(references: [id], fields: [userId])
+}
+
+model Branch {
+  id           String         @id @default(cuid())
+  code         String
+  address      String
+  team         String
+  AttendBranch AttendBranch[]
+}
+
+model AttendBranch {
+  id       String    @id @default(cuid())
+  clockIn  DateTime
+  clockOut DateTime
   userId   String
-  users    User?  @relation(references: [id], fields: [userId])
+  branchid String
+  location String
+  startOn  DateTime?
+  offDay   DateTime?
+  users    User?     @relation(references: [id], fields: [userId])
+  branchs  Branch?   @relation(references: [id], fields: [branchid])
 }
