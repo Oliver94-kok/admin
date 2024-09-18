@@ -18,7 +18,7 @@ export const AddSalary = async (userid: string) => {
         lateFine = 50;
       }
     }
-    let salarys = salary.salary as Prisma.JsonArray;
+    // let salarys = salary.salary as Prisma.JsonArray;
     let ns;
     if (user.late == 1) {
       ns = {
@@ -33,7 +33,7 @@ export const AddSalary = async (userid: string) => {
         late: null,
       };
     }
-    salarys.push(ns);
+    // salarys.push(ns);
     let total = 0;
     // salarys.map((e) => {
     //   total = total + e["total"];
@@ -45,5 +45,12 @@ export const AddSalary = async (userid: string) => {
     //   total,
     // };
     // let update = await db.salary.update({ where: { id: salary.id }, data: {} });
+  } else {
+    let newJson;
+    if (user.late == 1) {
+      newJson = {
+        day: user.day,
+      };
+    }
   }
 };
