@@ -15,6 +15,7 @@ export const SignInAction = async (data: z.infer<typeof SignInSchema>) => {
   if (!user) return { error: "User not found" };
   let hashPassword = await checkPassword(password, user.password);
   if (!hashPassword) return { error: "Username or password not match" };
+  if (user.role != "ADMIN") return { error: "Please contact administrator" };
   createSession(user.id);
   return { success: "success" };
 };

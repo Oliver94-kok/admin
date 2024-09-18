@@ -1,44 +1,45 @@
 import { checkClockIn } from "@/data/attend";
 import { db } from "@/lib/db";
-import { checkFolder } from "@/lib/function";
+import { checkWorkingHour, saveImage } from "@/lib/function";
 import { AttendsInterface } from "@/types/attendents";
+import { NextRequest } from "next/server";
 
-export const GET = async () => {
-  let d = await checkFolder();
+export const GET = async (req: Request) => {
+  let d =
+    await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img
+  FROM attends AS a
+  JOIN user AS u ON a.userId = u.id
+  WHERE date(a.clockIn) = CURDATE() OR date(a.clockOut) = CURDATE()`;
 
   return Response.json({ d }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
-  const { userId, clockIn } = await req.json();
+  const { userId, clockIn, imgClockIn } = await req.json();
+  let attendImg = await saveImage(imgClockIn);
   let data = {
     userId,
     clockIn,
+    img: attendImg,
   };
   let t = await db.attends.create({ data });
   return Response.json({ t }, { status: 201 });
 };
 
 export const PATCH = async (req: Request) => {
-  const { userId, clockOut } = await req.json();
-  let attend: AttendsInterface[] = await checkClockIn(userId);
-
-  let id;
-  attend.map((e) => {
-    console.log("ee");
-    id = e.id;
-    console.log(e);
+  const { userId, clockOut, id } = await req.json();
+  let d = req.arrayBuffer();
+  let attend = await checkClockIn(userId);
+  if (!attend)
+    return Response.json({ Error: "user not clock in" }, { status: 400 });
+  let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
+  let data = {
+    clockOut,
+    workingHour: workingHour,
+  };
+  let update = await db.attends.update({
+    data,
+    where: { id: id },
   });
-  //   return Response.json({ dat: attend[0].id }, { status: 200 });
-  if (attend) {
-    console.log("sds", id);
-    let data = {
-      clockOut,
-    };
-    let d = await db.attends.update({
-      where: { id },
-      data,
-    });
-    return Response.json({ d }, { status: 200 });
-  }
+  return Response.json({ update }, { status: 200 });
 };

@@ -20,6 +20,12 @@ export const createAttend = async ({ create }: dataAttend) => {
 export const checkClockIn = async (userId: string) => {
   let a: AttendsInterface[] =
     await db.$queryRaw`SELECT * FROM attends WHERE userId=${userId} AND date(clockIn) = CURDATE()`;
-
-  return a;
+  if (Array.isArray(a)) {
+    const firstRow = a[0];
+    const jsonResult = firstRow;
+    return jsonResult;
+  } else {
+    const jsonResult = a;
+    return jsonResult;
+  }
 };

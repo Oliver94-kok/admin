@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BRAND } from "@/types/brand";
 import Image from "next/image";
 import Modal from "../modal";
+import { AttendsInterface } from "@/types/attendents";
 
 const brandData: BRAND[] = [
   {
@@ -54,8 +55,11 @@ const brandData: BRAND[] = [
   // Add more data as needed
 ];
 
+interface dashTableInterface {
+  data: AttendsInterface[]
+}
 
-const DashTable = () => {
+const DashTable = ({ data }: dashTableInterface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
@@ -71,11 +75,12 @@ const DashTable = () => {
   };
 
   // Sort the filtered data
-  const sortedData = [...brandData].sort((a, b) => {
+  const sortedData = [...data].sort((a, b) => {
+
     if (!sortColumn) return 0;
 
-    const aValue = a[sortColumn as keyof BRAND];
-    const bValue = b[sortColumn as keyof BRAND];
+    const aValue = a[sortColumn as keyof AttendsInterface];
+    const bValue = b[sortColumn as keyof AttendsInterface];
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       return sortOrder === 'asc'
@@ -89,13 +94,16 @@ const DashTable = () => {
     return 0;
   });
   // Filtering data by search query
-  const filteredData = sortedData.filter(brand =>
-    brand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    brand.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    brand.clockin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    brand.clockout.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    brand.workinghours.toString().includes(searchQuery)
-  );
+  const filteredData = sortedData.filter(attend => {
+    // if (attend.name && attend.username && attend.workingHour) {
+    const searchText = searchQuery.toLowerCase(); // Lowercase searchQuery once
+    return attend.name.toLowerCase().includes(searchText) ||
+      attend.username.toLowerCase().includes(searchText)
+    //   attend?.workingHour.toString().includes(searchText);
+    // }
+    // return false; // Explicitly return false to avoid accidental inclusions
+  });
+
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
@@ -171,9 +179,9 @@ const DashTable = () => {
               Photo
             </h5>
           </div>
-          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('workinghours')}>
-            <p className="text-sm font-medium uppercase xsm:text-base">Working Hours</p>
-            {sortColumn === 'workinghours' && (
+          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('location')}>
+            <p className="text-sm font-medium uppercase xsm:text-base">Location</p>
+            {sortColumn === 'location' && (
               <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
                 {sortOrder === 'asc' ? '▲' : '▼'}
               </span>
@@ -191,10 +199,10 @@ const DashTable = () => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.logo)}
+                onClick={() => setSelectedImage(brand.userImg as string)}
               >
                 <Image
-                  src={brand.logo}
+                  src={brand.userImg ? brand.userImg : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
                   width={60}
                   height={50}
                   alt="leave"
@@ -212,13 +220,13 @@ const DashTable = () => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white">
-                {brand.clockin}
+                {brand.clockIn?.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: 'numeric' })}
               </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-green-light-1">
-                {brand.clockout}
+                {brand.clockOut?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })}
               </p>
             </div>
 
@@ -226,10 +234,10 @@ const DashTable = () => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.logo)}
+                onClick={() => setSelectedImage(brand.img as string)}
               >
                 <Image
-                  src={brand.logo}
+                  src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
                   width={60}
                   height={50}
                   alt="leave"
@@ -238,8 +246,8 @@ const DashTable = () => {
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
-              <p className="font-medium text-dark dark:text-white">
-                {brand.workinghours}
+              <p className="font-medium text-dark dark:text-white uppercase ">
+                {brand.location}
               </p>
             </div>
           </div>

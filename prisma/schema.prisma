@@ -24,15 +24,32 @@ model User {
   username String
   password String
   token    String?
+  userImg  String?
   role     UserRole  @default(USER)
   Attends  Attends[]
+  Salary   Salary[]
 }
 
 model Attends {
-  id       String    @id @default(cuid())
-  clockIn  DateTime?
-  clockOut DateTime?
-  img      String?
+  id          String    @id @default(cuid())
+  clockIn     DateTime?
+  clockOut    DateTime?
+  workingHour Float?
+  img         String?
+  locationIn  String?
+  locationOut String?
+  userId      String
+  users       User?     @relation(fields: [userId], references: [id])
+}
+
+model Salary {
+  id       String @id @default(cuid())
+  month    Int
+  year     Int
+  late     Float?
+  bonus    Float?
+  overTime Float?
+  salary   Json
   userId   String
-  users    User?     @relation(fields: [userId], references: [id])
+  users    User?  @relation(references: [id], fields: [userId])
 }

@@ -13,6 +13,7 @@
     "@nextui-org/select": "^2.2.5",
     "@prisma/client": "^5.19.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/luxon": "^3.4.2",
     "apexcharts": "^3.45.2",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
