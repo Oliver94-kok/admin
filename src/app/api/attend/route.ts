@@ -40,3 +40,7 @@
 //   });
 //   return Response.json({ update }, { status: 200 });
 // };
+export const GET = async () => {
+  // let user = await db.user.findMany({ orderBy: { username: "asc" } });
+  return Response.json({ user: "SS" }, { status: 200 });
+};
