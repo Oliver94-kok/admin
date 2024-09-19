@@ -177,9 +177,45 @@ const SalaryTable = () => {
   return (
     <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="flex justify-between mb-5">
-        <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
-          User Salary
-        </h4>
+        <div className='relative z-20 mb-5'>
+
+
+          {/* Year selection dropdown */}
+          {/* <div className="flex flex-col mt-4"> */}
+
+          <select
+            id="year"
+            className="pr-5 rounded text-[24px] font-bold text-dark dark:text-white p-2 bg-white dark:bg-gray-700"
+          >
+            {/* Add year options */}
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            {/* Add more years as needed */}
+          </select>
+
+
+          {/* </div> */}
+
+          {/* Month selection dropdown with Check button beside it */}
+
+
+          <select
+            id="month"
+            className="ml-5 mr-5 text-[24px] uppercase font-bold dark:border-gray-600 p-2 rounded text-dark dark:text-white bg-white dark:bg-gray-700"
+          >
+            {/* Add month options */}
+            <option value="01">Jan</option>
+            <option value="02">Feb</option>
+            <option value="03">Mar</option>
+            {/* Add the rest of the months */}
+          </select>
+
+          {/* Check button beside the month dropdown */}
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 pl-5 pr-5 ml-5 rounded">
+            Check
+          </button>
+
+        </div>
         <div className="relative mb-5 z-20 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"

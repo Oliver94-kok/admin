@@ -4,6 +4,7 @@ import { BRAND } from "@/types/brand";
 import Image from "next/image";
 import Modal from "../modal";
 import { AttendsInterface } from "@/types/attendents";
+import dayjs from 'dayjs';
 
 const brandData: BRAND[] = [
   {
@@ -66,6 +67,17 @@ const DashTable = ({ data }: dashTableInterface) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const itemsPerPage = 10;
+  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
+
+  // Generate the last three days' options including today
+  const getLastThreeDays = () => {
+    const today = dayjs();
+    const dates = [];
+    for (let i = 0; i < 3; i++) {
+      dates.push(today.subtract(i, 'day').format('DD / MM'));
+    }
+    return dates;
+  };
 
   // Function to handle sorting
   const handleSort = (column: string) => {
@@ -116,8 +128,20 @@ const DashTable = ({ data }: dashTableInterface) => {
       {/* Search Input */}
       <div className="flex justify-between mb-5">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
-          Today Clock in User
+          <select
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="pr-3 uppercase rounded text-body-2xlg font-bold text-dark dark:text-white bg-white dark:bg-gray-700"
+          >
+            {getLastThreeDays().map((date) => (
+              <option key={date} value={date}>
+                {date}
+              </option>
+            ))}
+          </select> Clock in User
         </h4>
+
+
         <div className="relative mb-5 z-20 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
