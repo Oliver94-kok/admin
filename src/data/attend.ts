@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
 
@@ -50,4 +51,19 @@ export const checkClockLate = async (userid: string) => {
   let month = checkLate.clockIn.getMonth() + 1;
   let day = checkLate.clockIn.getDate();
   return { late, year, month, day };
+};
+
+export const getDataByDate = async (tarikh: string) => {
+  let day = tarikh.split("/");
+  let year = new Date().getFullYear();
+  let d = `${year}-${day[1]}-${day[0]}`;
+
+  let data: AttendsInterface[] =
+    await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour
+    FROM attends AS a
+    JOIN user AS u ON a.userId = u.id
+    WHERE date(a.clockIn) = date(${d}) OR date(a.clockOut) = date(${d})`;
+  console.log(d);
+  console.log(data);
+  return data;
 };

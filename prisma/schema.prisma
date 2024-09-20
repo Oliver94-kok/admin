@@ -19,16 +19,17 @@ enum UserRole {
 }
 
 model User {
-  id           String         @id @default(cuid())
+  id           String        @id @default(cuid())
   name         String
   username     String
   password     String
   token        String?
   userImg      String?
-  role         UserRole       @default(USER)
+  role         UserRole      @default(USER)
   Attends      Attends[]
   Salary       Salary[]
-  AttendBranch AttendBranch[]
+  Leave        Leave[]
+  AttendBranch AttendBranch?
 }
 
 model Attends {
@@ -56,22 +57,34 @@ model Salary {
 }
 
 model Branch {
-  id           String         @id @default(cuid())
-  code         String
-  address      String
-  team         String
-  AttendBranch AttendBranch[]
+  id         String @id @default(cuid())
+  code       String
+  address    String
+  team       String
+  longtitude Float
+  latitude   Float
 }
 
 model AttendBranch {
   id       String    @id @default(cuid())
-  clockIn  DateTime
-  clockOut DateTime
-  userId   String
-  branchid String
-  location String
+  clockIn  DateTime?
+  clockOut DateTime?
+  userId   String    @unique
+  team     String
+  location String?
   startOn  DateTime?
   offDay   DateTime?
   users    User?     @relation(references: [id], fields: [userId])
-  branchs  Branch?   @relation(references: [id], fields: [branchid])
+}
+
+model Leave {
+  id        String   @id @default(cuid())
+  userId    String
+  reason    String
+  type      String
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  status    String
+  img       String?
+  users     User?    @relation(references: [id], fields: [userId])
 }

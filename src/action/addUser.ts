@@ -21,7 +21,14 @@ export const AddUser = async (name: string) => {
       username,
       password: hash,
     };
-    await db.user.create({ data });
+    let user = await db.user.create({
+      data: {
+        name,
+        username,
+        password: hash,
+      },
+    });
+    await db.attendBranch.create({ data: { team: "A", userId: user.id } });
     return { username, password };
   } else {
     let data = {
@@ -29,7 +36,8 @@ export const AddUser = async (name: string) => {
       username: "user01",
       password: hash,
     };
-    await db.user.create({ data });
+    let user = await db.user.create({ data });
+    await db.attendBranch.create({ data: { team: "A", userId: user.id } });
     return { username: "user01", password };
   }
 };

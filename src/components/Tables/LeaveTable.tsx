@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Leave } from '@/types/product';
 import Modal from '../modal';
+import { LeavesInterface } from '@/types/leave';
+import { ApproveLeave } from '@/action/approveLeave';
 
 const leaveData: Leave[] = [
   {
@@ -138,8 +140,12 @@ const leaveData: Leave[] = [
   },
   // ... other leaves
 ];
+interface LeaveTableInterface {
+  data: LeavesInterface[]
+}
 
-const LeaveTable = () => {
+
+const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
@@ -148,7 +154,8 @@ const LeaveTable = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const itemsPerPage = 10;
-
+  const [dataLeave, setDataLeave] = useState(data);
+  const [leaveId, setLeaveId] = useState("");
 
 
 
@@ -161,11 +168,11 @@ const LeaveTable = () => {
   };
 
   // Sort the filtered data
-  const sortedData = [...leaveData].sort((a, b) => {
+  const sortedData = [...dataLeave].sort((a, b) => {
     if (!sortColumn) return 0;
 
-    const aValue = a[sortColumn as keyof Leave];
-    const bValue = b[sortColumn as keyof Leave];
+    const aValue = a[sortColumn as keyof LeavesInterface];
+    const bValue = b[sortColumn as keyof LeavesInterface];
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       return sortOrder === 'asc'
@@ -180,20 +187,23 @@ const LeaveTable = () => {
   });
 
   // Paginate the data
-  const filteredData = sortedData.filter(leave =>
-    leave.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    leave.username.toString().includes(searchQuery) ||
-    leave.leavetype.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    leave.leavedate.toString().includes(searchQuery) ||
-    leave.branch.toString().includes(searchQuery)
-  );
+  const filteredData = sortedData.filter(attend => {
+    // if (attend.name && attend.username && attend.workingHour) {
+    const searchText = searchQuery.toLowerCase(); // Lowercase searchQuery once
+    return attend.users?.name.toLowerCase().includes(searchText) ||
+      attend.users?.username.toLowerCase().includes(searchText)
+    //   attend?.workingHour.toString().includes(searchText);
+    // }
+    // return false; // Explicitly return false to avoid accidental inclusions
+  });
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const handleConfirmOpen = (action: string) => {
+  const handleConfirmOpen = (action: string, id: string) => {
+    setLeaveId(id)
     setCurrentAction(action);
     setIsConfirmOpen(true);
   };
@@ -204,12 +214,15 @@ const LeaveTable = () => {
     setCurrentAction(null);
   };
 
-  const handleConfirm = () => {
-    if (currentAction === 'approve') {
-      console.log('Approved');
-    } else if (currentAction === 'reject') {
-      console.log('Rejected');
-    }
+  const handleConfirm = async () => {
+    ApproveLeave(currentAction!, leaveId).then((data) => {
+      if (data.error) {
+        return;
+      }
+      if (data.success) {
+
+      }
+    })
     handleConfirmClose();
   };
 
@@ -299,10 +312,10 @@ const LeaveTable = () => {
             <div
               className="h-12.5 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
-              onClick={() => setSelectedImage(leave.image)}
+              onClick={() => setSelectedImage(leave.users?.userImg as string)}
             >
               <Image
-                src={leave.image}
+                src={leave.users?.userImg ? leave.users?.userImg : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
                 width={60}
                 height={50}
                 alt="leave"
@@ -310,32 +323,32 @@ const LeaveTable = () => {
             </div>
             <div className="flex flex-col">
               <p className="flex font-medium text-dark dark:text-white sm:block">
-                {leave.name}
+                {leave.users?.name}
               </p>
               <p className="flex text-gray-500 text-sm sm:block">
-                {leave.username}
+                {leave.users?.username}
               </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {leave.leavetype}
+              {leave.type}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {leave.branch}
+              {leave.users?.AttendBranch?.team}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {leave.leavedate}
+              {leave.startDate.toDateString()}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <div className="flex-col flex-1 transition-opacity duration-500 relative -mr-2 pr-2 pl-2 h-28 overflow-y-auto">
               <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-                {leave.leavereason} </p>
+                {leave.reason} </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -343,10 +356,10 @@ const LeaveTable = () => {
               <div
                 className="h-25 w-15 rounded-md pl-5"
                 style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(leave.image)}
+                onClick={() => setSelectedImage(leave.img)}
               >
                 <Image
-                  src={leave.image}
+                  src={leave.img ? leave.img : ""}
                   width={100}
                   height={90}
                   alt="leave"
@@ -356,13 +369,13 @@ const LeaveTable = () => {
           </div>
           <div className="col-span-1 flex items-center justify-center pl-20">
             <button
-              onClick={() => handleConfirmOpen('Approve')}
+              onClick={() => handleConfirmOpen('Approve', leave.id)}
               className="bg-green-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 hover:bg-green-600"
             >
               Approve
             </button>
             <button
-              onClick={() => handleConfirmOpen('Reject')}
+              onClick={() => handleConfirmOpen('Reject', leave.id)}
               className="bg-red-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 hover:bg-red-600"
             >
               Reject

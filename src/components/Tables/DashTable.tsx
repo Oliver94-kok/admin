@@ -5,6 +5,7 @@ import Image from "next/image";
 import Modal from "../modal";
 import { AttendsInterface } from "@/types/attendents";
 import dayjs from 'dayjs';
+import { getDataByDate } from "@/data/attend";
 
 const brandData: BRAND[] = [
   {
@@ -57,10 +58,11 @@ const brandData: BRAND[] = [
 ];
 
 interface dashTableInterface {
-  data?: AttendsInterface[]
+  data: AttendsInterface[]
 }
 
 const DashTable = ({ data }: dashTableInterface) => {
+  const [tableDate, setTableData] = useState(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
@@ -74,7 +76,7 @@ const DashTable = ({ data }: dashTableInterface) => {
     const today = dayjs();
     const dates = [];
     for (let i = 0; i < 3; i++) {
-      dates.push(today.subtract(i, 'day').format('DD / MM'));
+      dates.push(today.subtract(i, 'day').format('DD/MM'));
     }
     return dates;
   };
@@ -87,12 +89,12 @@ const DashTable = ({ data }: dashTableInterface) => {
   };
 
   // Sort the filtered data
-  const sortedData = [...brandData].sort((a, b) => {
+  const sortedData = [...tableDate].sort((a, b) => {
 
     if (!sortColumn) return 0;
 
-    const aValue = a[sortColumn as keyof BRAND];
-    const bValue = b[sortColumn as keyof BRAND];
+    const aValue = a[sortColumn as keyof AttendsInterface];
+    const bValue = b[sortColumn as keyof AttendsInterface];
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       return sortOrder === 'asc'
@@ -116,7 +118,14 @@ const DashTable = ({ data }: dashTableInterface) => {
     // return false; // Explicitly return false to avoid accidental inclusions
   });
 
+  const onchangeDate = async (value: any) => {
+    setSelectedDate(value);
+    let d = await getDataByDate(value);
+    if (d) {
+      setTableData(d);
+    }
 
+  }
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -130,7 +139,7 @@ const DashTable = ({ data }: dashTableInterface) => {
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           <select
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={(e) => onchangeDate(e.target.value)}
             className="pr-3 uppercase rounded text-body-2xlg font-bold text-dark dark:text-white bg-white dark:bg-gray-700"
           >
             {getLastThreeDays().map((date) => (
@@ -223,10 +232,10 @@ const DashTable = ({ data }: dashTableInterface) => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.logo as string)}
+                onClick={() => setSelectedImage(brand.userImg as string)}
               >
                 <Image
-                  src={brand.logo ? brand.logo : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
+                  src={brand.userImg ? brand.userImg : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
                   width={60}
                   height={50}
                   alt="leave"
@@ -244,14 +253,14 @@ const DashTable = ({ data }: dashTableInterface) => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white">
-                {brand.clockin}
+                {brand.clockIn?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })}
               </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-green-light-1">
                 {/* {brand.clockin?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                {brand.clockin}
+                {brand.clockOut?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })}
               </p>
             </div>
 
@@ -259,10 +268,10 @@ const DashTable = ({ data }: dashTableInterface) => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.logo as string)}
+                onClick={() => setSelectedImage(brand.img as string)}
               >
                 <Image
-                  src={brand.logo ? brand.logo : "/images/brand/brand-02.svg"}
+                  src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
                   width={60}
                   height={50}
                   alt="leave"
@@ -272,7 +281,7 @@ const DashTable = ({ data }: dashTableInterface) => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white uppercase ">
-                {brand.workinghours}
+                {brand.workingHour}
               </p>
             </div>
           </div>
