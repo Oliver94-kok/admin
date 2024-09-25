@@ -41,7 +41,7 @@ model Attends {
   locationIn  String?
   locationOut String?
   userId      String
-  users       User?     @relation(fields: [userId], references: [id])
+  users       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Salary {
@@ -53,7 +53,7 @@ model Salary {
   overTimeHour Float?
   overTime     Float?
   userId       String
-  users        User?  @relation(references: [id], fields: [userId])
+  users        User?  @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Branch {
@@ -66,15 +66,14 @@ model Branch {
 }
 
 model AttendBranch {
-  id       String    @id @default(cuid())
-  clockIn  DateTime?
-  clockOut DateTime?
-  userId   String    @unique
+  id       String  @id @default(cuid())
+  clockIn  String?
+  clockOut String?
+  userId   String  @unique
   team     String
-  location String?
-  startOn  DateTime?
-  offDay   DateTime?
-  users    User?     @relation(references: [id], fields: [userId])
+  startOn  String?
+  offDay   String?
+  users    User?   @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Leave {
@@ -86,5 +85,5 @@ model Leave {
   endDate   DateTime @db.Date
   status    String
   img       String?
-  users     User?    @relation(references: [id], fields: [userId])
+  users     User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
 }

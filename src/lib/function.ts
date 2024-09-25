@@ -1,8 +1,10 @@
+"use server";
 var bcrypt = require("bcryptjs");
 import { v4 as uuidv4 } from "uuid";
 const { DateTime } = require("luxon");
 import { access, constants, mkdir, writeFile } from "fs/promises";
 import path from "path";
+import { getUserById } from "@/data/user";
 
 export const checkPassword = async (password: string, hash: string) => {
   let p = bcrypt.compareSync(password, hash);
@@ -66,4 +68,59 @@ export const randomPassword = async () => {
   }
 
   return password;
+};
+
+export const SentNoti = async (
+  title: string,
+  message: string,
+  externalUserId?: string,
+  externalUserIds?: [],
+) => {
+  const ONESIGNAL_REST_API_KEY = process.env.ONESIGNALAPIKEY;
+  const ONESIGNAL_APP_ID = process.env.ONESIGNALAPPID;
+  let user = await getUserById(externalUserId!);
+  let targetUserIds;
+
+  if (externalUserId) {
+    // Single user
+    targetUserIds = [user?.username];
+  } else if (Array.isArray(externalUserIds) && externalUserIds.length > 0) {
+    // Multiple users
+    targetUserIds = externalUserIds;
+  } else {
+    return {
+      error:
+        "Please provide either externalUserId or a non-empty externalUserIds array",
+    };
+  }
+  // return { targetUserIds };
+  const response = await fetch("https://onesignal.com/api/v1/notifications", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${ONESIGNAL_REST_API_KEY}`,
+    },
+    body: JSON.stringify({
+      app_id: ONESIGNAL_APP_ID,
+      include_external_user_ids: targetUserIds,
+      headings: { en: title },
+      contents: { en: message },
+    }),
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    return { success: data };
+  } else {
+    return { error: data };
+  }
+};
+
+export const slideDate = async (date: string) => {
+  const year = date.slice(0, 4);
+  const month = date.slice(5, 7);
+  const day = date.slice(8, 10);
+
+  return { year: parseInt(year), month: parseInt(month), day: parseInt(day) };
 };

@@ -1,23 +1,13 @@
 "use client";
+import { typeData } from "@/components/Tables/BranchATable";
 import flatpickr from "flatpickr";
 import { useEffect } from "react";
+interface DatePickerOneProps {
+  onSendData: (type: typeData, data: string) => void;
 
-const DatePickerOne = () => {
-  useEffect(() => {
-    // Init flatpickr
-    flatpickr(".form-datepicker", {
-      mode: "single",
-      static: true,
-      monthSelectorType: "static",
-      dateFormat: "M j, Y",
-      minDate: "today",
-      prevArrow:
-        '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
-      nextArrow:
-        '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
-    });
-  }, []);
+}
 
+const DatePickerOne = ({ value, defaultValue, inputRef, ...props }) => {
   return (
     <div>
       <div className="relative">
@@ -25,6 +15,7 @@ const DatePickerOne = () => {
           className="form-datepicker w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-3 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
           placeholder="mm/dd/yyyy"
           data-class="flatpickr-right"
+          {...props} defaultValue={defaultValue} ref={inputRef}
         />
 
         <div className="pointer-events-none absolute inset-0 left-auto right-2 flex items-center">

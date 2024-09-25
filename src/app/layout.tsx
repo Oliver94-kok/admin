@@ -5,7 +5,7 @@ import "@/css/satoshi.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
-
+import OneSignal from 'react-onesignal';
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,7 +15,21 @@ export default function RootLayout({
   const [loading, setLoading] = useState<boolean>(true);
 
   // const pathname = usePathname();
+  useEffect(() => {
+    // Ensure this code runs only on the client side
+    if (typeof window !== 'undefined') {
+      OneSignal.init({
+        appId: '48db9e0a-c176-4c30-ba58-44630340624f',
+        // You can add other initialization options here
+        notifyButton: {
+          enable: true,
+        },
+        // Uncomment the below line to run on localhost. See: https://documentation.onesignal.com/docs/local-testing
+        allowLocalhostAsSecureOrigin: true,
+      });
 
+    }
+  }, []);
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);

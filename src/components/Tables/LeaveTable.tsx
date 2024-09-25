@@ -6,6 +6,7 @@ import { Leave } from '@/types/product';
 import Modal from '../modal';
 import { LeavesInterface } from '@/types/leave';
 import { ApproveLeave } from '@/action/approveLeave';
+import { SentNoti } from '@/lib/function';
 
 const leaveData: Leave[] = [
   {
@@ -215,12 +216,13 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   };
 
   const handleConfirm = async () => {
-    ApproveLeave(currentAction!, leaveId).then((data) => {
+    ApproveLeave(currentAction!, leaveId).then(async (data) => {
       if (data.error) {
         return;
       }
       if (data.success) {
-
+        let d = await SentNoti("Leave", `Your leave ${currentAction}`, data.success);
+        console.log(d)
       }
     })
     handleConfirmClose();
