@@ -41,6 +41,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, imageUrl, username, pass
         navigator.clipboard.writeText(text);
     };
 
+    const handleModalClose = () => {
+        fetchData();
+        onClose(); // Close the modal
+    };
+
+    const fetchData = () => {
+        // Logic to fetch data from an API or server
+        console.log('Fetching data...');
+
+        // Simulate data fetching (replace with actual fetch logic)
+        setTimeout(() => {
+            window.location.reload(); // Refresh the page after data fetching
+        }, 250); // Optional delay for the refresh
+    };
+
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
             <div
@@ -90,7 +105,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, imageUrl, username, pass
                             </button>
                             <button
                                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                                onClick={onClose}
+                                onClick={handleModalClose}
                             >
                                 Done
                             </button>

@@ -42,12 +42,25 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
     const [password, setPassword] = useState<string>("");
     const itemsPerPage = 10;
 
-
     // Paginate the data
     const filteredData = data.filter(teamA =>
         teamA.users?.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+    const fetchData = async () => {
+        try {
+            // Replace this with your actual data-fetching logic
+            console.log('Fetching new data...');
+
+            // Simulate a delay or an API call
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            // Handle your data (e.g., update state, store response)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
 
     const currentData = filteredData.slice(
         (currentPage - 1) * itemsPerPage,
@@ -92,6 +105,8 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
             if (data.success) {
                 console.log(data.success)
                 setIsConfirmOpen(false)
+                fetchData();
+                window.location.reload();
             }
 
         })
@@ -121,6 +136,8 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
             }
             if (data.success) {
                 setIsDeleteOpen(false)
+                fetchData();
+                window.location.reload();
             }
         })
     }

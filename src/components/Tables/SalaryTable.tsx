@@ -128,6 +128,20 @@ const SalaryTable = () => {
   );
 
 
+  const fetchData = async () => {
+    try {
+      // Replace this with your actual data-fetching logic
+      console.log('Fetching new data...');
+
+      // Simulate a delay or an API call
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Handle your data (e.g., update state, store response)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleConfirmOpen = () => {
 
     setIsConfirmOpen(true);
@@ -141,6 +155,8 @@ const SalaryTable = () => {
 
   const handleConfirm = () => {
     handleConfirmClose();
+    fetchData();
+    window.location.reload();
   };
 
   const handleOpenForm = (id: string) => {

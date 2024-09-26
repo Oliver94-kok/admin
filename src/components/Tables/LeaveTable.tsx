@@ -203,6 +203,20 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     currentPage * itemsPerPage
   );
 
+  const fetchData = async () => {
+    try {
+      // Replace this with your actual data-fetching logic
+      console.log('Fetching new data...');
+
+      // Simulate a delay or an API call
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Handle your data (e.g., update state, store response)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleConfirmOpen = (action: string, id: string) => {
     setLeaveId(id)
     setCurrentAction(action);
@@ -223,6 +237,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       if (data.success) {
         let d = await SentNoti("Leave", `Your leave ${currentAction}`, data.success);
         console.log(d)
+        fetchData();
+        window.location.reload();
       }
     })
     handleConfirmClose();

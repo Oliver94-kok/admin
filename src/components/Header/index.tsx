@@ -74,7 +74,7 @@ const Header = (props: {
             {/* <!-- Search Form --> */}
             {/* <SearchForm /> */}
             {/* <!-- Search Form --> */}
-            <AddUserButton />
+            {/* <AddUserButton /> */}
             {/* <!-- Dark Mode Toggle --> */}
             <DarkModeSwitcher />
             {/* <!-- Dark Mode Toggle --> */}
