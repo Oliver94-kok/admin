@@ -74,10 +74,11 @@ const InvoiceTable = () => {
                 <p>Basic Day Salary:</p>
                 <p className="text-right">${invoice.bday}</p>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <p>Allowance:</p>
-                <p className="text-right">${invoice.allowance}</p> {/* Aligned right */}
-              </div>
+                <p className="text-right">${invoice.allowance}</p>  Aligned right 
+              </div>  */}
+
               <div className="flex justify-between">
                 <p>Overtime:</p>
                 <p className="text-right">${invoice.ot}</p> {/* Aligned right */}

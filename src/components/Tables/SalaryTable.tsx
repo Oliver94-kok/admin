@@ -89,7 +89,8 @@ const SalaryTable = () => {
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const itemsPerPage = 10;
   const [id, setid] = useState('');
-
+  const [salary, setSalary] = useState("");
+  const [error, setError] = useState("");
 
 
 
@@ -149,14 +150,20 @@ const SalaryTable = () => {
 
   const handleConfirmClose = () => {
     setIsConfirmOpen(false);
+    setError("")
     // Reset current action if needed
 
   };
 
   const handleConfirm = () => {
-    handleConfirmClose();
-    fetchData();
-    window.location.reload();
+    if (!salary || Number(salary) === 0) {
+      setError("Cannot confirm with an empty or zero value.");
+    } else {
+      setError("");
+      handleConfirmClose();
+      fetchData();
+      window.location.reload();
+    }
   };
 
   const handleOpenForm = (id: string) => {
@@ -478,14 +485,21 @@ const SalaryTable = () => {
             Are you sure you want to change this Basic Salary (Day)?
           </p>
 
-          {/* Add a text field here */}
+          {/* Text field for entering the salary */}
           <div className="flex justify-center">
             <input
               type="text"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
               placeholder="Enter new Basic Salary (Day)"
               className="mb-4 w-full max-w-xs rounded-lg border border-gray-300 p-2 focus:outline-none focus:border-primary"
             />
           </div>
+
+          {/* Error message */}
+          {error && (
+            <p className="text-red-500 text-center">{error}</p>
+          )}
 
           {/* Buttons positioned at the bottom right */}
           <div className="flex justify-end items-center space-x-4 mt-6">
@@ -501,7 +515,6 @@ const SalaryTable = () => {
             >
               Confirm
             </button>
-
           </div>
         </div>
       </Modal>
