@@ -26,8 +26,10 @@ export default async function middleware(req: NextRequest) {
   const session = await decrypt(cookie);
   if (isApiRoute) {
     let token = req.headers.get("authorization");
-    if (!token) return Response.json({ Error: "no token" }, { status: 404 });
-    // return Response.json({ Error: "no token" }, { status: 404 });
+    // if (!token) return Response.json({ Error: "no token" }, { status: 404 });
+    // const session2 = await decrypt(token.substring(7));
+    // if (!session2?.userId)
+    //   return Response.json({ error: "Token Invalid" }, { status: 404 });
   }
 
   // 5. Redirect to /login if the user is not authenticated

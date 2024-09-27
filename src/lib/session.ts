@@ -1,4 +1,4 @@
-import "server-only";
+"use server";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 const secretKey = process.env.SESSION_SECRET;
@@ -34,6 +34,7 @@ export async function createSession(userId: string) {
     sameSite: "lax",
     path: "/",
   });
+  return session;
 }
 export async function updateSession() {
   const session = cookies().get("session")?.value;
@@ -52,6 +53,6 @@ export async function updateSession() {
     path: "/",
   });
 }
-export function deleteSession() {
+export async function deleteSession() {
   cookies().delete("session");
 }

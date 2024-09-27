@@ -1,0 +1,653 @@
+[
+  {
+    "team": "A",
+    "code": "A385",
+    "address": "12  JALAN BUNGA TERATAI 2 TAMAN PLENTONG BARU 81750 MASAI JOHOR",
+    "latitude": 1.5275607849064212,
+    "longtitude": 103.82491800018448
+  },
+  {
+    "team": "A",
+    "code": "A386",
+    "address": "G-10 BLK F JLN JELATANG 4 TMN CAHAYA KOTA PUTERI 81750 MASAI JOHOR",
+    "latitude": 1.4919813277909348,
+    "longtitude": 103.84361692970833
+  },
+  {
+    "team": "A",
+    "code": "A387",
+    "address": "207A JALAN IMAN KAMPUNG MELAYU PANDAN 81100 JOHOR BAHRU JOHOR",
+    "latitude": 1.5227581548499323,
+    "longtitude": 103.77513200203882
+  },
+  {
+    "team": "A",
+    "code": "A802",
+    "address": "15-01 JLN SURIA 6 BANDAR BARU SERI ALAM",
+    "latitude": 1.4941217149156987,
+    "longtitude": 103.8750524252196
+  },
+  {
+    "team": "A",
+    "code": "A803",
+    "address": "23 JALAN CENDANA 5/1 TAMAN CENDANA 81700 PASIR GUDANG JOHOR",
+    "latitude": 1.4882031827925106,
+    "longtitude": 103.90995913270487
+  },
+  {
+    "team": "A",
+    "code": "A805",
+    "address": "9 PERJIRANAN 10/2 TAMAN AIR BIRU 81700 PASIR GUDANG JOHOR",
+    "latitude": 1.4548228559559846,
+    "longtitude": 103.90898615679944
+  },
+  {
+    "team": "A",
+    "code": "A806",
+    "address": "1 JALAN TEMBIKAI 7 TAMAN KOTA MASAI 81700 PASIR GUDANG JOHOR",
+    "latitude": 1.4835803504788874,
+    "longtitude": 103.9541935
+  },
+  {
+    "team": "A",
+    "code": "A807",
+    "address": "PERJIRANAN 9 TAMAN PERINDUSTRIAN TAMAN AIR BIRU 81700 PASIR GUDANG JOHOR",
+    "latitude": 1.4621296321002892,
+    "longtitude": 103.91447474289444
+  },
+  {
+    "team": "A",
+    "code": "A819",
+    "address": "14 JALAN JOHAR 3 TAMAN DESA CEMERLANG 81800 ULU TIRAM, JOHOR",
+    "latitude": 1.566162791907513,
+    "longtitude": 103.81391751865665
+  },
+  {
+    "team": "A",
+    "code": "B361",
+    "address": "42 JLN JAYA TMN MAJU JAYA 80400 JOHOR BAHRU",
+    "latitude": 1.4817861565854604,
+    "longtitude": 103.76504803930219
+  },
+  {
+    "team": "A",
+    "code": "B362",
+    "address": "1F GROUND FLOOR JLN MAJU TAMAN MAJU JAYA 80400 JOHOR BAHRU",
+    "latitude": 1.4810032737880563,
+    "longtitude": 103.76819786340813
+  },
+  {
+    "team": "A",
+    "code": "B363",
+    "address": "26 JLN JAYA TMN MAJU JAYA 80400 JOHOR BAHRU",
+    "latitude": 1.481220112773359,
+    "longtitude": 103.76486568152792
+  },
+  {
+    "team": "A",
+    "code": "B392",
+    "address": "73 JALAN PERMAS 1/1 BANDAR BARU PERMAS JAYA 81750 MASAI JOHOR",
+    "latitude": 1.514614677204385,
+    "longtitude": 103.81839156563869
+  },
+  {
+    "team": "A",
+    "code": "K01",
+    "address": "152 JALAN SCIENTEX JAYA 7 TAMAN SCIENTEX 81400 SENAI JOHOR ",
+    "latitude": 1.6307536332942634,
+    "longtitude": 103.6824091267327
+  },
+  {
+    "team": "A",
+    "code": "K02",
+    "address": "13 JALAN CYBER 16 SENAI COMMERCIAL PARK 81400 SENAI JOHOR DARUL TAKZIM",
+    "latitude": 1.6251837049403524,
+    "longtitude": 103.65528840596095
+  },
+  {
+    "team": "A",
+    "code": "K03",
+    "address": "21 JALAN BELIMBING 81400 SENAI JOHOR",
+    "latitude": 1.599788341503666,
+    "longtitude": 103.64461453852843
+  },
+  {
+    "team": "A",
+    "code": "K05",
+    "address": "141 JALAN SENAI JAYA 3 TAMAN SENAI JAYA 81400 SENAI JOHOR",
+    "latitude": 1.6126219403896502,
+    "longtitude": 103.66509537834824
+  },
+  {
+    "team": "A",
+    "code": "N181",
+    "address": "71 JLN SURIA 3 PUSAT KOMERSIAL SURIA GELANG PATAH",
+    "latitude": 1.4554098189626279,
+    "longtitude": 103.59860356898352
+  },
+  {
+    "team": "A",
+    "code": "N186",
+    "address": "41 JALAN PULAI HARMONI 1 BANDAR BARU KANGKAR PULAI",
+    "latitude": 1.552950245031768,
+    "longtitude": 103.59197298821735
+  },
+  {
+    "team": "A",
+    "code": "N187",
+    "address": "49 JALAN SILC 2/10 KAWASAN PERINDUSTRIAN SILC 79200 ISKANDAR PUTERI JOHOR",
+    "latitude": 1.4720224259109558,
+    "longtitude": 103.59103022166434
+  },
+  {
+    "team": "A",
+    "code": "N188",
+    "address": "24 JLN PELEPAS 2/2 TMN PERINDUSTRIAN TANJUNG PELEPAS 81550 GELANG PATAH JOHOR",
+    "latitude": 1.365117871742224,
+    "longtitude": 103.56740621710372
+  },
+  {
+    "team": "A",
+    "code": "S109",
+    "address": "74-I JLN DENAI UTAMA KEMPAS BARU 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.5139245304751376,
+    "longtitude": 103.7177689012223
+  },
+  {
+    "team": "A",
+    "code": "S130",
+    "address": "55 JALAN SETIA TROPIKA 1/25 TAMAN SETIA TROPIKA 81200 JOHOR BAHRU",
+    "latitude": 1.5453732307392218,
+    "longtitude": 103.71381932642124
+  },
+  {
+    "team": "A",
+    "code": "S131",
+    "address": "2 JLN SELASIH 1 TMN KEMAS/SIANTAN TAMPOI 81200 JOHOR BAHRU",
+    "latitude": 1.5118420360989153,
+    "longtitude": 103.70727757275534
+  },
+  {
+    "team": "A",
+    "code": "S138",
+    "address": "20 JLN DATARAN 3/1 TMN KEMPAS 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.5366223298642647,
+    "longtitude": 103.70942326127732
+  },
+  {
+    "team": "A",
+    "code": "S139",
+    "address": "19 JALAN PERSISIRAN PERLING 1 TMN PERLING 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.4971369063443545,
+    "longtitude": 103.6823723448284
+  },
+  {
+    "team": "A",
+    "code": "S152",
+    "address": "15 JLN TEMENGGONG 11 TMN UNGKU TUN AMINAH 81300 SKUDAI JOHOR",
+    "latitude": 1.509296462014495,
+    "longtitude": 103.65212924525949
+  },
+  {
+    "team": "A",
+    "code": "S601",
+    "address": "31 JALAN JAYA MAS 1 TAMAN NUSA JAYA MAS",
+    "latitude": 1.493651451134945,
+    "longtitude": 103.64197964632235
+  },
+  {
+    "team": "A",
+    "code": "PG",
+    "address": "48A JLN PENDEKAR 10 TMN UNGKU TUN AMINAH 81300 SKUDAI JOHOR",
+    "latitude": 1.5139853296432229,
+    "longtitude": 103.65349392194639
+  },
+  {
+    "team": "B",
+    "code": "A823",
+    "address": "18 JALAN LANJUT 11 DESA CEMERLANG 81800 ULU TIRAM JOHOR",
+    "latitude": 1.5597990376068265,
+    "longtitude": 103.81691884026624
+  },
+  {
+    "team": "B",
+    "code": "B09",
+    "address": "16 JALAN DATARAN LARKIN 2 TAMAN DATARAN 80350 LARKIN",
+    "latitude": 1.4980034432050153,
+    "longtitude": 103.74254702548055
+  },
+  {
+    "team": "B",
+    "code": "B80",
+    "address": "40-D JALAN AH SIANG 80300 JOHOR BAHRU",
+    "latitude": 1.4637780276994767,
+    "longtitude": 103.77139466112062
+  },
+  {
+    "team": "B",
+    "code": "B81",
+    "address": "50 JALAN LUMBA KUDA BUKIT CHAGAR 80300 JOHOR BAHRU JOHOR",
+    "latitude": 1.4623433148782474,
+    "longtitude": 103.76803066154855
+  },
+  {
+    "team": "B",
+    "code": "B372",
+    "address": "28 GROUND FLOOR JALAN SURIA 19 TAMAN SURIA 81100 JOHOR BAHRU JOHOR",
+    "latitude": 1.5043383141980902,
+    "longtitude": 103.76045015507262
+  },
+  {
+    "team": "B",
+    "code": "B375",
+    "address": "1280 JALAN TUN FATIMAH KANGKAR TEBRAU BARU 81100 JOHOR BAHRU JOHOR",
+    "latitude": 1.5328354781821172,
+    "longtitude": 103.76428811394902
+  },
+  {
+    "team": "B",
+    "code": "B377",
+    "address": "31 JALAN RIANG UTAMA TAMAN GEMBIRA 81200 JOHOR BAHRU JOHOR DARUL TA'ZIM",
+    "latitude": 1.5229290693839388,
+    "longtitude": 103.74813146008837
+  },
+  {
+    "team": "B",
+    "code": "B381",
+    "address": "7 JALAN MASJID KAMPUNG MELAYU MAJIDEE 81100 JOHOR BAHRU JOHOR",
+    "latitude": 1.513313110408901,
+    "longtitude": 103.7559706820023
+  },
+  {
+    "team": "B",
+    "code": "N182",
+    "address": "32 JLN PI 1/2 TMN PULAI INDAH 81110 PEKAN NANAS JOHOR",
+    "latitude": 1.5447892651323343,
+    "longtitude": 103.58297282259105
+  },
+  {
+    "team": "B",
+    "code": "N185",
+    "address": "31 JALAN PULAI EMAS 1/4 TAMAN PULAI EMAS 81400 KANGKAR PULAI JOHOR",
+    "latitude": 1.5692228628416816,
+    "longtitude": 103.59819108115434
+  },
+  {
+    "team": "B",
+    "code": "N201",
+    "address": "14 E GROUND FLOOR JLN BESAR 81550 GELANG PATAH",
+    "latitude": 1.4480339792422612,
+    "longtitude": 103.59011546520705
+  },
+  {
+    "team": "B",
+    "code": "N202",
+    "address": "44 MEDAN NUSA PERINTIS 8 TAMAN NUSA PERINTIS 2 79200 ISKANDAR PUTERI JOHOR MALAYSIA",
+    "latitude": 1.4500085355864065,
+    "longtitude": 103.59460384733697
+  },
+  {
+    "team": "B",
+    "code": "N203",
+    "address": "35A MEDAN NUSA PERINTIS 2 TAMAN NUSA PERINTIS 2 81550 GELANG PATAH JOHOR",
+    "latitude": 1.4512871007829093,
+    "longtitude": 103.59520342246967
+  },
+  {
+    "team": "B",
+    "code": "N701",
+    "address": "9 JLN 2 TMN PERUMAHAN RAYKAT LIMA KEDAI 81560 GELANG PATAH",
+    "latitude": 1.5049413885351262,
+    "longtitude": 103.62166961761564
+  },
+  {
+    "team": "B",
+    "code": "S135",
+    "address": "66 JLN PADI 2 BANDAR BARU UDA 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.4896459988586985,
+    "longtitude": 103.71321311763415
+  },
+  {
+    "team": "B",
+    "code": "S136",
+    "address": "G17 TINGKAT BAWAH BLOK F JALAN SRI PERKASA 1/1 TAMAN TAMPOI UTAMA 81200 TAMPOI JOHOR",
+    "latitude": 1.4985418842406784,
+    "longtitude": 103.68959856804923
+  },
+  {
+    "team": "B",
+    "code": "S703",
+    "address": "22 JALAN RONGGENG 11 TAMAN SKUDAI BARU 81300 SKUDAI JOHOR",
+    "latitude": 1.5298140551113757,
+    "longtitude": 103.66357815257619
+  },
+  {
+    "team": "B",
+    "code": "S705",
+    "address": "G-10 JALAN MAWAR 1 TAMAN TAMPOI INDAH 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.5131282000420907,
+    "longtitude": 103.6831619230742
+  },
+  {
+    "team": "B",
+    "code": "P01",
+    "address": "8 TAMAN UTAMA JALAN UTAMA2 81500 PEKAN NANAS JOHOR",
+    "latitude": 1.5041940009816355,
+    "longtitude": 103.51717049442894
+  },
+  {
+    "team": "B",
+    "code": "P02",
+    "address": "1-1 JALAN PERMATA 1 PUSAT PERDAGANGAN PEKAN NANAS  81500 PEKAN NENAS JOHOR",
+    "latitude": 1.5304717569245336,
+    "longtitude": 103.59245675561417
+  },
+  {
+    "team": "B",
+    "code": "P03",
+    "address": "DH923 TAMAN BUNGA 81500 PEKAN NENAS JOHOR",
+    "latitude": 1.5190571619449833,
+    "longtitude": 103.51409457371983
+  },
+  {
+    "team": "B",
+    "code": "P05",
+    "address": "RESTORAN SHARAFATH PEKAN NANAS 81500 PEKAN NANAS JOHOR",
+    "latitude": 1.5094005061479905,
+    "longtitude": 103.51145036693089
+  },
+  {
+    "team": "C",
+    "code": "A808",
+    "address": "27 JALAN SENA 9 TAMAN RINTING 81750 MASAI JOHOR",
+    "latitude": 1.489117985493714,
+    "longtitude": 103.86933925804719
+  },
+  {
+    "team": "C",
+    "code": "B01",
+    "address": "26 JLN SUTERA 3 TMN SENTOSA 80150 JOHOR",
+    "latitude": 1.4913885020652138,
+    "longtitude": 103.76878220191064
+  },
+  {
+    "team": "C",
+    "code": "B03",
+    "address": "36-K JLN KOLAM AIR 80200 JOHOR BAHRU",
+    "latitude": 1.4718081545720152,
+    "longtitude": 103.7365318266924
+  },
+  {
+    "team": "C",
+    "code": "B05",
+    "address": "49 D JALAN SUSUR LARKIN PERDANA 1 TAMAN LARKIN PERDANA 80350 JOHOR BAHRU JOHOR",
+    "latitude": 1.5009954461602073,
+    "longtitude": 103.74936428319434
+  },
+  {
+    "team": "C",
+    "code": "B06",
+    "address": "10D JALAN CENDERAWA LARKIN JAYA 80350 JOHOR BAHRU JOHOR",
+    "latitude": 1.4969470810327958,
+    "longtitude": 103.7400950348988
+  },
+  {
+    "team": "C",
+    "code": "B08",
+    "address": "BZ 12 TERMINAL BUS LARKIN JALAN GARUDA 80350 JOHOR BAHRU JOHOR",
+    "latitude": 1.4951488887858115,
+    "longtitude": 103.74271101646069
+  },
+  {
+    "team": "C",
+    "code": "B11",
+    "address": "4 JALAN BEDARA TAMAN MELODIES 80250 JOHOR BAHRU JOHOR",
+    "latitude": 1.4910050264284256,
+    "longtitude": 103.76152386895525
+  },
+  {
+    "team": "C",
+    "code": "B18",
+    "address": "31-01 JALAN GERODA 2/1 PUSAT PERDAGANGAN LARKIN LARKIN JAYA 80350 JOHOR BAHRU JOHOR",
+    "latitude": 1.495660077197645,
+    "longtitude": 103.74129369162581
+  },
+  {
+    "team": "C",
+    "code": "B19",
+    "address": "1 BLOCK-B FLAT LARKIN JALAN MURAI GAJAH LARKIN JAYA 80350 JOHOR BAHRU JOHOR",
+    "latitude": 1.4987414252748337,
+    "longtitude": 103.74337467733099
+  },
+  {
+    "team": "C",
+    "code": "B82",
+    "address": "BANGUNAN NUFRI HOLDINGS NO 12F JLN YAHYA AL DATAR JOHOR 80300 JOHOR BAHRU",
+    "latitude": 1.4719180088686195,
+    "longtitude": 103.76448007609983
+  },
+  {
+    "team": "C",
+    "code": "B365",
+    "address": "1-1A JALAN PASIR PELANGI TAMAN ISKANDAR 80050 JOHOR BAHRU JOHOR",
+    "latitude": 1.4935785881155232,
+    "longtitude": 103.78430844069729
+  },
+  {
+    "team": "C",
+    "code": "B371",
+    "address": "35A JLN BAYU PUTERI 1/3 TAMAN BAYU PUTERI 80150 JOHOR BAHRU",
+    "latitude": 1.4983572472115645,
+    "longtitude": 103.78920088767815
+  },
+  {
+    "team": "C",
+    "code": "B373",
+    "address": "14 JALAN KESUM TAMAN ISTIMEWA 81100 JOHOR BAHRU",
+    "latitude": 1.5293514798654346,
+    "longtitude": 103.76877274038473
+  },
+  {
+    "team": "C",
+    "code": "B376",
+    "address": "37 JALAN KOTA TINGGI BATU 7 KAWASAN PERINDUSTRIAN PANDAN 81100 JOHOR BAHRU JOHOR",
+    "latitude": 1.5521877459318398,
+    "longtitude": 103.80132266358713
+  },
+  {
+    "team": "C",
+    "code": "B379",
+    "address": "UNIT 17-01 &19-01 JALAN CEMPERAI 1A KAMPUNG BARU PANDAN 80100 JOHOR BAHRU JOHOR",
+    "latitude": 1.525876563607658,
+    "longtitude": 103.77175273370861
+  },
+  {
+    "team": "C",
+    "code": "B393",
+    "address": "10 JALAN BEDARA TAMAN MELODIES 80250 JOHOR BAHRU JOHOR",
+    "latitude": 1.4909916255192912,
+    "longtitude": 103.76178328866702
+  },
+  {
+    "team": "C",
+    "code": "S133",
+    "address": "8 JALAN PERKASA 2/18 TAMAN TAMPOI UTAMA 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.5035914906668009,
+    "longtitude": 103.68565638789113
+  },
+  {
+    "team": "C",
+    "code": "S155",
+    "address": "71 JALAN EMAS PUTIH 4 TAMAN SRI SKUDAI 81300 SKUDAI JOHOR",
+    "latitude": 1.5457986740449599,
+    "longtitude": 103.65684953767476
+  },
+  {
+    "team": "C",
+    "code": "A606",
+    "address": "38 JALAN SUSUR MASAI LAMA 1 TAMAN SAUJANA PLENTONG 81750 JOHOR BAHRU JOHOR",
+    "latitude": 1.5255700086259911,
+    "longtitude": 103.80035077296773
+  },
+  {
+    "team": "C",
+    "code": "S603",
+    "address": "9 JALAN MEWAH RIA 5/1 TAMAN MEWAH 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.5178429064186691,
+    "longtitude": 103.68857190666404
+  },
+  {
+    "team": "D",
+    "code": "A812",
+    "address": "3 JALAN BAYAN 31/1 TAMAN MEGA RIA 81750 MASAI JOHOR",
+    "latitude": 1.49881570854011,
+    "longtitude": 103.85643580112362
+  },
+  {
+    "team": "D",
+    "code": "A813",
+    "address": "33 JLN TASEK 60 BANDAR SERI ALAM 81750",
+    "latitude": 1.5028275902601653,
+    "longtitude": 103.88593258891618
+  },
+  {
+    "team": "D",
+    "code": "A815",
+    "address": "01-08 BLK S JALAN BALAU 17 TAMAN RINTING MASAI JOHOR",
+    "latitude": 1.4831984333959387,
+    "longtitude": 103.86903972762727
+  },
+  {
+    "team": "D",
+    "code": "A817",
+    "address": "99 JALAN CENDANA 1 TAMAN RINTING 81750 MASAI JOHOR",
+    "latitude": 1.4864255005302212,
+    "longtitude": 103.87474942855646
+  },
+  {
+    "team": "D",
+    "code": "A820",
+    "address": "42 JALAN SURIA 68 BANDAR SERI ALAM 81750 MASAI JOHOR",
+    "latitude": 1.496084950994076,
+    "longtitude": 103.88052434841343
+  },
+  {
+    "team": "D",
+    "code": "A821",
+    "address": "JLN TASEK 64 BANDAR BARU SERI  ALAM 81750 MASAI",
+    "latitude": 1.5072878583452283,
+    "longtitude": 103.88792416588448
+  },
+  {
+    "team": "D",
+    "code": "A822",
+    "address": "33 JALAN PENGKALAN 5 KAMPUNG PASIR PUTIH 81700 PASIR GUADANG JOHOR",
+    "latitude": 1.4414892192894204,
+    "longtitude": 103.93213410761652
+  },
+  {
+    "team": "D",
+    "code": "B02",
+    "address": "7 JALAN SRI BAHAGIA 5 TAMAN SRI BAHAGIA 81200 JOHOR BAHRU JOHOR",
+    "latitude": 1.5099907052300574,
+    "longtitude": 103.72871479265191
+  },
+  {
+    "team": "D",
+    "code": "B366",
+    "address": "K3-204 TKT 2 BLOK K3 JALAN IBRAHIM SULTAN TAMAN STULANG LAUT",
+    "latitude": 1.4664674400698887,
+    "longtitude": 103.7779652365903
+  },
+  {
+    "team": "D",
+    "code": "B378",
+    "address": "14-A JALAN SAHABAT KG MELAYU MAJIDI JOHOR BAHRU JOHOR",
+    "latitude": 1.5097944095397038,
+    "longtitude": 103.74913952397289
+  },
+  {
+    "team": "D",
+    "code": "B382",
+    "address": "12A JALAN MURNI 6 TAMAN SURIA 81100 JOHOR BAHRU JOHOR",
+    "latitude": 1.5012107131646917,
+    "longtitude": 103.75464504959382
+  },
+  {
+    "team": "D",
+    "code": "B383",
+    "address": "35 JALAN BUKIT MUTIARA 21 TAMAN BUKIT MUTIARA 81100 JOHOR BAHRU  JOHOR",
+    "latitude": 1.5415677636361602,
+    "longtitude": 103.74394013566193
+  },
+  {
+    "team": "D",
+    "code": "B388",
+    "address": "22-01 JALAN SETIA 3/1 TAMAN SETIA INDAH JOHOR BAHRU JOHOR",
+    "latitude": 1.572336024182576,
+    "longtitude": 103.75606088444675
+  },
+  {
+    "team": "D",
+    "code": "B391",
+    "address": "47A JALAN PERMAS 4 BANDAR BARU PERMAS JAYA 81750 MASAI JOHOR",
+    "latitude": 1.504712461594208,
+    "longtitude": 103.82061403941084
+  },
+  {
+    "team": "D",
+    "code": "店1",
+    "address": "82-E JALAN WONG AH FOOK 80000 JOHOR BAHRU JOHOR",
+    "latitude": 1.459406683929205,
+    "longtitude": 103.76466251372821
+  },
+  {
+    "team": "D",
+    "code": "店3",
+    "address": "36-01 JALAN MELDRUM 80000 JOHOR BAHRU JOHOR",
+    "latitude": 1.4597064837628948,
+    "longtitude": 103.76538012611589
+  },
+  {
+    "team": "D",
+    "code": "68",
+    "address": "68 JALAN WONG AH FOOK 80000 JOHOR BAHRU JOHOR",
+    "latitude": 1.4591651191782509,
+    "longtitude": 103.76500112410959
+  },
+  {
+    "team": "D",
+    "code": "小龙咖啡店",
+    "address": "24 JLN MELDRUM BANDAR JOHOR BAHRU 8000 JOHOR BAHRU JOHOR",
+    "latitude": 1.4585042497713243,
+    "longtitude": 103.76608551250226
+  },
+  {
+    "team": "D",
+    "code": "小龙咖啡店",
+    "address": "26 JLN MELDRUM BANDAR JOHOR BAHRU 8000 JOHOR BAHRU JOHOR",
+    "latitude": 1.4595199130301963,
+    "longtitude": 103.7655584087087
+  },
+  {
+    "team": "D",
+    "code": "M1",
+    "address": "G-45 SUITE 1101 11th FLOOR MERLIN TOWER JALAN MELDRUM 80000 JOHOR BAHRU JOHOR",
+    "latitude": 1.460307712808324,
+    "longtitude": 103.76522399076686
+  },
+  {
+    "team": "D",
+    "code": "M CORNER KOPITIAM",
+    "address": "UNIT G50 GROUND FLOOR MERLIN TOWER JALAN MELDRUM  80000 JOHOR BAHRU  JOHOR",
+    "latitude": 1.4603121434338666,
+    "longtitude": 103.76522509762218
+  },
+  {
+    "team": "D",
+    "code": "M SNOOKER CENTRE",
+    "address": "UNIT 120 LEVEL 1 MERLIN TOWER JALAN MELDRUM 80000 JOHOR BAHRU",
+    "latitude": 1.4603117749153491,
+    "longtitude": 103.76522942376553
+  }
+]

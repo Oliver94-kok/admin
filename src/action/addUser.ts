@@ -26,6 +26,7 @@ export const AddUser = async (name: string) => {
         name,
         username,
         password: hash,
+        isLogin: false,
       },
     });
     await db.attendBranch.create({ data: { team: "A", userId: user.id } });
@@ -35,6 +36,7 @@ export const AddUser = async (name: string) => {
       name,
       username: "user01",
       password: hash,
+      isLogin: false,
     };
     let user = await db.user.create({ data });
     await db.attendBranch.create({ data: { team: "A", userId: user.id } });

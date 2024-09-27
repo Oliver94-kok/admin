@@ -18,6 +18,7 @@ export const POST = async (req: Request) => {
     username,
     password: hash,
     role,
+    isLogin: false,
   };
   let user = await db.user.create({ data });
   return Response.json({ user }, { status: 201 });

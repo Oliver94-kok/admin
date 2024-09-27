@@ -23,8 +23,9 @@ model User {
   name         String
   username     String
   password     String
-  token        String?
+  token        String?       @db.LongText
   userImg      String?
+  isLogin      Boolean
   role         UserRole      @default(USER)
   Attends      Attends[]
   Salary       Salary[]
@@ -40,6 +41,7 @@ model Attends {
   img         String?
   locationIn  String?
   locationOut String?
+  fine        Float
   userId      String
   users       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
