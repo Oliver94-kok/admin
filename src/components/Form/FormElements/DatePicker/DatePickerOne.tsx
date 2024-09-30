@@ -3,19 +3,28 @@ import { typeData } from "@/components/Tables/BranchATable";
 import flatpickr from "flatpickr";
 import { useEffect } from "react";
 interface DatePickerOneProps {
-  onSendData: (type: typeData, data: string) => void;
-
+  value?: string | number | readonly string[] | undefined;
+  defaultValue?: string;
+  inputRef?: React.Ref<HTMLInputElement>;
 }
 
-const DatePickerOne = ({ value, defaultValue, inputRef, ...props }) => {
+const DatePickerOne: React.FC<DatePickerOneProps> = ({
+  value,
+  defaultValue,
+  inputRef,
+  ...props
+}) => {
   return (
     <div>
       <div className="relative">
         <input
           className="form-datepicker w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-3 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-          placeholder="mm/dd/yyyy"
+          placeholder="dd/mm/yyyy"
           data-class="flatpickr-right"
-          {...props} defaultValue={defaultValue} ref={inputRef}
+          {...props}
+          defaultValue={defaultValue}
+          ref={inputRef}
+          value={value}
         />
 
         <div className="pointer-events-none absolute inset-0 left-auto right-2 flex items-center">

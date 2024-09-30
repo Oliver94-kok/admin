@@ -19,18 +19,19 @@ enum UserRole {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  name         String
-  username     String
-  password     String
-  token        String?       @db.LongText
-  userImg      String?
-  isLogin      Boolean
-  role         UserRole      @default(USER)
-  Attends      Attends[]
-  Salary       Salary[]
-  Leave        Leave[]
-  AttendBranch AttendBranch?
+  id               String            @id @default(cuid())
+  name             String
+  username         String
+  password         String
+  token            String?           @db.LongText
+  userImg          String?
+  isLogin          Boolean
+  role             UserRole          @default(USER)
+  Attends          Attends[]
+  Salary           Salary[]
+  Leave            Leave[]
+  AttendBranch     AttendBranch?
+  NotificationUser NotificationUser?
 }
 
 model Attends {
@@ -54,6 +55,8 @@ model Salary {
   late         Float?
   overTimeHour Float?
   overTime     Float?
+  total        Float?
+  perDay       Float?
   userId       String
   users        User?  @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
@@ -88,4 +91,12 @@ model Leave {
   status    String
   img       String?
   users     User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model NotificationUser {
+  id     String @id @default(cuid())
+  leave  Json?
+  clock  Json?
+  userId String @unique
+  users  User?  @relation(fields: [userId], references: [id])
 }

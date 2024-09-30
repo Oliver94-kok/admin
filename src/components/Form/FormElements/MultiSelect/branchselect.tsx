@@ -4,13 +4,16 @@ import React, { useState } from "react";
 
 interface BranchSelectGroupProps {
   onSendData: (type: typeData, data: string) => void;
+  initialValue: string;
 }
 
-
-const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({ onSendData }) => {
+const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
+  onSendData,
+  initialValue,
+}) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
-
+  console.log("initisl value", initialValue);
   const changeTextColor = () => {
     setIsOptionSelected(true);
   };
@@ -23,24 +26,32 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({ onSendData }) => 
 
       <div className="relative z-20 rounded-[7px] bg-white dark:bg-dark-2">
         <select
-          value={selectedOption}
+          defaultValue={initialValue}
+          // value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
             onSendData(typeData.BRANCH, e.target.value);
             changeTextColor();
           }}
-          className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent pl-3 px-11.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${isOptionSelected ? "text-dark dark:text-white" : ""
-            }`}
+          className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${
+            isOptionSelected ? "text-dark dark:text-white" : ""
+          }`}
         >
-          <option value="UnitedStates" className="text-dark-5 dark:text-dark-6">
-            Perling
+          <option value="A" className="text-dark-5 dark:text-dark-6">
+            A
           </option>
-          <option value="UK" className="text-dark-5 dark:text-dark-6">
-            Austin
+          <option value="B" className="text-dark-5 dark:text-dark-6">
+            B
+          </option>
+          <option value="C" className="text-dark-5 dark:text-dark-6">
+            C
+          </option>
+          <option value="D" className="text-dark-5 dark:text-dark-6">
+            D
           </option>
         </select>
 
-        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-dark-4 dark:text-dark-6">
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 transform text-dark-4 dark:text-dark-6">
           <svg
             className="fill-current"
             width="20"

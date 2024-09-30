@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
-
+import {DateTime} from 'luxon';
 interface dataAttend {
   create?: AttendsInterface;
   userId?: string;
@@ -68,3 +68,47 @@ export const getDataByDate = async (tarikh: string) => {
   console.log(data);
   return data;
 };
+export const createNotClockIn=async(clockOut:Date,userId:string,)=>{
+  try {
+    let fine = await db.salary.findFirst({where:{userId,month:new Date().getMonth()+1,year:new Date().getFullYear()}})
+    let late = 0;
+    if(fine?.late!>=1) {late =100}else{late=100} 
+    await db.attends.create({data:{userId,fine:late,clockOut}})
+
+    return {success:"success"}
+  } catch (error) {
+    return null
+  }
+}
+
+export const calOverTime=async(userId:string,clockOut: Date)=>{
+  let user =await db.attendBranch.findFirst({where:{userId}})
+  const endTime = DateTime.isDateTime(clockOut) 
+    ? clockOut 
+    : (clockOut instanceof Date 
+      ? DateTime.fromJSDate(clockOut) 
+      : DateTime.fromISO(clockOut));
+
+  // Ensure endTime is valid
+  if (!endTime.isValid) {
+    throw new Error("Invalid clockOut time provided");
+  }
+  if(user){
+    let out = user.clockOut;
+    const [regularHours, regularMinutes] = out!.split(":").map(Number);
+    const regularEndTime = endTime.set({
+      hour: regularHours,
+      minute: regularMinutes,
+      second: 0,
+      millisecond: 0
+    });
+    console.log("🚀 ~ calOverTime ~ regularEndTime:", regularEndTime)
+  
+    const diff = endTime.diff(regularEndTime, "minutes");
+    console.log("🚀 ~ calOverTime ~ endTime:", endTime)
+
+    // Return the maximum of 0 and the calculated overtime
+    return Math.max(0, diff.minutes);
+
+  }
+}

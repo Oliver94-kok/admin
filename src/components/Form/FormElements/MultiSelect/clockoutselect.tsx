@@ -4,9 +4,13 @@ import React, { useState } from "react";
 
 interface ClockoutSelectGroupProps {
   onSendData: (type: typeData, data: string) => void;
+  initialValue: string;
 }
 
-const ClockoutSelectGroup: React.FC<ClockoutSelectGroupProps> = ({ onSendData }) => {
+const ClockoutSelectGroup: React.FC<ClockoutSelectGroupProps> = ({
+  onSendData,
+  initialValue,
+}) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
 
@@ -21,70 +25,166 @@ const ClockoutSelectGroup: React.FC<ClockoutSelectGroupProps> = ({ onSendData })
       </label> */}
 
       <div className="relative z-20 rounded-[7px] bg-white dark:bg-dark-2">
-
         <select
-          value={selectedOption}
+          defaultValue={initialValue}
+          // value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
-            onSendData(typeData.CLOCKOUT, e.target.value)
+            onSendData(typeData.CLOCKOUT, e.target.value);
             changeTextColor();
           }}
-          className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent pl-3 px-11.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${isOptionSelected ? "text-dark dark:text-white" : ""
-            }`}
+          className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${
+            isOptionSelected ? "text-dark dark:text-white" : ""
+          }`}
         >
-          <option value="00:00:00" className="text-dark-5 dark:text-dark-6">00:00</option>
-          <option value="00:30:00" className="text-dark-5 dark:text-dark-6">00:30</option>
-          <option value="01:00:00" className="text-dark-5 dark:text-dark-6">01:00</option>
-          <option value="01:30:00" className="text-dark-5 dark:text-dark-6">01:30</option>
-          <option value="02:00:00" className="text-dark-5 dark:text-dark-6">02:00</option>
-          <option value="02:30:00" className="text-dark-5 dark:text-dark-6">02:30</option>
-          <option value="03:00:00" className="text-dark-5 dark:text-dark-6">03:00</option>
-          <option value="03:30:00" className="text-dark-5 dark:text-dark-6">03:30</option>
-          <option value="04:00:00" className="text-dark-5 dark:text-dark-6">04:00</option>
-          <option value="04:30:00" className="text-dark-5 dark:text-dark-6">04:30</option>
-          <option value="05:00:00" className="text-dark-5 dark:text-dark-6">05:00</option>
-          <option value="05:30:00" className="text-dark-5 dark:text-dark-6">05:30</option>
-          <option value="06:00:00" className="text-dark-5 dark:text-dark-6">06:00</option>
-          <option value="06:30:00" className="text-dark-5 dark:text-dark-6">06:30</option>
-          <option value="07:00:00" className="text-dark-5 dark:text-dark-6">07:00</option>
-          <option value="07:30:00" className="text-dark-5 dark:text-dark-6">07:30</option>
-          <option value="08:00:00" className="text-dark-5 dark:text-dark-6">08:00</option>
-          <option value="08:30:00" className="text-dark-5 dark:text-dark-6">08:30</option>
-          <option value="09:00:00" className="text-dark-5 dark:text-dark-6">09:00</option>
-          <option value="09:30:00" className="text-dark-5 dark:text-dark-6">09:30</option>
-          <option value="10:00:00" className="text-dark-5 dark:text-dark-6">10:00</option>
-          <option value="10:30:00" className="text-dark-5 dark:text-dark-6">10:30</option>
-          <option value="11:00:00" className="text-dark-5 dark:text-dark-6">11:00</option>
-          <option value="11:30:00" className="text-dark-5 dark:text-dark-6">11:30</option>
-          <option value="12:00:00" className="text-dark-5 dark:text-dark-6">12:00</option>
-          <option value="12:30:00" className="text-dark-5 dark:text-dark-6">12:30</option>
-          <option value="13:00:00" className="text-dark-5 dark:text-dark-6">13:00</option>
-          <option value="13:30:00" className="text-dark-5 dark:text-dark-6">13:30</option>
-          <option value="14:00:00" className="text-dark-5 dark:text-dark-6">14:00</option>
-          <option value="14:30:00" className="text-dark-5 dark:text-dark-6">14:30</option>
-          <option value="15:00:00" className="text-dark-5 dark:text-dark-6">15:00</option>
-          <option value="15:30:00" className="text-dark-5 dark:text-dark-6">15:30</option>
-          <option value="16:00:00" className="text-dark-5 dark:text-dark-6">16:00</option>
-          <option value="16:30:00" className="text-dark-5 dark:text-dark-6">16:30</option>
-          <option value="17:00:00" className="text-dark-5 dark:text-dark-6">17:00</option>
-          <option value="17:30:00" className="text-dark-5 dark:text-dark-6">17:30</option>
-          <option value="18:00:00" className="text-dark-5 dark:text-dark-6">18:00</option>
-          <option value="18:30:00" className="text-dark-5 dark:text-dark-6">18:30</option>
-          <option value="19:00:00" className="text-dark-5 dark:text-dark-6">19:00</option>
-          <option value="19:30:00" className="text-dark-5 dark:text-dark-6">19:30</option>
-          <option value="20:00:00" className="text-dark-5 dark:text-dark-6">20:00</option>
-          <option value="20:30:00" className="text-dark-5 dark:text-dark-6">20:30</option>
-          <option value="21:00:00" className="text-dark-5 dark:text-dark-6">21:00</option>
-          <option value="21:30:00" className="text-dark-5 dark:text-dark-6">21:30</option>
-          <option value="22:00:00" className="text-dark-5 dark:text-dark-6">22:00</option>
-          <option value="22:30:00" className="text-dark-5 dark:text-dark-6">22:30</option>
-          <option value="23:00:00" className="text-dark-5 dark:text-dark-6">23:00</option>
-          <option value="23:30:00" className="text-dark-5 dark:text-dark-6">23:30</option>
+          <option value="00:00" className="text-dark-5 dark:text-dark-6">
+            00:00
+          </option>
+          <option value="00:30" className="text-dark-5 dark:text-dark-6">
+            00:30
+          </option>
+          <option value="01:00" className="text-dark-5 dark:text-dark-6">
+            01:00
+          </option>
+          <option value="01:30" className="text-dark-5 dark:text-dark-6">
+            01:30
+          </option>
+          <option value="02:00" className="text-dark-5 dark:text-dark-6">
+            02:00
+          </option>
+          <option value="02:30" className="text-dark-5 dark:text-dark-6">
+            02:30
+          </option>
+          <option value="03:00" className="text-dark-5 dark:text-dark-6">
+            03:00
+          </option>
+          <option value="03:30" className="text-dark-5 dark:text-dark-6">
+            03:30
+          </option>
+          <option value="04:00" className="text-dark-5 dark:text-dark-6">
+            04:00
+          </option>
+          <option value="04:30" className="text-dark-5 dark:text-dark-6">
+            04:30
+          </option>
+          <option value="05:00" className="text-dark-5 dark:text-dark-6">
+            05:00
+          </option>
+          <option value="05:30" className="text-dark-5 dark:text-dark-6">
+            05:30
+          </option>
+          <option value="06:00" className="text-dark-5 dark:text-dark-6">
+            06:00
+          </option>
+          <option value="06:30" className="text-dark-5 dark:text-dark-6">
+            06:30
+          </option>
+          <option value="07:00" className="text-dark-5 dark:text-dark-6">
+            07:00
+          </option>
+          <option value="07:30" className="text-dark-5 dark:text-dark-6">
+            07:30
+          </option>
+          <option value="08:00" className="text-dark-5 dark:text-dark-6">
+            08:00
+          </option>
+          <option value="08:30" className="text-dark-5 dark:text-dark-6">
+            08:30
+          </option>
+          <option value="09:00" className="text-dark-5 dark:text-dark-6">
+            09:00
+          </option>
+          <option value="09:30" className="text-dark-5 dark:text-dark-6">
+            09:30
+          </option>
+          <option value="10:00" className="text-dark-5 dark:text-dark-6">
+            10:00
+          </option>
+          <option value="10:30" className="text-dark-5 dark:text-dark-6">
+            10:30
+          </option>
+          <option value="11:00" className="text-dark-5 dark:text-dark-6">
+            11:00
+          </option>
+          <option value="11:30" className="text-dark-5 dark:text-dark-6">
+            11:30
+          </option>
+          <option value="12:00" className="text-dark-5 dark:text-dark-6">
+            12:00
+          </option>
+          <option value="12:30" className="text-dark-5 dark:text-dark-6">
+            12:30
+          </option>
+          <option value="13:00" className="text-dark-5 dark:text-dark-6">
+            13:00
+          </option>
+          <option value="13:30" className="text-dark-5 dark:text-dark-6">
+            13:30
+          </option>
+          <option value="14:00" className="text-dark-5 dark:text-dark-6">
+            14:00
+          </option>
+          <option value="14:30" className="text-dark-5 dark:text-dark-6">
+            14:30
+          </option>
+          <option value="15:00" className="text-dark-5 dark:text-dark-6">
+            15:00
+          </option>
+          <option value="15:30" className="text-dark-5 dark:text-dark-6">
+            15:30
+          </option>
+          <option value="16:00" className="text-dark-5 dark:text-dark-6">
+            16:00
+          </option>
+          <option value="16:30" className="text-dark-5 dark:text-dark-6">
+            16:30
+          </option>
+          <option value="17:00" className="text-dark-5 dark:text-dark-6">
+            17:00
+          </option>
+          <option value="17:30" className="text-dark-5 dark:text-dark-6">
+            17:30
+          </option>
+          <option value="18:00" className="text-dark-5 dark:text-dark-6">
+            18:00
+          </option>
+          <option value="18:30" className="text-dark-5 dark:text-dark-6">
+            18:30
+          </option>
+          <option value="19:00" className="text-dark-5 dark:text-dark-6">
+            19:00
+          </option>
+          <option value="19:30" className="text-dark-5 dark:text-dark-6">
+            19:30
+          </option>
+          <option value="20:00" className="text-dark-5 dark:text-dark-6">
+            20:00
+          </option>
+          <option value="20:30" className="text-dark-5 dark:text-dark-6">
+            20:30
+          </option>
+          <option value="21:00" className="text-dark-5 dark:text-dark-6">
+            21:00
+          </option>
+          <option value="21:30" className="text-dark-5 dark:text-dark-6">
+            21:30
+          </option>
+          <option value="22:00" className="text-dark-5 dark:text-dark-6">
+            22:00
+          </option>
+          <option value="22:30" className="text-dark-5 dark:text-dark-6">
+            22:30
+          </option>
+          <option value="23:00" className="text-dark-5 dark:text-dark-6">
+            23:00
+          </option>
+          <option value="23:30" className="text-dark-5 dark:text-dark-6">
+            23:30
+          </option>
         </select>
 
-
         {/* Dropdown arrow */}
-        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-dark-4 dark:text-dark-6">
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 transform text-dark-4 dark:text-dark-6">
           <svg
             className="fill-current"
             width="20"

@@ -1,13 +1,14 @@
 // src/components/SalaryTable.tsx
-"use client"
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { Salary } from '@/types/product';
-import ButtonPopup from '../Buttons/plusButton'; // Adjust the path as needed
-import PopupForm from '../Form/PopupForm'; // Adjust the path as needed
-import MultiSelect from '../Form/MultiSelect'; // Adjust the path as needed
-import Modal from '../modal';
-import Link from 'next/link';
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
+import { Salary } from "@/types/product";
+import ButtonPopup from "../Buttons/plusButton"; // Adjust the path as needed
+import PopupForm from "../Form/PopupForm"; // Adjust the path as needed
+import MultiSelect from "../Form/MultiSelect"; // Adjust the path as needed
+import Modal from "../modal";
+import Link from "next/link";
+import { SalaryUser } from "@/types/salary";
 
 const salaryData: Salary[] = [
   {
@@ -74,85 +75,85 @@ const salaryData: Salary[] = [
 ];
 
 export type SelectedItem = {
-  id: string;    // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
-  item: string;  // 'item' should also be a string.
+  id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
+  item: string; // 'item' should also be a string.
 };
 
-const SalaryTable = () => {
+interface SalaryTableInterface {
+  data: SalaryUser[];
+}
+
+const SalaryTable = ({ data }: SalaryTableInterface) => {
+  const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);;
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const itemsPerPage = 10;
-  const [id, setid] = useState('');
+  const [id, setid] = useState("");
   const [salary, setSalary] = useState("");
   const [error, setError] = useState("");
 
-
-
-
   // Function to handle sorting
   const handleSort = (column: string) => {
-    const newSortOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortOrder =
+      sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortOrder(newSortOrder);
   };
 
   // Sort the filtered data
-  const sortedData = [...salaryData].sort((a, b) => {
+  const sortedData = [...dataSalary].sort((a, b) => {
     if (!sortColumn) return 0;
-    const aValue = a[sortColumn as keyof Salary] as unknown as number;
-    const bValue = b[sortColumn as keyof Salary] as unknown as number;
+    const aValue = a[sortColumn as keyof SalaryUser] as unknown as number;
+    const bValue = b[sortColumn as keyof SalaryUser] as unknown as number;
 
-    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
   // Paginate the data
-  const filteredData = sortedData.filter(salary =>
-    salary.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    salary.bday.toString().includes(searchQuery) ||
-    salary.ot.toString().includes(searchQuery) ||
-    salary.totalday.toString().includes(searchQuery) ||
-    salary.late.toString().includes(searchQuery) ||
-    salary.totalsal.toString().includes(searchQuery)
+  const filteredData = sortedData.filter(
+    (salary) =>
+      salary.users?.username
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      salary.users?.name.toString().includes(searchQuery) ||
+      salary.total!.toString().includes(searchQuery),
   );
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
-
 
   const fetchData = async () => {
     try {
       // Replace this with your actual data-fetching logic
-      console.log('Fetching new data...');
+      console.log("Fetching new data...");
 
       // Simulate a delay or an API call
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Handle your data (e.g., update state, store response)
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
   const handleConfirmOpen = () => {
-
     setIsConfirmOpen(true);
   };
 
   const handleConfirmClose = () => {
     setIsConfirmOpen(false);
-    setError("")
+    setError("");
     // Reset current action if needed
-
   };
 
   const handleConfirm = () => {
@@ -183,32 +184,29 @@ const SalaryTable = () => {
     if (!itemExists) {
       const newItem = { id, item };
       setSelectedItems((prevItems) => [...prevItems, newItem]);
-      console.log('New Item already exists:', newItem);
+      console.log("New Item already exists:", newItem);
     } else {
-      console.log('Item already exists:', item);
+      console.log("Item already exists:", item);
     }
     handleCloseForm(); // Close the form after adding
   };
 
-
   const handleRemoveItem = (item: string) => {
-    setSelectedItems((prevItems) =>
-      prevItems.filter(i => i.id !== item) // Compare the 'item' property in each object
+    setSelectedItems(
+      (prevItems) => prevItems.filter((i) => i.id !== item), // Compare the 'item' property in each object
     );
   };
 
   return (
     <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <div className="flex justify-between mb-5">
-        <div className='relative z-20 mb-5'>
-
-
+      <div className="mb-5 flex justify-between">
+        <div className="relative z-20 mb-5">
           {/* Year selection dropdown */}
           {/* <div className="flex flex-col mt-4"> */}
 
           <select
             id="year"
-            className="pr-5 rounded text-[24px] font-bold text-dark dark:text-white p-2 bg-white dark:bg-gray-700"
+            className="rounded bg-white p-2 pr-5 text-[24px] font-bold text-dark dark:bg-gray-700 dark:text-white"
           >
             {/* Add year options */}
             <option value="2023">2023</option>
@@ -216,15 +214,13 @@ const SalaryTable = () => {
             {/* Add more years as needed */}
           </select>
 
-
           {/* </div> */}
 
           {/* Month selection dropdown with Check button beside it */}
 
-
           <select
             id="month"
-            className="ml-5 mr-5 text-[24px] uppercase font-bold dark:border-gray-600 p-2 rounded text-dark dark:text-white bg-white dark:bg-gray-700"
+            className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             {/* Add month options */}
             <option value="01">Jan</option>
@@ -234,12 +230,11 @@ const SalaryTable = () => {
           </select>
 
           {/* Check button beside the month dropdown */}
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 pl-5 pr-5 ml-5 rounded">
+          <button className="ml-5 rounded bg-blue-500 px-4 py-2 pl-5 pr-5 font-bold text-white hover:bg-blue-600">
             Check
           </button>
-
         </div>
-        <div className="relative mb-5 z-20 w-full max-w-[414px]">
+        <div className="relative z-20 mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
             placeholder="Search here..."
@@ -275,69 +270,120 @@ const SalaryTable = () => {
 
       <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Username</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Username
+          </h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('bday')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Basic Salary<br></br>(Day)</h5>
-          {sortColumn === 'bday' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center"
+          onClick={() => handleSort("bday")}
+        >
+          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+            Basic Salary<br></br>(Day)
+          </h5>
+          {sortColumn === "bday" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('ot')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">OT<br></br>(Hours)</h5>
-          {sortColumn === 'ot' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center"
+          onClick={() => handleSort("ot")}
+        >
+          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+            OT<br></br>(Hours)
+          </h5>
+          {sortColumn === "ot" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('totalday')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base text-center">Total Working Days</h5>
-          {sortColumn === 'totalday' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center"
+          onClick={() => handleSort("totalday")}
+        >
+          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+            Total Working Days
+          </h5>
+          {sortColumn === "totalday" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('late')}>
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center"
+          onClick={() => handleSort("late")}
+        >
           <h5 className="text-sm font-medium uppercase xsm:text-base">Late</h5>
-          {sortColumn === 'late' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+          {sortColumn === "late" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">OT</h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer" onClick={() => handleSort('totalsal')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Total salary</h5>
-          {sortColumn === 'totalsal' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center"
+          onClick={() => handleSort("totalsal")}
+        >
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Total salary
+          </h5>
+          {sortColumn === "totalsal" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Actions
+          </h5>
         </div>
       </div>
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
-            }`} key={key}
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${
+            key === currentData.length - 1
+              ? ""
+              : "border-b border-stroke dark:border-dark-3"
+          }`}
+          key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
             <div
               className="h-12.5 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
-              onClick={() => setSelectedImage(salary.image)}
+              onClick={() =>
+                setSelectedImage(
+                  salary.users?.userImg
+                    ? salary.users?.userImg
+                    : "/uploads/user/defaultUser.jpg",
+                )
+              }
             >
               <Image
-                src={salary.image}
+                src={
+                  salary.users?.userImg
+                    ? salary.users?.userImg
+                    : "/uploads/user/defaultUser.jpg"
+                }
                 width={60}
                 height={50}
                 alt="leave"
@@ -345,26 +391,26 @@ const SalaryTable = () => {
             </div>
             <div className="flex flex-col">
               <p className="flex font-medium text-dark dark:text-white sm:block">
-                {salary.name}
+                {salary.users?.name}
               </p>
-              <p className="flex text-gray-500 text-sm sm:block">
-                {salary.username}
+              <p className="flex text-sm text-gray-500 sm:block">
+                {salary.users?.username}
               </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.bday}
+              {salary.perDay}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.ot}
+              {salary.overTimeHour}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.totalday}
+              {salary.workingDay}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -387,14 +433,11 @@ const SalaryTable = () => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.totalsal}
+              {salary.total}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
-            <button
-              onClick={handleConfirmOpen}
-              className="hover:text-primary"
-            >
+            <button onClick={handleConfirmOpen} className="hover:text-primary">
               <svg
                 className="fill-current"
                 width="20"
@@ -409,7 +452,7 @@ const SalaryTable = () => {
             </button>
             <Link
               href="/invoice" // Update to your desired route
-              className="hover:text-primary flex items-center justify-center"
+              className="flex items-center justify-center hover:text-primary"
             >
               <svg
                 className="fill-current"
@@ -441,8 +484,9 @@ const SalaryTable = () => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
+                currentPage === i + 1 ? "bg-primary text-white" : ""
+              }`}
             >
               {i + 1}
             </button>
@@ -463,7 +507,7 @@ const SalaryTable = () => {
       {/* Render the image modal */}
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image
-          src={selectedImage || ''}
+          src={selectedImage || ""}
           width={600}
           height={500}
           alt="Product"
@@ -481,7 +525,7 @@ const SalaryTable = () => {
       {/* Render the confirmation modal */}
       <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
         <div className="p-5">
-          <p className="mb-4 text-center justify-center">
+          <p className="mb-4 justify-center text-center">
             Are you sure you want to change this Basic Salary (Day)?
           </p>
 
@@ -492,34 +536,30 @@ const SalaryTable = () => {
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
               placeholder="Enter new Basic Salary (Day)"
-              className="mb-4 w-full max-w-xs rounded-lg border border-gray-300 p-2 focus:outline-none focus:border-primary"
+              className="mb-4 w-full max-w-xs rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none"
             />
           </div>
 
           {/* Error message */}
-          {error && (
-            <p className="text-red-500 text-center">{error}</p>
-          )}
+          {error && <p className="text-center text-red-500">{error}</p>}
 
           {/* Buttons positioned at the bottom right */}
-          <div className="flex justify-end items-center space-x-4 mt-6">
+          <div className="mt-6 flex items-center justify-end space-x-4">
             <button
               onClick={handleConfirmClose}
-              className="text-red-500 underline font-medium hover:text-red-600"
+              className="font-medium text-red-500 underline hover:text-red-600"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
-              className="btn btn-primary bg-green-500 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
+              className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
             >
               Confirm
             </button>
           </div>
         </div>
       </Modal>
-
-
     </div>
   );
 };
