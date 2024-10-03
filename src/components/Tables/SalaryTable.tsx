@@ -9,6 +9,8 @@ import MultiSelect from "../Form/MultiSelect"; // Adjust the path as needed
 import Modal from "../modal";
 import Link from "next/link";
 import { SalaryUser } from "@/types/salary";
+import { addPerDay } from "@/action/addperDay";
+import { AddOverTime, delOvetime } from "@/action/salaryOt";
 
 const salaryData: Salary[] = [
   {
@@ -77,6 +79,7 @@ const salaryData: Salary[] = [
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
   item: string; // 'item' should also be a string.
+  idSalary: string;
 };
 
 interface SalaryTableInterface {
@@ -97,6 +100,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   const [id, setid] = useState("");
   const [salary, setSalary] = useState("");
   const [error, setError] = useState("");
+  const [idSalary, setIdSalary] = useState<string>("")
 
   // Function to handle sorting
   const handleSort = (column: string) => {
@@ -146,7 +150,8 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     }
   };
 
-  const handleConfirmOpen = () => {
+  const handleConfirmOpen = (id: string) => {
+    setIdSalary(id);
     setIsConfirmOpen(true);
   };
 
@@ -156,19 +161,28 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     // Reset current action if needed
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    console.log("salary handle confirm", salary)
     if (!salary || Number(salary) === 0) {
       setError("Cannot confirm with an empty or zero value.");
-    } else {
-      setError("");
+      return
+    }
+    setError("");
+    let result = await addPerDay(idSalary, Number(salary))
+    if (result.error) {
+      setError(result.error)
+      return;
+    }
+    if (result.success) {
       handleConfirmClose();
-      fetchData();
       window.location.reload();
     }
   };
 
-  const handleOpenForm = (id: string) => {
+  const handleOpenForm = (id: string, salaryId: string) => {
+    console.log("🚀 ~ handleOpenForm ~ salaryId:", salaryId)
     setid(id);
+    setIdSalary(salaryId)
     setIsFormOpen(true);
   };
 
@@ -176,13 +190,18 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     setIsFormOpen(false);
   };
 
-  const handleAddItem = (item: string, id: string) => {
+  const handleAddItem = async (item: string, id: string) => {
     // Check if the item already exists by its id
     const itemExists = selectedItems.some((e) => e.id === id);
+    let result = await AddOverTime(idSalary, Number(item));
+    if (result.error) {
+      setError(result.error);
+      return
+    }
 
     // If the item does not exist, add it to the selectedItems
     if (!itemExists) {
-      const newItem = { id, item };
+      const newItem = { id, item, idSalary };
       setSelectedItems((prevItems) => [...prevItems, newItem]);
       console.log("New Item already exists:", newItem);
     } else {
@@ -191,14 +210,22 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     handleCloseForm(); // Close the form after adding
   };
 
-  const handleRemoveItem = (item: string) => {
-    setSelectedItems(
-      (prevItems) => prevItems.filter((i) => i.id !== item), // Compare the 'item' property in each object
-    );
+  const handleRemoveItem = async (item: string) => {
+    let data = selectedItems.find((i) => i.id === item)
+    if (data) {
+      let result = await delOvetime(data?.idSalary);
+      if (result.error) {
+        setError(result.error);
+        return
+      }
+      setSelectedItems(
+        (prevItems) => prevItems.filter((i) => i.id !== item), // Compare the 'item' property in each object
+      );
+    }
   };
 
   return (
-    <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="mb-5 flex justify-between">
         <div className="relative z-20 mb-5">
           {/* Year selection dropdown */}
@@ -359,11 +386,10 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${
-            key === currentData.length - 1
-              ? ""
-              : "border-b border-stroke dark:border-dark-3"
-          }`}
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+            ? ""
+            : "border-b border-stroke dark:border-dark-3"
+            }`}
           key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
@@ -424,10 +450,11 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 items={selectedItems}
                 onRemove={handleRemoveItem}
                 id={key}
+
               />
             </div>
             <ButtonPopup
-              onClick={() => handleOpenForm(key.toString())}
+              onClick={() => handleOpenForm(key.toString(), salary.id)}
               customClasses="border border-primary text-primary rounded-full rounded-[2px] px-5 py-1 lg:px-10 xl:px-5"
             />
           </div>
@@ -437,7 +464,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
-            <button onClick={handleConfirmOpen} className="hover:text-primary">
+            <button onClick={() => handleConfirmOpen(salary.id)} className="hover:text-primary">
               <svg
                 className="fill-current"
                 width="20"
@@ -451,7 +478,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
               </svg>
             </button>
             <Link
-              href="/invoice" // Update to your desired route
+              href={`/invoice/${salary.id}`} // Update to your desired route
               className="flex items-center justify-center hover:text-primary"
             >
               <svg
@@ -484,9 +511,8 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
-                currentPage === i + 1 ? "bg-primary text-white" : ""
-              }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
             >
               {i + 1}
             </button>

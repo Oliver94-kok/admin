@@ -6,9 +6,10 @@ interface MultiSelectProps {
     items: SelectedItem[];
     onRemove: (item: string) => void;
     id: number;
+
 }
 
-const MultiSelect: React.FC<MultiSelectProps> = ({ items, onRemove, id }) => {
+const MultiSelect: React.FC<MultiSelectProps> = ({ items, onRemove, id, }) => {
     return (
         <div className="flex flex-wrap gap-2">
             {items.map((item, index) => (

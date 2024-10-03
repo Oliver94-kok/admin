@@ -42,6 +42,7 @@ model Attends {
   img         String?
   locationIn  String?
   locationOut String?
+  overtime    Int?
   fine        Float
   userId      String
   users       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -52,6 +53,8 @@ model Salary {
   month        Int
   year         Int
   workingDay   Int
+  workingHoour Int?
+  fine         Int?
   late         Float?
   overTimeHour Float?
   overTime     Float?
@@ -82,15 +85,15 @@ model AttendBranch {
 }
 
 model Leave {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   userId    String
   reason    String
   type      String
-  startDate DateTime @db.Date
-  endDate   DateTime @db.Date
+  startDate String
+  endDate   String
   status    String
   img       String?
-  users     User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
+  users     User?   @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model NotificationUser {

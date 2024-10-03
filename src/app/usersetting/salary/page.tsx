@@ -25,7 +25,6 @@ const getData = async () => {
 
 const Salary = async () => {
   const salary = await getData();
-  console.log(salary);
   return (
     <>
       <DefaultLayout>

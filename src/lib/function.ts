@@ -28,28 +28,38 @@ const checkFolder = async (folder: String) => {
   }
   return p;
 };
-export const saveImageUser = async (img: string) => {
+export const saveImageUser = async (img: string, username: string) => {
   const buffer = Buffer.from(img, "base64");
   const uniqueSuffix = uuidv4();
   const paths = path.join(process.cwd(), `public/uploads/user/`);
   try {
-    await writeFile(`${paths}/${uniqueSuffix}.jpg`, buffer);
+    await writeFile(`${paths}/${username}.JPEG`, buffer);
   } catch (err) {}
-  return `/uploads/user/${uniqueSuffix}.jpg`;
+  return `/uploads/user/${username}.JPEG`;
 };
-export const saveImage = async (img: string) => {
+export const saveImage = async (img: string, username: string) => {
   const buffer = Buffer.from(img, "base64");
   const uniqueSuffix = uuidv4();
   const now = DateTime.now().toFormat("dd-LL-y");
   const paths = await checkFolder(now);
+
   try {
-    await writeFile(`${paths}/${uniqueSuffix}.jpg`, buffer);
+    await writeFile(`${paths}/${username}.jpg`, buffer);
   } catch (error) {
     console.log(error);
   }
   return `/uploads/${now}/${uniqueSuffix}.jpg`;
 };
-
+export const saveImageLeaveUser = async (img: string, username: string) => {
+  const buffer = Buffer.from(img, "base64");
+  const uniqueSuffix = uuidv4();
+  const paths = path.join(process.cwd(), `public/uploads/leave/`);
+  const now = DateTime.now().toFormat("dd-LL-y");
+  try {
+    await writeFile(`${paths}/${username}_${now}.jpg`, buffer);
+  } catch (err) {}
+  return `/uploads/leave/${username}_${now}.jpg`;
+};
 export const checkWorkingHour = async (clockIn: Date, clockOut: Date) => {
   let c = clockIn.toISOString();
   var start = DateTime.fromISO(c);

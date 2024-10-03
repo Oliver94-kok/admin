@@ -7,140 +7,7 @@ import Modal from '../modal';
 import { LeavesInterface } from '@/types/leave';
 import { ApproveLeave } from '@/action/approveLeave';
 import { SentNoti } from '@/lib/function';
-
-const leaveData: Leave[] = [
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "001",
-    branch: "perling",
-    leavetype: "MC",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "002",
-    branch: "perling",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "003",
-    branch: "austin",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "002",
-    branch: "perling",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "003",
-    branch: "austin",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "002",
-    branch: "perling",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "003",
-    branch: "austin",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "002",
-    branch: "perling",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "003",
-    branch: "austin",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "002",
-    branch: "perling",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "003",
-    branch: "austin",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "002",
-    branch: "perling",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "test",
-    username: "003",
-    branch: "austin",
-    leavetype: "annual",
-    leavedate: "10/9/2025(08:00) 13/09/2025(10:00)",
-    leavereason: "tenowijrafbnlfkatjreotnbijuapbgfgjndsfmndsfkj",
-    leaveimage: "",
-  },
-  // ... other leaves
-];
+import { DateTime } from 'luxon';
 interface LeaveTableInterface {
   data: LeavesInterface[]
 }
@@ -330,10 +197,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             <div
               className="h-12.5 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
-              onClick={() => setSelectedImage(leave.users?.userImg as string)}
+              onClick={() => setSelectedImage(leave.users?.userImg ? leave.users?.userImg : "/uploads/user/defaultUser.jpg")}
             >
               <Image
-                src={leave.users?.userImg ? leave.users?.userImg : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
+                src={leave.users?.userImg ? leave.users?.userImg : "/uploads/user/defaultUser.jpg"}
                 width={60}
                 height={50}
                 alt="leave"
@@ -359,8 +226,9 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {leave.startDate.toDateString()}
+            <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
+              <i>Start:{leave.startDate} </i>
+              <i>End:{leave.endDate}</i>
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -371,18 +239,22 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div
-                className="h-25 w-15 rounded-md pl-5"
-                style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(leave.img)}
-              >
-                <Image
-                  src={leave.img ? leave.img : ""}
-                  width={100}
-                  height={90}
-                  alt="leave"
-                />
-              </div>
+              {leave.img ? <>
+                <div
+                  className="h-25 w-15 rounded-md pl-5"
+                  style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
+                  onClick={() => setSelectedImage(leave.img)}
+                >
+                  <Image
+                    src={leave.img ? leave.img : ""}
+                    width={100}
+                    height={90}
+                    alt="leave"
+                  />
+                </div></> : <>
+                No image
+
+              </>}
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center pl-20">
@@ -439,8 +311,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image
           src={selectedImage || ''}
-          width={600}
-          height={500}
+          width={300}
+          height={300}
           alt="leave"
         />
       </Modal>

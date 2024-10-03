@@ -1,7 +1,8 @@
 "use server";
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
-import {DateTime} from 'luxon';
+import { DateTime } from "luxon";
+import { createSalary, getSalaryByUserId } from "./salary";
 interface dataAttend {
   create?: AttendsInterface;
   userId?: string;
@@ -68,47 +69,76 @@ export const getDataByDate = async (tarikh: string) => {
   console.log(data);
   return data;
 };
-export const createNotClockIn=async(clockOut:Date,userId:string,)=>{
+export const createNotClockIn = async (
+  userId: string,
+  clockOut: Date,
+  overtime: number,
+) => {
   try {
-    let fine = await db.salary.findFirst({where:{userId,month:new Date().getMonth()+1,year:new Date().getFullYear()}})
-    let late = 0;
-    if(fine?.late!>=1) {late =100}else{late=100} 
-    await db.attends.create({data:{userId,fine:late,clockOut}})
+    let fine = 0;
+    let salary = await getSalaryByUserId(userId);
+    if (salary) {
+      if (salary?.late! >= 1) {
+        fine = 100;
+      } else {
+        fine = 50;
+      }
+      var ot = salary?.overTimeHour! + overtime;
+      var wd = salary?.workingDay! + 1;
+      var late = salary?.late! + 1;
+      await db.salary.update({
+        where: { id: salary?.id },
+        data: { overTimeHour: ot, workingDay: wd, late },
+      });
+    }
 
-    return {success:"success"}
-  } catch (error) {
-    return null
-  }
-}
-
-export const calOverTime=async(userId:string,clockOut: Date)=>{
-  let user =await db.attendBranch.findFirst({where:{userId}})
-  const endTime = DateTime.isDateTime(clockOut) 
-    ? clockOut 
-    : (clockOut instanceof Date 
-      ? DateTime.fromJSDate(clockOut) 
-      : DateTime.fromISO(clockOut));
-
-  // Ensure endTime is valid
-  if (!endTime.isValid) {
-    throw new Error("Invalid clockOut time provided");
-  }
-  if(user){
-    let out = user.clockOut;
-    const [regularHours, regularMinutes] = out!.split(":").map(Number);
-    const regularEndTime = endTime.set({
-      hour: regularHours,
-      minute: regularMinutes,
-      second: 0,
-      millisecond: 0
+    await createSalary(userId, 1, overtime);
+    let dataAttend = {
+      userId,
+      fine,
+      clockOut,
+      overtime,
+    };
+    console.log("🚀 ~ dataAttend:", dataAttend);
+    await db.attends.create({
+      data: { userId, fine, clockOut, overtime },
     });
-    console.log("🚀 ~ calOverTime ~ regularEndTime:", regularEndTime)
-  
-    const diff = endTime.diff(regularEndTime, "minutes");
-    console.log("🚀 ~ calOverTime ~ endTime:", endTime)
 
-    // Return the maximum of 0 and the calculated overtime
-    return Math.max(0, diff.minutes);
-
+    return { success: "success" };
+  } catch (error) {
+    console.log("🚀 ~ error:", error);
+    return null;
   }
-}
+};
+
+export const calOverTime = async (userId: string, clockOut: string) => {
+  let user = await db.attendBranch.findFirst({ where: { userId } });
+  if (user) {
+    // let c = clockOut.toISOString();
+    var start = DateTime.fromISO(clockOut);
+    console.log("🚀 ~ calOverTime ~ start:", start);
+
+    var end = DateTime.fromISO(user.clockOut!);
+    console.log("🚀 ~ calOverTime ~ end:", end);
+    var hour = start.diff(end, ["hours", "minutes", "seconds"]);
+    var min = hour.minutes;
+    return hour.as("minute").toFixed();
+  }
+};
+
+export const lateClockIn = async (userId: string, clockIn: string) => {
+  let user = await db.attendBranch.findFirst({ where: { userId } });
+  if (user) {
+    var start = DateTime.fromISO(clockIn);
+    var time = DateTime.fromISO(user.clockIn!);
+    var result = start.diff(time, ["hours", "minutes", "seconds"]);
+    let min = result.as("minutes");
+    let minute = result.toObject().minutes;
+
+    if (min <= 0) return 0;
+    if (minute! <= 10) return 0;
+
+    return 1;
+  }
+  return null;
+};

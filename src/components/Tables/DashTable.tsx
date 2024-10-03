@@ -133,7 +133,7 @@ const DashTable = ({ data }: dashTableInterface) => {
   );
 
   return (
-    <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {/* Search Input */}
       <div className="flex justify-between mb-5">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">

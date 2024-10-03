@@ -3,8 +3,8 @@ export interface LeavesInterface {
   userId: string;
   reason: string;
   type: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   status: string;
   img: string | null;
   users: {

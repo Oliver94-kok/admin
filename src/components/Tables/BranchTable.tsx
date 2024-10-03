@@ -66,7 +66,7 @@ interface BranchTableInterface {
 
 const BranchTable = ({ A, B, C }: BranchTableInterface) => {
   return (
-    <div className="w-[1280px] rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <BranchATable data={A} team={"Team A"} />
       <BranchATable data={B} team="Team B" />
       <BranchATable data={C} team="Team C" />
