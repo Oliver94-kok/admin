@@ -441,7 +441,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-              {salary.late}
+              {salary.fine}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
