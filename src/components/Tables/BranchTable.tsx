@@ -62,14 +62,61 @@ interface BranchTableInterface {
   A: BranchsUser[];
   B: BranchsUser[];
   C: BranchsUser[];
+  D: BranchsUser[];
 }
 
-const BranchTable = ({ A, B, C }: BranchTableInterface) => {
+const BranchTable = ({ A, B, C, D }: BranchTableInterface) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 4; // Since there are 3 teams (A, B, C)
+
   return (
     <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <BranchATable data={A} team={"Team A"} />
-      <BranchATable data={B} team="Team B" />
-      <BranchATable data={C} team="Team C" />
+      {currentPage === 1 && <BranchATable data={A} team="Team A" />}
+      {currentPage === 2 && <BranchATable data={B} team="Team B" />}
+      {currentPage === 3 && <BranchATable data={C} team="Team C" />}
+      {currentPage === 4 && <BranchATable data={C} team="Team D" />}
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between px-7.5 py-7 mt-4">
+        <div className="flex items-center">
+          {/* Prev Button */}
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] 
+              ${currentPage === 1 ? "cursor-not-allowed text-gray-400" : "hover:bg-primary hover:text-white"}`}
+          >
+            Prev
+          </button>
+
+          {/* Page Numbers */}
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium 
+                ${currentPage === i + 1 ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] 
+              ${currentPage === totalPages ? "cursor-not-allowed text-gray-400" : "hover:bg-primary hover:text-white"}`}
+          >
+            Next
+          </button>
+        </div>
+
+        {/* Page Info */}
+        <p className="font-medium">
+          Showing {currentPage} of {totalPages} pages
+        </p>
+      </div>
     </div>
   );
 };

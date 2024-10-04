@@ -156,8 +156,8 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           {team}
         </h4>
-        <div className="relative z-20 mb-5 w-full max-w-[414px]">
-          {/* <input
+        <div className="relative mb-5 w-full max-w-[414px]">
+          <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
             placeholder="Search here..."
             type="text"
@@ -186,7 +186,7 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
                 fill=""
               />
             </svg>
-          </button> */}
+          </button>
         </div>
       </div>
 
@@ -233,11 +233,10 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
 
       {currentData.map((teamA, key) => (
         <div
-          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${
-            key === currentData.length - 1
-              ? ""
-              : "border-b border-stroke dark:border-dark-3"
-          }`}
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+            ? ""
+            : "border-b border-stroke dark:border-dark-3"
+            }`}
           key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
@@ -335,7 +334,7 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
                   console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
                   onSendData(typeData.STARTON, tarikh);
                 }}
-                // value={clockIn}
+              // value={clockIn}
               />
             </p>
           </div>
@@ -376,7 +375,7 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
                   console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
                   onSendData(typeData.OFFDAY, tarikh);
                 }}
-                // value={clockIn}
+              // value={clockIn}
               />
             </p>
           </div>
@@ -468,7 +467,7 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
         </div>
       ))}
       {/* Pagination */}
-      <div className="flex justify-between px-7.5 py-7">
+      {/* <div className="flex justify-between px-7.5 py-7">
         <div className="flex items-center">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
@@ -481,9 +480,8 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
-                currentPage === i + 1 ? "bg-primary text-white" : ""
-              }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
             >
               {i + 1}
             </button>
@@ -499,7 +497,7 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
         <p className="font-medium">
           Showing {currentPage} of {totalPages} pages
         </p>
-      </div>
+      </div> */}
       {/* Render the image modal */}
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image

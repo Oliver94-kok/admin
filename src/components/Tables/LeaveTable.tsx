@@ -120,7 +120,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           User Leave
         </h4>
-        <div className="relative mb-5 z-20 w-full max-w-[414px]">
+        <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
             placeholder="Search here..."

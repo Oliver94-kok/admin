@@ -227,13 +227,13 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   return (
     <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="mb-5 flex justify-between">
-        <div className="relative z-20 mb-5">
+        <div className="relative mb-5">
           {/* Year selection dropdown */}
           {/* <div className="flex flex-col mt-4"> */}
 
           <select
             id="year"
-            className="rounded bg-white p-2 pr-5 text-[24px] font-bold text-dark dark:bg-gray-700 dark:text-white"
+            className="rounded bg-white p-2 pr-5 text-[24px] font-bold text-dark dark:bg-gray-dark dark:text-white"
           >
             {/* Add year options */}
             <option value="2023">2023</option>
@@ -247,7 +247,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
           <select
             id="month"
-            className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
           >
             {/* Add month options */}
             <option value="01">Jan</option>
@@ -261,7 +261,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
             Check
           </button>
         </div>
-        <div className="relative z-20 mb-5 w-full max-w-[414px]">
+        <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
             placeholder="Search here..."

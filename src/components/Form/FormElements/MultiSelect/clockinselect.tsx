@@ -24,7 +24,7 @@ const ClockinSelectGroup: React.FC<ClockinSelectGroupProps> = ({
         Select Country
       </label> */}
 
-      <div className="relative z-20 rounded-[7px] bg-white dark:bg-dark-2">
+      <div className="relative rounded-[7px] bg-white dark:bg-dark-2">
         <select
           defaultValue={initialValue}
           // value={selectedOption}
@@ -33,9 +33,8 @@ const ClockinSelectGroup: React.FC<ClockinSelectGroupProps> = ({
             onSendData(typeData.CLOCKIN, e.target.value);
             changeTextColor();
           }}
-          className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${
-            isOptionSelected ? "text-dark dark:text-white" : ""
-          }`}
+          className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${isOptionSelected ? "text-dark dark:text-white" : ""
+            }`}
         >
           <option value="00:00" className="text-dark-5 dark:text-dark-6">
             00:00
