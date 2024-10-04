@@ -101,6 +101,36 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   const [salary, setSalary] = useState("");
   const [error, setError] = useState("");
   const [idSalary, setIdSalary] = useState<string>("")
+  const [selectAll, setSelectAll] = useState(false); // State for Select All
+
+
+  // Handle Select All Logic
+  const handleSelectAllChange = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      const allSelectedItems = currentData.map((salary) => ({
+        id: salary.id, // Ensure to provide the correct id
+        item: salary.users?.name || "", // Adjust based on your data structure
+        idSalary: salary.id, // Adjust based on your data structure
+      }));
+      setSelectedItems(allSelectedItems);
+
+      console.log(selectedItems.length);
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  // Function to handle printing of selected entries
+  const handlePrint = () => {
+
+    if (selectedItems.length == 0) {
+      alert("No items selected for printing.");
+      return;
+    }
+
+    console.log("Printing selected items:", selectedItems);
+  };
 
   // Function to handle sorting
   const handleSort = (column: string) => {
@@ -295,7 +325,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-9 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-9 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             Username
@@ -377,6 +407,23 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
             </span>
           )}
         </div>
+        <div className="col-span-1 flex flex-col items-center justify-center">
+          <button
+            onClick={handlePrint}
+            className="text-sm font-medium uppercase xsm:text-base hover:text-blue-600"
+          >
+            Print
+          </button>
+          <label className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              checked={selectAll} // Bind checkbox to selectAll state
+              onChange={handleSelectAllChange} // Handle change
+              className="mr-2"
+            />
+            <span className="text-sm">Select all</span>
+          </label>
+        </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             Actions
@@ -386,7 +433,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+          className={`grid grid-cols-9 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-9 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
             ? ""
             : "border-b border-stroke dark:border-dark-3"
             }`}
@@ -463,6 +510,27 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
               {salary.total}
             </p>
           </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={selectedItems.some((item) => item.id === salary.id)} // Check if item is selected
+                onChange={() => {
+                  const itemExists = selectedItems.some((item) => item.id === salary.id);
+                  if (itemExists) {
+                    setSelectedItems((prev) => prev.filter((item) => item.id !== salary.id));
+                  } else {
+                    setSelectedItems((prev) => [
+                      ...prev,
+                      { id: salary.id, item: salary.users?.name || "", idSalary: salary.id },
+                    ]);
+                  }
+                }}
+                className="mr-2"
+              />
+            </label>
+          </div>
+
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
             <button onClick={() => handleConfirmOpen(salary.id)} className="hover:text-primary">
               <svg
