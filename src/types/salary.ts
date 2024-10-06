@@ -21,6 +21,10 @@ export interface userInvoice {
   late: number | null;
   overTimeHour: number | null;
   overTime: number | null;
+  // Bonus: number | null;
+  // Allowance: number | null;
+  // Cover: number | null;
+  // Absent: number | null;
   total: number | null;
   perDay: number | null;
   userId: string;

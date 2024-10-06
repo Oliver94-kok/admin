@@ -1,15 +1,20 @@
-// src/components/MultiSelect.tsx
 import React from 'react';
 import { SelectedItem } from '../Tables/SalaryTable';
 
 interface MultiSelectProps {
     items: SelectedItem[];
     onRemove: (item: string) => void;
-    id: number;
-
+    id: string;
 }
 
-const MultiSelect: React.FC<MultiSelectProps> = ({ items, onRemove, id, }) => {
+const MultiSelect: React.FC<MultiSelectProps> = ({ items, onRemove, id }) => {
+    const handleRemove = (itemId: string) => {
+        const confirmRemove = window.confirm("Are you sure you want to remove this item?");
+        if (confirmRemove) {
+            onRemove(itemId); // Only remove if user confirms
+        }
+    };
+
     return (
         <div className="flex flex-wrap gap-2">
             {items.map((item, index) => (
@@ -21,7 +26,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ items, onRemove, id, }) => {
                     >
                         {item.item}
                         <button
-                            onClick={() => onRemove(item.id)}
+                            onClick={() => handleRemove(item.id)}
                             className="ml-2 text-white hover:text-gray-300"
                         >
                             &times;

@@ -4,13 +4,19 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Salary } from "@/types/product";
 import ButtonPopup from "../Buttons/plusButton"; // Adjust the path as needed
-import PopupForm from "../Form/PopupForm"; // Adjust the path as needed
 import MultiSelect from "../Form/MultiSelect"; // Adjust the path as needed
 import Modal from "../modal";
 import Link from "next/link";
 import { SalaryUser } from "@/types/salary";
 import { addPerDay } from "@/action/addperDay";
 import { AddOverTime, delOvetime } from "@/action/salaryOt";
+import OTPopup from "../Form/Otpopup";
+import BonusPopup from "../Form/bonuspopup";
+import AllowPopup from "../Form/allowpopup";
+import CoverPopup from "../Form/coverpopup";
+import { AddAllow, delAllow } from "@/action/salaryAllow";
+import { AddBonus, delBonus } from "@/action/salaryBonus";
+import { AddCover, delCover } from "@/action/salaryCover";
 
 const salaryData: Salary[] = [
   {
@@ -102,7 +108,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   const [error, setError] = useState("");
   const [idSalary, setIdSalary] = useState<string>("")
   const [selectAll, setSelectAll] = useState(false); // State for Select All
-
+  const [activePopup, setActivePopup] = useState<string | null>(null);
 
   // Handle Select All Logic
   const handleSelectAllChange = () => {
@@ -209,15 +215,137 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     }
   };
 
-  const handleOpenForm = (id: string, salaryId: string) => {
-    console.log("🚀 ~ handleOpenForm ~ salaryId:", salaryId)
+  const handleOpenForm = (popupType: string, id: string, salaryId: string) => {
+    console.log("🚀 ~ handleOpenForm ~ salaryId:", salaryId);
     setid(id);
-    setIdSalary(salaryId)
+    setIdSalary(salaryId);
+    setActivePopup(popupType); // Set the type of popup to open
     setIsFormOpen(true);
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
+    setActivePopup(null);
+  };
+
+  const handleAddOverTime = async (item: string, id: string) => {
+    const itemExists = selectedItems.some((e) => e.id === id);
+    let result = await AddOverTime(idSalary, Number(item));
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    if (!itemExists) {
+      const newItem = { id, item, idSalary };
+      setSelectedItems((prevItems) => [...prevItems, newItem]);
+      console.log("New Item added:", newItem);
+    } else {
+      console.log("Item already exists:", item);
+    }
+    handleCloseForm(); // Close the form after adding
+  };
+
+  const handleAddCover = async (item: string, id: string) => {
+    const itemExists = selectedItems.some((e) => e.id === id);
+    let result = await AddCover(idSalary, Number(item));
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    if (!itemExists) {
+      const newItem = { id, item, idSalary };
+      setSelectedItems((prevItems) => [...prevItems, newItem]);
+      console.log("New Item added:", newItem);
+    } else {
+      console.log("Item already exists:", item);
+    }
+    handleCloseForm(); // Close the form after adding
+  };
+
+  const handleAddAllow = async (item: string, id: string) => {
+    const itemExists = selectedItems.some((e) => e.id === id);
+    let result = await AddAllow(idSalary, Number(item));
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    if (!itemExists) {
+      const newItem = { id, item, idSalary };
+      setSelectedItems((prevItems) => [...prevItems, newItem]);
+      console.log("New Item added:", newItem);
+    } else {
+      console.log("Item already exists:", item);
+    }
+    handleCloseForm(); // Close the form after adding
+  };
+
+  const handleAddBonus = async (item: string, id: string) => {
+    const itemExists = selectedItems.some((e) => e.id === id);
+    let result = await AddBonus(idSalary, Number(item));
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    if (!itemExists) {
+      const newItem = { id, item, idSalary };
+      setSelectedItems((prevItems) => [...prevItems, newItem]);
+      console.log("New Item added:", newItem);
+    } else {
+      console.log("Item already exists:", item);
+    }
+    handleCloseForm(); // Close the form after adding
+  };
+
+  const handleRemoveOverTime = async (item: string) => {
+    let data = selectedItems.find((i) => i.id === item);
+    if (data) {
+      let result = await delOvetime(data.idSalary);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
+    }
+  };
+
+  const handleRemoveCover = async (item: string) => {
+    let data = selectedItems.find((i) => i.id === item);
+    if (data) {
+      let result = await delCover(data.idSalary);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
+    }
+  };
+
+  const handleRemoveAllow = async (item: string) => {
+    let data = selectedItems.find((i) => i.id === item);
+    if (data) {
+      let result = await delAllow(data.idSalary);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
+    }
+  };
+
+  const handleRemoveBonus = async (item: string) => {
+    let data = selectedItems.find((i) => i.id === item);
+    if (data) {
+      let result = await delBonus(data.idSalary);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
+    }
   };
 
   const handleAddItem = async (item: string, id: string) => {
@@ -325,7 +453,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-9 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-9 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-12 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             Username
@@ -392,11 +520,20 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">OT</h5>
         </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Bonus</h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Allowance</h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Cover</h5>
+        </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
           onClick={() => handleSort("totalsal")}
         >
-          <h5 className="text-sm font-medium uppercase xsm:text-base">
+          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
             Total salary
           </h5>
           {sortColumn === "totalsal" && (
@@ -433,7 +570,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-9 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-9 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
             ? ""
             : "border-b border-stroke dark:border-dark-3"
             }`}
@@ -491,19 +628,59 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
               {salary.fine}
             </p>
           </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <div className="px-4 py-6">
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('OT', id, salary.id)}>Add </button>
+
+            {/* MultiSelect component */}
+            <div className="px-5 items-center justify-center w-full">
               <MultiSelect
                 items={selectedItems}
-                onRemove={handleRemoveItem}
-                id={key}
-
+                onRemove={handleRemoveOverTime}
+                id={id}
               />
             </div>
-            <ButtonPopup
-              onClick={() => handleOpenForm(key.toString(), salary.id)}
-              customClasses="border border-primary text-primary rounded-full rounded-[2px] px-5 py-1 lg:px-10 xl:px-5"
-            />
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Bonus', id, salary.id)}>Add </button>
+
+            {/* MultiSelect component */}
+            <div className="px-5 items-center justify-center w-full">
+              <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveBonus}
+                id={id}
+              />
+            </div>
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Allow', id, salary.id)}>Add </button>
+
+
+            {/* MultiSelect component */}
+            <div className="px-5 items-center justify-center w-full">
+              <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveAllow}
+                id={id}
+              />
+            </div>
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Cover', id, salary.id)}>Add </button>
+
+
+            {/* MultiSelect component */}
+            <div className="px-5 items-center justify-center w-full">
+              <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveCover}
+                id={id}
+              />
+            </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
@@ -608,13 +785,51 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         />
       </Modal>
 
-      {/* Render the popup form modal */}
-      <PopupForm
-        isOpen={isFormOpen}
-        onClose={handleCloseForm}
-        onAddItem={handleAddItem}
-        id={id}
-      />
+      {/* Combined Popups */}
+      {isFormOpen && (
+        <>
+          {activePopup === 'OT' && (
+            <OTPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddOverTime} // Use the specific handler
+              onRemove={handleRemoveOverTime} // Use the specific remove handler
+              id={id}
+              items={selectedItems}
+            />
+          )}
+          {activePopup === 'Bonus' && (
+            <BonusPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddBonus} // Use the specific handler
+              onRemove={handleRemoveBonus} // Use the specific remove handler
+              id={id}
+              items={selectedItems}
+            />
+          )}
+          {activePopup === 'Allow' && (
+            <AllowPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddAllow} // Use the specific handler
+              onRemove={handleRemoveAllow} // Use the specific remove handler
+              id={id}
+              items={selectedItems}
+            />
+          )}
+          {activePopup === 'Cover' && (
+            <CoverPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddCover} // Use the specific handler
+              onRemove={handleRemoveCover} // Use the specific remove handler
+              id={id}
+              items={selectedItems}
+            />
+          )}
+        </>
+      )}
 
       {/* Render the confirmation modal */}
       <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>

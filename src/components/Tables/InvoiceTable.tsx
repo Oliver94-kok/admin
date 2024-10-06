@@ -40,9 +40,24 @@ const InvoiceTable = ({ data }: tabelInvoice) => {
         html2canvas: { scale: 2 }, // Higher scale for better quality
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       };
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(element).save().catch((err: any) => console.error(err)); // Log any errors
+    } else {
+      console.error("No element found for PDF generation.");
     }
   };
+
+  const lateEntries = [
+    { date: '15/SEP', reason: 'Late', penalty: -50 },
+    { date: '18/SEP', reason: 'Late', penalty: -50 },
+    // Add more late entries as needed
+  ];
+
+  const notClockedInEntries = [
+    { date: '20/SEP', reason: 'Not Clocked in', penalty: -50 },
+    { date: '22/SEP', reason: 'Not Clocked in', penalty: -50 },
+    // Add more not clocked in entries as needed
+  ];
+
 
   return (
     <div className=" min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -92,8 +107,43 @@ const InvoiceTable = ({ data }: tabelInvoice) => {
               <p className="text-right">${data.overTime}</p> {/* Aligned right */}
             </div>
             <div className="flex justify-between">
-              <p>Deduction:</p>
-              <p className="text-right">-${data.fine}</p> {/* Aligned right */}
+              <p>Bonus:</p>
+              <p className="text-right">-${data.overTime}</p> {/* Aligned right */}
+            </div>
+            <div className="flex justify-between">
+              <p>Allowance:</p>
+              <p className="text-right">-${data.overTime}</p> {/* Aligned right */}
+            </div>
+            <div className="flex justify-between">
+              <p>Cover:</p>
+              <p className="text-right">-${data.overTime}</p> {/* Aligned right */}
+            </div>
+            <br />
+            <div style={{ color: 'red' }}>
+              <p>
+                *Absent 2Day -Basic Day Salary
+              </p>
+              <p>*Lateness:</p>
+              <ul>
+                {lateEntries.map((entry, index) => (
+                  <li key={index}>
+                    {entry.date} {entry.reason} {entry.penalty}
+                  </li>
+                ))}
+              </ul>
+              <p>*Not Clocked in:</p>
+              <ul>
+                {notClockedInEntries.map((entry, index) => (
+                  <li key={index}>
+                    {entry.date} {entry.reason} {entry.penalty}
+                  </li>
+                ))}
+              </ul>
+              <br />
+            </div>
+            <div className="flex justify-between">
+              <p >Deduction:</p>
+              <p className="text-right" style={{ color: 'red' }}>-${data.fine}</p> {/* Aligned right */}
             </div>
             <div className="border-t border-stroke mt-10 pt-4 flex justify-between font-bold"> {/* Divider added here */}
               <p>Total Salary:</p>
@@ -101,7 +151,6 @@ const InvoiceTable = ({ data }: tabelInvoice) => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
