@@ -60,6 +60,9 @@ model Salary {
   overTime     Float?
   total        Float?
   perDay       Float?
+  bonus        Float?
+  allowance    Float?
+  cover        Float?
   userId       String
   users        User?  @relation(references: [id], fields: [userId], onDelete: Cascade)
 }

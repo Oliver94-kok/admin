@@ -7,6 +7,9 @@ export interface SalaryUser {
   late: number | null;
   overTimeHour: number | null;
   overTime: number | null;
+  bonus: number | null;
+  allowance: number | null;
+  cover: number | null;
   total: number | null;
   perDay: number | null;
   users: { name: string; username: string; userImg: string | null } | null;
@@ -21,10 +24,9 @@ export interface userInvoice {
   late: number | null;
   overTimeHour: number | null;
   overTime: number | null;
-  // Bonus: number | null;
-  // Allowance: number | null;
-  // Cover: number | null;
-  // Absent: number | null;
+  bonus: number | null;
+  allowance: number | null;
+  cover: number | null;
   total: number | null;
   perDay: number | null;
   userId: string;

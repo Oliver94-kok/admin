@@ -2,25 +2,25 @@
 import React, { useState } from 'react';
 import Modal from '../modal'; // Make sure this path is correct
 import MultiSelect from './MultiSelect'; // Ensure this import path is correct
-import { SelectedItem } from '../Tables/SalaryTable';
+import { SelectedItem, typeComponentSalary } from '../Tables/SalaryTable';
 
 interface CoverPopupProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddItem: (item: string, id: string) => void;
+    onAddItem: (item: string, id: string, type: typeComponentSalary) => void;
     id: string;
     items: SelectedItem[]; // Add items prop
-    onRemove: (itemId: string) => void; // Add onRemove prop
+    type: typeComponentSalary
 }
 
-const CoverPopup: React.FC<CoverPopupProps> = ({ isOpen, onClose, onAddItem, id, items, onRemove }) => {
+const CoverPopup: React.FC<CoverPopupProps> = ({ isOpen, onClose, onAddItem, id, items, type }) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleAddItem = () => {
         if (inputValue.trim()) {
             const confirmAdd = window.confirm("Are you sure you want to add this?");
             if (confirmAdd) {
-                onAddItem(inputValue.trim(), id);
+                onAddItem(inputValue.trim(), id, type);
                 setInputValue('');
             }
         }

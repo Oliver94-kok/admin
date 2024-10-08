@@ -9,7 +9,7 @@ export const addPerDay = async (id: string, perDay: number) => {
   console.log("🚀 ~ addPerDay ~ total:", total);
   try {
     await db.salary.update({ where: { id }, data: { perDay, total } });
-    return { success: "Success" };
+    return { success: "Success", total };
   } catch (error) {
     return { error: "error while update data" };
   }

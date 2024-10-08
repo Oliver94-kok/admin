@@ -10,77 +10,18 @@ import Link from "next/link";
 import { SalaryUser } from "@/types/salary";
 import { addPerDay } from "@/action/addperDay";
 import { AddOverTime, delOvetime } from "@/action/salaryOt";
-import OTPopup from "../Form/Otpopup";
 import BonusPopup from "../Form/bonuspopup";
 import AllowPopup from "../Form/allowpopup";
 import CoverPopup from "../Form/coverpopup";
 import { AddAllow, delAllow } from "@/action/salaryAllow";
 import { AddBonus, delBonus } from "@/action/salaryBonus";
 import { AddCover, delCover } from "@/action/salaryCover";
+import OTPopup from "../Form/otpopup";
+import { ComponentSalary } from "../Form/componentSalary";
+import { useSalaryStore } from "@/lib/zudstand/salary";
+import { useRouter } from "next/navigation";
 
-const salaryData: Salary[] = [
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "001",
-    bday: 70,
-    ot: 10,
-    totalday: 22,
-    late: -50,
-    totalsal: 45,
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "003",
-    bday: 90,
-    ot: 20,
-    totalday: 10,
-    late: -100,
-    totalsal: 500,
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "002",
-    bday: 60,
-    ot: 12,
-    totalday: 80,
-    late: -40,
-    totalsal: 600,
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "001",
-    bday: 70,
-    ot: 14,
-    totalday: 22,
-    late: -50,
-    totalsal: 45,
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "003",
-    bday: 100,
-    ot: 16,
-    totalday: 10,
-    late: -100,
-    totalsal: 500,
-  },
-  {
-    image: "/images/product/product-03.png",
-    name: "tester",
-    username: "002",
-    bday: 2220,
-    ot: 600,
-    totalday: 80,
-    late: -40,
-    totalsal: 600,
-  },
-  // ... other products
-];
+
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -92,7 +33,15 @@ interface SalaryTableInterface {
   data: SalaryUser[];
 }
 
+export enum typeComponentSalary {
+  OverTime,
+  Bonus,
+  Allowance,
+  Cover
+}
+
 const SalaryTable = ({ data }: SalaryTableInterface) => {
+  const router = useRouter();
   const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -109,20 +58,37 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   const [idSalary, setIdSalary] = useState<string>("")
   const [selectAll, setSelectAll] = useState(false); // State for Select All
   const [activePopup, setActivePopup] = useState<string | null>(null);
+  const { salaryUsers, addSalaryUser, addSalaryUsers, filterAndRemoveSalaryUsers, clearSalaryUsers, saveSalaryUsersToStorage } = useSalaryStore();
 
   // Handle Select All Logic
   const handleSelectAllChange = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
+      let checkperday: (string | undefined)[] = [];
+      currentData.forEach((d) => {
+        if (d.perDay == null) {
+          checkperday.push(d.users?.name);
+        }
+      })
+      if (checkperday.length != 0) {
+        checkperday.forEach((e) => {
+          alert(`${e} not have input per day salary`)
+        })
+        return
+      }
       const allSelectedItems = currentData.map((salary) => ({
+
         id: salary.id, // Ensure to provide the correct id
         item: salary.users?.name || "", // Adjust based on your data structure
         idSalary: salary.id, // Adjust based on your data structure
       }));
       setSelectedItems(allSelectedItems);
 
+      const newUser: SalaryUser[] = dataSalary;
+      addSalaryUsers(newUser);
       console.log(selectedItems.length);
     } else {
+      clearSalaryUsers()
       setSelectedItems([]);
     }
   };
@@ -130,12 +96,13 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   // Function to handle printing of selected entries
   const handlePrint = () => {
 
-    if (selectedItems.length == 0) {
+    if (salaryUsers.length == 0) {
       alert("No items selected for printing.");
-      return;
+      return
     }
-
-    console.log("Printing selected items:", selectedItems);
+    saveSalaryUsersToStorage();
+    router.push("/invoice")
+    console.log("Printing selected items:", salaryUsers);
   };
 
   // Function to handle sorting
@@ -172,20 +139,6 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     currentPage * itemsPerPage,
   );
 
-  const fetchData = async () => {
-    try {
-      // Replace this with your actual data-fetching logic
-      console.log("Fetching new data...");
-
-      // Simulate a delay or an API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Handle your data (e.g., update state, store response)
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   const handleConfirmOpen = (id: string) => {
     setIdSalary(id);
     setIsConfirmOpen(true);
@@ -210,8 +163,13 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
       return;
     }
     if (result.success) {
+      setDataSalary((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === idSalary ? { ...user, ...{ perDay: Number(salary), total: Number(result.total) } } : user
+        )
+      );
       handleConfirmClose();
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -228,157 +186,148 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     setActivePopup(null);
   };
 
-  const handleAddOverTime = async (item: string, id: string) => {
-    const itemExists = selectedItems.some((e) => e.id === id);
-    let result = await AddOverTime(idSalary, Number(item));
-    if (result.error) {
-      setError(result.error);
-      return;
+  const handleAddComponentSalary = async (item: string, id: string, type: typeComponentSalary) => {
+    switch (type) {
+      case typeComponentSalary.OverTime:
+        AddOverTime(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ overTime: Number(item), total: data.total } } : user
+              )
+            );
+            console.info(data.success);
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.Allowance:
+        AddAllow(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ allowance: Number(item), total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      case typeComponentSalary.Bonus:
+        AddBonus(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ bonus: Number(item), total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      case typeComponentSalary.Cover:
+        AddCover(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ cover: Number(item), total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      default: break;
     }
 
-    if (!itemExists) {
-      const newItem = { id, item, idSalary };
-      setSelectedItems((prevItems) => [...prevItems, newItem]);
-      console.log("New Item added:", newItem);
-    } else {
-      console.log("Item already exists:", item);
-    }
     handleCloseForm(); // Close the form after adding
   };
 
-  const handleAddCover = async (item: string, id: string) => {
-    const itemExists = selectedItems.some((e) => e.id === id);
-    let result = await AddCover(idSalary, Number(item));
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-
-    if (!itemExists) {
-      const newItem = { id, item, idSalary };
-      setSelectedItems((prevItems) => [...prevItems, newItem]);
-      console.log("New Item added:", newItem);
-    } else {
-      console.log("Item already exists:", item);
-    }
-    handleCloseForm(); // Close the form after adding
-  };
-
-  const handleAddAllow = async (item: string, id: string) => {
-    const itemExists = selectedItems.some((e) => e.id === id);
-    let result = await AddAllow(idSalary, Number(item));
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-
-    if (!itemExists) {
-      const newItem = { id, item, idSalary };
-      setSelectedItems((prevItems) => [...prevItems, newItem]);
-      console.log("New Item added:", newItem);
-    } else {
-      console.log("Item already exists:", item);
-    }
-    handleCloseForm(); // Close the form after adding
-  };
-
-  const handleAddBonus = async (item: string, id: string) => {
-    const itemExists = selectedItems.some((e) => e.id === id);
-    let result = await AddBonus(idSalary, Number(item));
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-
-    if (!itemExists) {
-      const newItem = { id, item, idSalary };
-      setSelectedItems((prevItems) => [...prevItems, newItem]);
-      console.log("New Item added:", newItem);
-    } else {
-      console.log("Item already exists:", item);
-    }
-    handleCloseForm(); // Close the form after adding
-  };
-
-  const handleRemoveOverTime = async (item: string) => {
-    let data = selectedItems.find((i) => i.id === item);
-    if (data) {
-      let result = await delOvetime(data.idSalary);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
-    }
-  };
-
-  const handleRemoveCover = async (item: string) => {
-    let data = selectedItems.find((i) => i.id === item);
-    if (data) {
-      let result = await delCover(data.idSalary);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
-    }
-  };
-
-  const handleRemoveAllow = async (item: string) => {
-    let data = selectedItems.find((i) => i.id === item);
-    if (data) {
-      let result = await delAllow(data.idSalary);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
-    }
-  };
-
-  const handleRemoveBonus = async (item: string) => {
-    let data = selectedItems.find((i) => i.id === item);
-    if (data) {
-      let result = await delBonus(data.idSalary);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setSelectedItems((prevItems) => prevItems.filter((i) => i.id !== item));
-    }
-  };
-
-  const handleAddItem = async (item: string, id: string) => {
-    // Check if the item already exists by its id
-    const itemExists = selectedItems.some((e) => e.id === id);
-    let result = await AddOverTime(idSalary, Number(item));
-    if (result.error) {
-      setError(result.error);
-      return
-    }
-
-    // If the item does not exist, add it to the selectedItems
-    if (!itemExists) {
-      const newItem = { id, item, idSalary };
-      setSelectedItems((prevItems) => [...prevItems, newItem]);
-      console.log("New Item already exists:", newItem);
-    } else {
-      console.log("Item already exists:", item);
-    }
-    handleCloseForm(); // Close the form after adding
-  };
-
-  const handleRemoveItem = async (item: string) => {
-    let data = selectedItems.find((i) => i.id === item)
-    if (data) {
-      let result = await delOvetime(data?.idSalary);
-      if (result.error) {
-        setError(result.error);
-        return
-      }
-      setSelectedItems(
-        (prevItems) => prevItems.filter((i) => i.id !== item), // Compare the 'item' property in each object
-      );
+  const handleRemoveComponentSalary = async (id: string, type: typeComponentSalary) => {
+    console.log("🚀 ~ handleRemoveComponentSalary ~ id:", id)
+    switch (type) {
+      case typeComponentSalary.OverTime:
+        delOvetime(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ overTime: null, total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      case typeComponentSalary.Allowance:
+        delAllow(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ allowance: null, total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      case typeComponentSalary.Bonus:
+        delBonus(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ bonus: null, total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      case typeComponentSalary.Cover:
+        delCover(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            return
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id ? { ...user, ...{ cover: null, total: data.total } } : user
+              )
+            );
+            return
+          }
+        });
+        break;
+      default:
+        break;
     }
   };
 
@@ -634,38 +583,32 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
             {/* MultiSelect component */}
             <div className="px-5 items-center justify-center w-full">
-              <MultiSelect
+              {/* <MultiSelect
                 items={selectedItems}
                 onRemove={handleRemoveOverTime}
                 id={id}
-              />
+              /> */}
+              {salary.overTime && <><ComponentSalary amount={salary.overTime} type={typeComponentSalary.OverTime} id={salary.id} handleRemove={handleRemoveComponentSalary} /></>}
+
             </div>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
+
             <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Bonus', id, salary.id)}>Add </button>
 
             {/* MultiSelect component */}
             <div className="px-5 items-center justify-center w-full">
-              <MultiSelect
-                items={selectedItems}
-                onRemove={handleRemoveBonus}
-                id={id}
-              />
+              {salary.bonus && <><ComponentSalary amount={salary.bonus} type={typeComponentSalary.Bonus} id={salary.id} handleRemove={handleRemoveComponentSalary} /></>}
+
             </div>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Allow', id, salary.id)}>Add </button>
-
-
             {/* MultiSelect component */}
             <div className="px-5 items-center justify-center w-full">
-              <MultiSelect
-                items={selectedItems}
-                onRemove={handleRemoveAllow}
-                id={id}
-              />
+              {salary.allowance && <> <ComponentSalary amount={salary.allowance.toString()} type={typeComponentSalary.Allowance} id={salary.id} handleRemove={handleRemoveComponentSalary} /> </>}
             </div>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
@@ -675,11 +618,8 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
             {/* MultiSelect component */}
             <div className="px-5 items-center justify-center w-full">
-              <MultiSelect
-                items={selectedItems}
-                onRemove={handleRemoveCover}
-                id={id}
-              />
+              {salary.cover && <> <ComponentSalary amount={salary.cover} type={typeComponentSalary.Cover} id={salary.id} handleRemove={handleRemoveComponentSalary} /> </>}
+
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -695,8 +635,10 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 onChange={() => {
                   const itemExists = selectedItems.some((item) => item.id === salary.id);
                   if (itemExists) {
+                    filterAndRemoveSalaryUsers({ id: salary.id })
                     setSelectedItems((prev) => prev.filter((item) => item.id !== salary.id));
                   } else {
+                    addSalaryUser(salary);
                     setSelectedItems((prev) => [
                       ...prev,
                       { id: salary.id, item: salary.users?.name || "", idSalary: salary.id },
@@ -792,40 +734,40 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
             <OTPopup
               isOpen={true}
               onClose={handleCloseForm}
-              onAddItem={handleAddOverTime} // Use the specific handler
-              onRemove={handleRemoveOverTime} // Use the specific remove handler
-              id={id}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
               items={selectedItems}
+              type={typeComponentSalary.OverTime}
             />
           )}
           {activePopup === 'Bonus' && (
             <BonusPopup
               isOpen={true}
               onClose={handleCloseForm}
-              onAddItem={handleAddBonus} // Use the specific handler
-              onRemove={handleRemoveBonus} // Use the specific remove handler
-              id={id}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
               items={selectedItems}
+              type={typeComponentSalary.Bonus}
             />
           )}
           {activePopup === 'Allow' && (
             <AllowPopup
               isOpen={true}
               onClose={handleCloseForm}
-              onAddItem={handleAddAllow} // Use the specific handler
-              onRemove={handleRemoveAllow} // Use the specific remove handler
-              id={id}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
               items={selectedItems}
+              type={typeComponentSalary.Allowance}
             />
           )}
           {activePopup === 'Cover' && (
             <CoverPopup
               isOpen={true}
               onClose={handleCloseForm}
-              onAddItem={handleAddCover} // Use the specific handler
-              onRemove={handleRemoveCover} // Use the specific remove handler
-              id={id}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
               items={selectedItems}
+              type={typeComponentSalary.Cover}
             />
           )}
         </>
