@@ -15,7 +15,8 @@ const getData = async () => {
   const teamA = data.filter((d) => d.team === "A");
   const teamB = data.filter(d => d.team === "B");
   const teamC = data.filter(d => d.team === "C");
-  return { teamA, teamB, teamC };
+  const teamD = data.filter(d => d.team === "D");
+  return { teamA, teamB, teamC, teamD };
 }
 
 const Branches = async () => {
@@ -23,7 +24,7 @@ const Branches = async () => {
   return (
     <>
       <DefaultLayout>
-        <BranchTable A={branch.teamA} B={branch.teamB} C={branch.teamC} />
+        <BranchTable A={branch.teamA} B={branch.teamB} C={branch.teamC} D={branch.teamD} />
       </DefaultLayout>
     </>
   );

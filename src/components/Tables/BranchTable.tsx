@@ -74,7 +74,7 @@ const BranchTable = ({ A, B, C, D }: BranchTableInterface) => {
       {currentPage === 1 && <BranchATable data={A} team="Team A" />}
       {currentPage === 2 && <BranchATable data={B} team="Team B" />}
       {currentPage === 3 && <BranchATable data={C} team="Team C" />}
-      {currentPage === 4 && <BranchATable data={C} team="Team D" />}
+      {currentPage === 4 && <BranchATable data={D} team="Team D" />}
 
       {/* Pagination Controls */}
       <div className="flex justify-between px-7.5 py-7 mt-4">
