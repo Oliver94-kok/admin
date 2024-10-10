@@ -1,3 +1,4 @@
+"use client"
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import React from "react";
@@ -5,30 +6,30 @@ import SalaryTable from "@/components/Tables/SalaryTable";
 import { db } from "@/lib/db";
 import { SalaryUser } from "@/types/salary";
 
-export const metadata: Metadata = {
-  title: "Salary Page",
-};
+// export const metadata: Metadata = {
+//   title: "Salary Page",
+// };
 
-const getData = async () => {
-  "use server";
-  let month = new Date().getMonth() + 1;
-  let year = new Date().getFullYear();
-  let data: SalaryUser[] = await db.salary.findMany({
-    where: { month, year },
-    include: {
-      users: { select: { name: true, username: true, userImg: true } },
-    },
-  });
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import Loader from "@/components/common/Loader";
+import useSWR from "swr";
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
-  return data;
-};
-
-const Salary = async () => {
-  const salary = await getData();
+const Salary = () => {
+  // const { isPending, isError, data, error } = useQuery({
+  //   queryKey: ['todos'],
+  //   queryFn: ({ signal }) =>
+  //     axios.get('/api/salary/dashboard', {
+  //       signal,
+  //     }),
+  // });
+  const { data, error, isLoading } = useSWR('/api/salary/dashboard', fetcher)
   return (
+
     <>
       <DefaultLayout>
-        <SalaryTable data={salary} />
+        {isLoading ? <Loader /> : <SalaryTable data={data.salary} />}
       </DefaultLayout>
     </>
   );

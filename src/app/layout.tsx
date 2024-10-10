@@ -6,6 +6,7 @@ import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import OneSignal from 'react-onesignal';
+import { ReactQueryClientProvider } from "@/components/QueryClientProvider ";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,10 +36,13 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true}>
-        {loading ? <Loader /> : children}
-      </body>
-    </html>
+    <ReactQueryClientProvider>
+      <html lang="en">
+        <body suppressHydrationWarning={true}>
+          {loading ? <Loader /> : children}
+        </body>
+      </html>
+    </ReactQueryClientProvider>
+
   );
 }

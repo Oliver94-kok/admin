@@ -1,3 +1,4 @@
+"use client"
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import React from "react";
@@ -6,35 +7,29 @@ import { db } from "@/lib/db";
 import { LeavesInterface } from "@/types/leave";
 
 
-export const metadata: Metadata = {
-  title: "Leave Page",
-};
+// export const metadata: Metadata = {
+//   title: "Leave Page",
+// };
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import Loader from "@/components/common/Loader";
+import useSWR from "swr";
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
-const getData = async () => {
-  let data: LeavesInterface[] = await db.leave.findMany({
-    orderBy: { status: "desc" },
-    include: {
-      users: {
-        select: {
-          userImg: true, name: true, username: true, AttendBranch: {
-            select: {
-              team: true
-            }
-          }
-        }
-      },
+const Leave = () => {
+  // const { isPending, isError, data, error } = useQuery({
+  //   queryKey: ['todos'],
+  //   queryFn: ({ signal }) =>
+  //     axios.get('/api/leave/dashboard', {
+  //       signal,
+  //     }),
+  // });
+  const { data, error, isLoading } = useSWR('/api/leave/dashboard', fetcher)
 
-    }
-  })
-  return data;
-}
-
-const Leave = async () => {
-  const leave = await getData()
   return (
     <>
       <DefaultLayout>
-        <LeaveTable data={leave} />
+        {isLoading ? <Loader /> : <LeaveTable data={data.leave} />}
       </DefaultLayout>
     </>
   );

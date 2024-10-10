@@ -1,30 +1,37 @@
+'use client';
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import React from "react";
 import BranchTable from "@/components/Tables/BranchTable";
-import { db } from "@/lib/db";
-import { BranchsUser } from "@/types/branchs";
 
-export const metadata: Metadata = {
-  title: "Branches Page",
-};
+import Loader from "@/components/common/Loader";
 
-const getData = async () => {
-  "use server"
-  let data: BranchsUser[] = await db.attendBranch.findMany({ include: { users: { select: { name: true, username: true, userImg: true } } } })
-  const teamA = data.filter((d) => d.team === "A");
-  const teamB = data.filter(d => d.team === "B");
-  const teamC = data.filter(d => d.team === "C");
-  const teamD = data.filter(d => d.team === "D");
-  return { teamA, teamB, teamC, teamD };
-}
+// export const metadata: Metadata = {
+//   title: "Branches Page",
+// };
 
-const Branches = async () => {
-  const branch = await getData()
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import useSWR from "swr";
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+
+
+const Branches = () => {
+  // const { isPending, isError, data, error } = useQuery({
+  //   queryKey: ['todos'],
+  //   queryFn: ({ signal }) =>
+  //     axios.get('/api/branch/dashboard', {
+  //       signal,
+  //     }),
+  // });
+  const { data, error, isLoading } = useSWR('/api/branch/dashboard', fetcher)
+  console.log("🚀 ~ Branches ~ data:", data)
   return (
+
     <>
       <DefaultLayout>
-        <BranchTable A={branch.teamA} B={branch.teamB} C={branch.teamC} D={branch.teamD} />
+        {isLoading ? <Loader /> : <BranchTable A={data.teamA} B={data.teamB} C={data.teamC} D={data.teamD} />}
       </DefaultLayout>
     </>
   );

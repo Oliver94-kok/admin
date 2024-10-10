@@ -1,27 +1,40 @@
+'use client';
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import React from "react";
 import DashTable from "@/components/Tables/DashTable";
-import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
+import useSWR from 'swr'
 
-export const metadata: Metadata = {
-    title: "Admin Page",
-};
-const getAllData = async () => {
+import Loader from "@/components/common/Loader";
 
-    let data: AttendsInterface[] = await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour
-    FROM Attends AS a
-    JOIN User AS u ON a.userId = u.id
-    WHERE date(a.clockIn) = CURDATE() OR date(a.clockOut) = CURDATE()`;
-    return data;
-}
-const Dashboard = async () => {
-    const attends = await getAllData()
+// export const metadata: Metadata = {
+//     title: "Admin Page",
+// };
+
+import axios, { AxiosResponse } from "axios";
+import { useQuery } from "@tanstack/react-query";
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+
+const Dashboard = () => {
+    // const { isPending, isError, data, error } = useQuery({
+    //     queryKey: ['todos'],
+    //     queryFn: ({ signal }) =>
+    //         axios.get('/api/attend/dashboard', {
+    //             signal,
+    //         }),
+    // });
+    const { data, error, isLoading } = useSWR('/api/attend/dashboard', fetcher)
+    console.log("🚀 ~ Dashboard ~ data:", data)
+    // if (isLoading) return <Loader />
+
     return (
+
         <>
             <DefaultLayout>
-                <DashTable data={attends} />
+                {/* {data?.data.data ? <DashTable data={data.data.data} /> : <>error</>} */}
+                {isLoading ? <Loader /> : <DashTable data={data.data} />}
             </DefaultLayout>
         </>
     );

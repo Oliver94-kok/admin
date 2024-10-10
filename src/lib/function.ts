@@ -5,6 +5,7 @@ const { DateTime } = require("luxon");
 import { access, constants, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { getUserById } from "@/data/user";
+import axios from "axios";
 
 export const checkPassword = async (password: string, hash: string) => {
   let p = bcrypt.compareSync(password, hash);
