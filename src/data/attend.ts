@@ -22,7 +22,7 @@ interface dataAttend {
 
 export const checkClockIn = async (userId: string) => {
   let a: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM attends WHERE userId=${userId} AND date(clockIn) = CURDATE()`;
+    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND date(clockIn) = CURDATE()`;
   if (Array.isArray(a)) {
     const firstRow = a[0];
     const jsonResult = firstRow;
@@ -35,7 +35,7 @@ export const checkClockIn = async (userId: string) => {
 
 export const checkClockLate = async (userid: string) => {
   let a: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM attends WHERE userId=${userid} AND date(clockIn) = CURDATE()`;
+    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userid} AND date(clockIn) = CURDATE()`;
   let checkLate = a[0];
   let hours = checkLate.clockIn.getHours();
   let minutes = checkLate.clockIn.getMinutes();
@@ -62,8 +62,8 @@ export const getDataByDate = async (tarikh: string) => {
 
   let data: AttendsInterface[] =
     await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour
-    FROM attends AS a
-    JOIN user AS u ON a.userId = u.id
+    FROM Attends AS a
+    JOIN User AS u ON a.userId = u.id
     WHERE date(a.clockIn) = date(${d}) OR date(a.clockOut) = date(${d})`;
   console.log(d);
   console.log(data);
