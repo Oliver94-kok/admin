@@ -13,9 +13,11 @@ import Modal from "../modal";
 import { UpdateUserBranch } from "@/action/attendBranch";
 import { resetPasswordUser } from "@/action/resetpassword";
 import { deleteUsers } from "@/action/deleteUser";
+import { mutate } from "swr";
 interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
+  refresh: () => void
 }
 
 export enum typeData {
@@ -26,7 +28,7 @@ export enum typeData {
   OFFDAY,
 }
 
-export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
+export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
@@ -116,8 +118,8 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
       if (data.success) {
         console.log(data.success);
         setIsConfirmOpen(false);
-        fetchData();
-        window.location.reload();
+        refresh()
+        // window.location.reload();
       }
     });
   };
@@ -131,6 +133,7 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
       }
       if (data.success) {
         setPassword(data.success);
+        refresh()
       }
     });
   };
@@ -146,7 +149,8 @@ export const BranchATable = ({ data, team }: BranchTableAInterfface) => {
       if (data.success) {
         setIsDeleteOpen(false);
         fetchData();
-        window.location.reload();
+        refresh()
+
       }
     });
   };

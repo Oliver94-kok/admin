@@ -20,6 +20,7 @@ import OTPopup from "../Form/otpopup";
 import { ComponentSalary } from "../Form/componentSalary";
 import { useSalaryStore } from "@/lib/zudstand/salary";
 import { useRouter } from "next/navigation";
+import { mutate } from "swr";
 
 
 
@@ -168,6 +169,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
           user.id === idSalary ? { ...user, ...{ perDay: Number(salary), total: Number(result.total) } } : user
         )
       );
+      mutate("/api/salary/dashboard")
       handleConfirmClose();
       // window.location.reload();
     }
@@ -200,6 +202,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ overTime: Number(item), total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             console.info(data.success);
             return;
           }
@@ -217,6 +220,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ allowance: Number(item), total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });
@@ -233,6 +237,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ bonus: Number(item), total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });
@@ -249,6 +254,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ cover: Number(item), total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });
@@ -274,6 +280,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ overTime: null, total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });
@@ -290,6 +297,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ allowance: null, total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });
@@ -306,6 +314,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ bonus: null, total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });
@@ -322,6 +331,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 user.id === id ? { ...user, ...{ cover: null, total: data.total } } : user
               )
             );
+            mutate("/api/salary/dashboard")
             return
           }
         });

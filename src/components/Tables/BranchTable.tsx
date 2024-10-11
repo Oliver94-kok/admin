@@ -63,18 +63,19 @@ interface BranchTableInterface {
   B: BranchsUser[];
   C: BranchsUser[];
   D: BranchsUser[];
+  refreshData: () => void;
 }
 
-const BranchTable = ({ A, B, C, D }: BranchTableInterface) => {
+const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 4; // Since there are 3 teams (A, B, C)
 
   return (
     <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-      {currentPage === 1 && <BranchATable data={A} team="Team A" />}
-      {currentPage === 2 && <BranchATable data={B} team="Team B" />}
-      {currentPage === 3 && <BranchATable data={C} team="Team C" />}
-      {currentPage === 4 && <BranchATable data={D} team="Team D" />}
+      {currentPage === 1 && <BranchATable data={A} team="Team A" refresh={refreshData} />}
+      {currentPage === 2 && <BranchATable data={B} team="Team B" refresh={refreshData} />}
+      {currentPage === 3 && <BranchATable data={C} team="Team C" refresh={refreshData} />}
+      {currentPage === 4 && <BranchATable data={D} team="Team D" refresh={refreshData} />}
 
       {/* Pagination Controls */}
       <div className="flex justify-between px-7.5 py-7 mt-4">

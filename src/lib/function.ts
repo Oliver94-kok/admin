@@ -49,7 +49,7 @@ export const saveImage = async (img: string, username: string) => {
   } catch (error) {
     console.log(error);
   }
-  return `/uploads/${now}/${uniqueSuffix}.jpg`;
+  return `/uploads/${now}/${username}.jpg`;
 };
 export const saveImageLeaveUser = async (img: string, username: string) => {
   const buffer = Buffer.from(img, "base64");

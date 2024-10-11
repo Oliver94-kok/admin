@@ -12,7 +12,7 @@ import Loader from "@/components/common/Loader";
 
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -27,11 +27,14 @@ const Branches = () => {
   // });
   const { data, error, isLoading } = useSWR('/api/branch/dashboard', fetcher)
   console.log("🚀 ~ Branches ~ data:", data)
+  const refreshData = () => {
+    mutate("/api/branch/dashboard"); // Re-fetch data from the server  
+  };
   return (
 
     <>
       <DefaultLayout>
-        {isLoading ? <Loader /> : <BranchTable A={data.teamA} B={data.teamB} C={data.teamC} D={data.teamD} />}
+        {isLoading ? <Loader /> : <BranchTable A={data.teamA} B={data.teamB} C={data.teamC} D={data.teamD} refreshData={refreshData} />}
       </DefaultLayout>
     </>
   );

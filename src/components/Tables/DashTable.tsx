@@ -6,56 +6,8 @@ import Modal from "../modal";
 import { AttendsInterface } from "@/types/attendents";
 import dayjs from 'dayjs';
 import { getDataByDate } from "@/data/attend";
+import { DateTime } from "luxon";
 
-const brandData: BRAND[] = [
-  {
-    logo: "/images/brand/brand-01.svg",
-    name: "Google",
-    username: "001",
-    clockin: "08:00",
-    clockout: "16:00",
-    inphoto: 590,
-    workinghours: 4.8,
-  },
-  {
-    logo: "/images/brand/brand-02.svg",
-    name: "X.com",
-    username: "001",
-    clockin: "09:00",
-    clockout: "17:00",
-    inphoto: 590,
-    workinghours: 4.8,
-  },
-  {
-    logo: "/images/brand/brand-03.svg",
-    name: "Google",
-    username: "001",
-    clockin: "10:00",
-    clockout: "18:00",
-    inphoto: 590,
-    workinghours: 4.8,
-  },
-  {
-    logo: "/images/brand/brand-01.svg",
-    name: "Google",
-    username: "001",
-    clockin: "08:00",
-    clockout: "16:00",
-    inphoto: 590,
-    workinghours: 4.8,
-  },
-  {
-    logo: "/images/brand/brand-02.svg",
-    name: "X.com",
-    username: "001",
-    clockin: "09:00",
-    clockout: "17:00",
-    inphoto: 590,
-    workinghours: 4.8,
-  },
-
-  // Add more data as needed
-];
 
 interface dashTableInterface {
   data: AttendsInterface[]
@@ -131,7 +83,10 @@ const DashTable = ({ data }: dashTableInterface) => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
+  const displayTime = (clock: any) => {
+    const dateTime = DateTime.fromISO(clock);
+    return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
+  };
   return (
     <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {/* Search Input */}
@@ -253,14 +208,15 @@ const DashTable = ({ data }: dashTableInterface) => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white">
-                {brand.clockIn?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })}
+                {/* {brand.clockIn?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
+                {displayTime(brand.clockIn)}
               </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-green-light-1">
                 {/* {brand.clockin?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                {brand.clockOut?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })}
+                {displayTime(brand.clockOut)}
               </p>
             </div>
 

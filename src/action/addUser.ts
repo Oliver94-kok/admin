@@ -29,6 +29,7 @@ export const AddUser = async (name: string) => {
         isLogin: false,
       },
     });
+    await db.notificationUser.create({ data: { userId: user.id } });
     await db.attendBranch.create({ data: { team: "A", userId: user.id } });
     return { username, password };
   } else {
@@ -40,6 +41,7 @@ export const AddUser = async (name: string) => {
     };
     let user = await db.user.create({ data });
     await db.attendBranch.create({ data: { team: "A", userId: user.id } });
+    await db.notificationUser.create({ data: { userId: user.id } });
     return { username: "user01", password };
   }
 };

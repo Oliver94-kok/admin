@@ -41,6 +41,9 @@ export const GET = async (req: Request) => {
 
 export const POST = async (req: Request) => {
   const { userId, clockIn, imgClockIn } = await req.json();
+  let check = await checkClockIn(userId);
+  if (check)
+    return Response.json({ error: "User aldready clock in" }, { status: 400 });
   const user = await getUserById(userId);
   let attendImg = await saveImage(imgClockIn, user?.username!);
   let late = await lateClockIn(userId, clockIn);
@@ -55,7 +58,7 @@ export const POST = async (req: Request) => {
     fine: fine,
   };
   let t = await db.attends.create({ data });
-  return Response.json({ t }, { status: 201 });
+  return Response.json({ id: t.id }, { status: 201 });
 };
 
 export const PATCH = async (req: Request) => {

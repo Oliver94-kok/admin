@@ -8,6 +8,7 @@ import { LeavesInterface } from '@/types/leave';
 import { ApproveLeave } from '@/action/approveLeave';
 import { SentNoti } from '@/lib/function';
 import { DateTime } from 'luxon';
+import { mutate } from 'swr';
 interface LeaveTableInterface {
   data: LeavesInterface[]
 }
@@ -105,7 +106,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         let d = await SentNoti("Leave", `Your leave ${currentAction}`, data.success);
         console.log(d)
         fetchData();
-        window.location.reload();
+        mutate("/api/leave/dashboard")
+        // window.location.reload();
       }
     })
     handleConfirmClose();
