@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-
+export const dynamic = "force-dynamic";
 export const GET = async (req: Request) => {
   let data =
     await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour

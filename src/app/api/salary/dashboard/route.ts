@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { SalaryUser } from "@/types/salary";
-
+export const dynamic = "force-dynamic";
 export const GET = async (req: Request) => {
   let month = new Date().getMonth() + 1;
   let year = new Date().getFullYear();

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-
+export const dynamic = "force-dynamic";
 export const GET = async (req: Request) => {
   let data = await db.attendBranch.findMany({
     include: {

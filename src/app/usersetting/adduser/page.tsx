@@ -1,24 +1,26 @@
-"use client"
-import { useRef, useState } from 'react';
+"use client";
+import { useRef, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import Modal from "@/components/modal";
-import InputGroup from '@/components/Form/FormElements/InputGroup';
-import { AddUser } from '@/action/addUser';
-
+import InputGroup from "@/components/Form/FormElements/InputGroup";
+import { AddUser } from "@/action/addUser";
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+// Correctly set revalidate value
+// export const revalidate = 1;
 const FormLayout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const name = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("")
+  const [password, setPassword] = useState("");
   const handleOpenModal = async () => {
-
-    let n = name.current?.value
-    if (!n) return
+    let n = name.current?.value;
+    if (!n) return;
 
     AddUser(n).then((data) => {
       if (data) {
         setUsername(data.username);
-        setPassword(data.password)
+        setPassword(data.password);
       }
     });
     setIsModalOpen(true);
@@ -51,15 +53,15 @@ const FormLayout = () => {
                 name='userName'
                 ref={name}
               /> */}
-              <div className='mb-4.5'>
+              <div className="mb-4.5">
                 <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
                   Name
                   <span className="text-red">*</span>
                 </label>
                 <input
                   type={"text"}
-                  placeholder='Enter full name'
-                  name='username'
+                  placeholder="Enter full name"
+                  name="username"
                   ref={name}
                   className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary active:border-primary disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
                 />
@@ -87,4 +89,3 @@ const FormLayout = () => {
 };
 
 export default FormLayout;
-

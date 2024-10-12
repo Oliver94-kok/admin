@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import React from "react";
@@ -15,7 +15,10 @@ import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/common/Loader";
 import useSWR from "swr";
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
-
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+// Correctly set revalidate value
+// export const revalidate = 1;
 const Salary = () => {
   // const { isPending, isError, data, error } = useQuery({
   //   queryKey: ['todos'],
@@ -24,9 +27,8 @@ const Salary = () => {
   //       signal,
   //     }),
   // });
-  const { data, error, isLoading } = useSWR('/api/salary/dashboard', fetcher)
+  const { data, error, isLoading } = useSWR("/api/salary/dashboard", fetcher);
   return (
-
     <>
       <DefaultLayout>
         {isLoading ? <Loader /> : <SalaryTable data={data.salary} />}
