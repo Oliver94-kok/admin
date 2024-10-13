@@ -5,8 +5,10 @@ import "@/css/satoshi.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
-import OneSignal from 'react-onesignal';
+import OneSignal from "react-onesignal";
 import { ReactQueryClientProvider } from "@/components/QueryClientProvider ";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,9 +42,9 @@ export default function RootLayout({
       <html lang="en">
         <body suppressHydrationWarning={true}>
           {loading ? <Loader /> : children}
+          <ToastContainer />
         </body>
       </html>
     </ReactQueryClientProvider>
-
   );
 }

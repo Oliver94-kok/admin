@@ -5,13 +5,10 @@ import DashTable from "@/components/Tables/DashTable";
 import Signin from "@/components/Auth/Signin";
 
 export const metadata: Metadata = {
-  title:
-    "Dashboard Page",
+  title: "Dashboard Page",
   description: "Dashboard Page",
 };
 
 export default function Home() {
-  return (
-    <Signin />
-  );
+  return <Signin />;
 }

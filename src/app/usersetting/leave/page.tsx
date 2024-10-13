@@ -12,7 +12,7 @@ import { LeavesInterface } from "@/types/leave";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/common/Loader";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -27,7 +27,9 @@ const Leave = () => {
   //     }),
   // });
   const { data, error, isLoading } = useSWR("/api/leave/dashboard", fetcher);
-
+  const refreshData = () => {
+    mutate("/api/leave/dashboard"); // Re-fetch data from the server
+  };
   return (
     <>
       <DefaultLayout>

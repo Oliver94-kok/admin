@@ -2,9 +2,6 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { Salary } from "@/types/product";
-import ButtonPopup from "../Buttons/plusButton"; // Adjust the path as needed
-import MultiSelect from "../Form/MultiSelect"; // Adjust the path as needed
 import Modal from "../modal";
 import Link from "next/link";
 import { SalaryUser } from "@/types/salary";
@@ -21,8 +18,7 @@ import { ComponentSalary } from "../Form/componentSalary";
 import { useSalaryStore } from "@/lib/zudstand/salary";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
-
-
+import { toast, ToastContainer } from "react-toastify";
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -32,16 +28,17 @@ export type SelectedItem = {
 
 interface SalaryTableInterface {
   data: SalaryUser[];
+  refresh?: () => void;
 }
 
 export enum typeComponentSalary {
   OverTime,
   Bonus,
   Allowance,
-  Cover
+  Cover,
 }
 
-const SalaryTable = ({ data }: SalaryTableInterface) => {
+const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
   const router = useRouter();
   const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -56,10 +53,17 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   const [id, setid] = useState("");
   const [salary, setSalary] = useState("");
   const [error, setError] = useState("");
-  const [idSalary, setIdSalary] = useState<string>("")
+  const [idSalary, setIdSalary] = useState<string>("");
   const [selectAll, setSelectAll] = useState(false); // State for Select All
   const [activePopup, setActivePopup] = useState<string | null>(null);
-  const { salaryUsers, addSalaryUser, addSalaryUsers, filterAndRemoveSalaryUsers, clearSalaryUsers, saveSalaryUsersToStorage } = useSalaryStore();
+  const {
+    salaryUsers,
+    addSalaryUser,
+    addSalaryUsers,
+    filterAndRemoveSalaryUsers,
+    clearSalaryUsers,
+    saveSalaryUsersToStorage,
+  } = useSalaryStore();
 
   // Handle Select All Logic
   const handleSelectAllChange = () => {
@@ -70,15 +74,14 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         if (d.perDay == null) {
           checkperday.push(d.users?.name);
         }
-      })
+      });
       if (checkperday.length != 0) {
         checkperday.forEach((e) => {
-          alert(`${e} not have input per day salary`)
-        })
-        return
+          alert(`${e} not have input per day salary`);
+        });
+        return;
       }
       const allSelectedItems = currentData.map((salary) => ({
-
         id: salary.id, // Ensure to provide the correct id
         item: salary.users?.name || "", // Adjust based on your data structure
         idSalary: salary.id, // Adjust based on your data structure
@@ -89,20 +92,19 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
       addSalaryUsers(newUser);
       console.log(selectedItems.length);
     } else {
-      clearSalaryUsers()
+      clearSalaryUsers();
       setSelectedItems([]);
     }
   };
 
   // Function to handle printing of selected entries
   const handlePrint = () => {
-
     if (salaryUsers.length == 0) {
       alert("No items selected for printing.");
-      return
+      return;
     }
     saveSalaryUsersToStorage();
-    router.push("/invoice")
+    router.push("/invoice");
     console.log("Printing selected items:", salaryUsers);
   };
 
@@ -152,24 +154,29 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
   };
 
   const handleConfirm = async () => {
-    console.log("salary handle confirm", salary)
+    console.log("salary handle confirm", salary);
     if (!salary || Number(salary) === 0) {
       setError("Cannot confirm with an empty or zero value.");
-      return
+      return;
     }
     setError("");
-    let result = await addPerDay(idSalary, Number(salary))
+    let result = await addPerDay(idSalary, Number(salary));
     if (result.error) {
-      setError(result.error)
+      setError(result.error);
       return;
     }
     if (result.success) {
       setDataSalary((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === idSalary ? { ...user, ...{ perDay: Number(salary), total: Number(result.total) } } : user
-        )
+          user.id === idSalary
+            ? {
+                ...user,
+                ...{ perDay: Number(salary), total: Number(result.total) },
+              }
+            : user,
+        ),
       );
-      mutate("/api/salary/dashboard")
+      mutate("/api/salary/dashboard");
       handleConfirmClose();
       // window.location.reload();
     }
@@ -188,7 +195,11 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
     setActivePopup(null);
   };
 
-  const handleAddComponentSalary = async (item: string, id: string, type: typeComponentSalary) => {
+  const handleAddComponentSalary = async (
+    item: string,
+    id: string,
+    type: typeComponentSalary,
+  ) => {
     switch (type) {
       case typeComponentSalary.OverTime:
         AddOverTime(id, Number(item)).then((data) => {
@@ -199,10 +210,18 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ overTime: Number(item), total: data.total } } : user
-              )
+                user.id === id
+                  ? {
+                      ...user,
+                      ...{ overTime: Number(item), total: data.total },
+                    }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
+            mutate("/api/salary/dashboard");
+            toast.success("Success Notification !", {
+              position: "top-center",
+            });
             console.info(data.success);
             return;
           }
@@ -212,16 +231,24 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         AddAllow(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ allowance: Number(item), total: data.total } } : user
-              )
+                user.id === id
+                  ? {
+                      ...user,
+                      ...{ allowance: Number(item), total: data.total },
+                    }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            toast.success("Success Notification !", {
+              position: "top-center",
+            });
+            return;
           }
         });
         break;
@@ -229,16 +256,21 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         AddBonus(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ bonus: Number(item), total: data.total } } : user
-              )
+                user.id === id
+                  ? { ...user, ...{ bonus: Number(item), total: data.total } }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            toast.success("Success Notification !", {
+              position: "top-center",
+            });
+            return;
           }
         });
         break;
@@ -246,42 +278,53 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         AddCover(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ cover: Number(item), total: data.total } } : user
-              )
+                user.id === id
+                  ? { ...user, ...{ cover: Number(item), total: data.total } }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            toast.success("Success Notification !", {
+              position: "top-center",
+            });
+            return;
           }
         });
         break;
-      default: break;
+      default:
+        break;
     }
 
     handleCloseForm(); // Close the form after adding
   };
 
-  const handleRemoveComponentSalary = async (id: string, type: typeComponentSalary) => {
-    console.log("🚀 ~ handleRemoveComponentSalary ~ id:", id)
+  const handleRemoveComponentSalary = async (
+    id: string,
+    type: typeComponentSalary,
+  ) => {
+    console.log("🚀 ~ handleRemoveComponentSalary ~ id:", id);
     switch (type) {
       case typeComponentSalary.OverTime:
         delOvetime(id).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ overTime: null, total: data.total } } : user
-              )
+                user.id === id
+                  ? { ...user, ...{ overTime: null, total: data.total } }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            return;
           }
         });
         break;
@@ -289,16 +332,18 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         delAllow(id).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ allowance: null, total: data.total } } : user
-              )
+                user.id === id
+                  ? { ...user, ...{ allowance: null, total: data.total } }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            return;
           }
         });
         break;
@@ -306,16 +351,18 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         delBonus(id).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ bonus: null, total: data.total } } : user
-              )
+                user.id === id
+                  ? { ...user, ...{ bonus: null, total: data.total } }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            return;
           }
         });
         break;
@@ -323,16 +370,18 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         delCover(id).then((data) => {
           if (data.error) {
             console.error(data.error);
-            return
+            return;
           }
           if (data.success) {
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
-                user.id === id ? { ...user, ...{ cover: null, total: data.total } } : user
-              )
+                user.id === id
+                  ? { ...user, ...{ cover: null, total: data.total } }
+                  : user,
+              ),
             );
-            mutate("/api/salary/dashboard")
-            return
+            mutate("/api/salary/dashboard");
+            return;
           }
         });
         break;
@@ -483,7 +532,9 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
           <h5 className="text-sm font-medium uppercase xsm:text-base">Bonus</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Allowance</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Allowance
+          </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">Cover</h5>
@@ -506,11 +557,11 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
         <div className="col-span-1 flex flex-col items-center justify-center">
           <button
             onClick={handlePrint}
-            className="text-sm font-medium uppercase xsm:text-base hover:text-blue-600"
+            className="text-sm font-medium uppercase hover:text-blue-600 xsm:text-base"
           >
             Print
           </button>
-          <label className="flex items-center mt-2">
+          <label className="mt-2 flex items-center">
             <input
               type="checkbox"
               checked={selectAll} // Bind checkbox to selectAll state
@@ -529,10 +580,11 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
-            ? ""
-            : "border-b border-stroke dark:border-dark-3"
-            }`}
+          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${
+            key === currentData.length - 1
+              ? ""
+              : "border-b border-stroke dark:border-dark-3"
+          }`}
           key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
@@ -589,47 +641,101 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
-            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('OT', id, salary.id)}>Add </button>
+            <button
+              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("OT", id, salary.id)}
+            >
+              Add{" "}
+            </button>
 
             {/* MultiSelect component */}
-            <div className="px-5 items-center justify-center w-full">
+            <div className="w-full items-center justify-center px-5">
               {/* <MultiSelect
                 items={selectedItems}
                 onRemove={handleRemoveOverTime}
                 id={id}
               /> */}
-              {salary.overTime && <><ComponentSalary amount={salary.overTime} type={typeComponentSalary.OverTime} id={salary.id} handleRemove={handleRemoveComponentSalary} /></>}
-
+              {salary.overTime && (
+                <>
+                  <ComponentSalary
+                    amount={salary.overTime}
+                    type={typeComponentSalary.OverTime}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />
+                </>
+              )}
             </div>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
 
-            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Bonus', id, salary.id)}>Add </button>
+            <button
+              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("Bonus", id, salary.id)}
+            >
+              Add{" "}
+            </button>
 
             {/* MultiSelect component */}
-            <div className="px-5 items-center justify-center w-full">
-              {salary.bonus && <><ComponentSalary amount={salary.bonus} type={typeComponentSalary.Bonus} id={salary.id} handleRemove={handleRemoveComponentSalary} /></>}
-
+            <div className="w-full items-center justify-center px-5">
+              {salary.bonus && (
+                <>
+                  <ComponentSalary
+                    amount={salary.bonus}
+                    type={typeComponentSalary.Bonus}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />
+                </>
+              )}
             </div>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
-            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Allow', id, salary.id)}>Add </button>
+            <button
+              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("Allow", id, salary.id)}
+            >
+              Add{" "}
+            </button>
             {/* MultiSelect component */}
-            <div className="px-5 items-center justify-center w-full">
-              {salary.allowance && <> <ComponentSalary amount={salary.allowance.toString()} type={typeComponentSalary.Allowance} id={salary.id} handleRemove={handleRemoveComponentSalary} /> </>}
+            <div className="w-full items-center justify-center px-5">
+              {salary.allowance && (
+                <>
+                  {" "}
+                  <ComponentSalary
+                    amount={salary.allowance.toString()}
+                    type={typeComponentSalary.Allowance}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />{" "}
+                </>
+              )}
             </div>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
-            <button className="border border-primary text-primary rounded-full rounded-[2px] lg:px-10 xl:px-5 mb-4" onClick={() => handleOpenForm('Cover', id, salary.id)}>Add </button>
-
+            <button
+              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("Cover", id, salary.id)}
+            >
+              Add{" "}
+            </button>
 
             {/* MultiSelect component */}
-            <div className="px-5 items-center justify-center w-full">
-              {salary.cover && <> <ComponentSalary amount={salary.cover} type={typeComponentSalary.Cover} id={salary.id} handleRemove={handleRemoveComponentSalary} /> </>}
-
+            <div className="w-full items-center justify-center px-5">
+              {salary.cover && (
+                <>
+                  {" "}
+                  <ComponentSalary
+                    amount={salary.cover}
+                    type={typeComponentSalary.Cover}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />{" "}
+                </>
+              )}
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -643,15 +749,23 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
                 type="checkbox"
                 checked={selectedItems.some((item) => item.id === salary.id)} // Check if item is selected
                 onChange={() => {
-                  const itemExists = selectedItems.some((item) => item.id === salary.id);
+                  const itemExists = selectedItems.some(
+                    (item) => item.id === salary.id,
+                  );
                   if (itemExists) {
-                    filterAndRemoveSalaryUsers({ id: salary.id })
-                    setSelectedItems((prev) => prev.filter((item) => item.id !== salary.id));
+                    filterAndRemoveSalaryUsers({ id: salary.id });
+                    setSelectedItems((prev) =>
+                      prev.filter((item) => item.id !== salary.id),
+                    );
                   } else {
                     addSalaryUser(salary);
                     setSelectedItems((prev) => [
                       ...prev,
-                      { id: salary.id, item: salary.users?.name || "", idSalary: salary.id },
+                      {
+                        id: salary.id,
+                        item: salary.users?.name || "",
+                        idSalary: salary.id,
+                      },
                     ]);
                   }
                 }}
@@ -661,7 +775,10 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
           </div>
 
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
-            <button onClick={() => handleConfirmOpen(salary.id)} className="hover:text-primary">
+            <button
+              onClick={() => handleConfirmOpen(salary.id)}
+              className="hover:text-primary"
+            >
               <svg
                 className="fill-current"
                 width="20"
@@ -708,8 +825,9 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
+                currentPage === i + 1 ? "bg-primary text-white" : ""
+              }`}
             >
               {i + 1}
             </button>
@@ -740,7 +858,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
       {/* Combined Popups */}
       {isFormOpen && (
         <>
-          {activePopup === 'OT' && (
+          {activePopup === "OT" && (
             <OTPopup
               isOpen={true}
               onClose={handleCloseForm}
@@ -750,7 +868,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
               type={typeComponentSalary.OverTime}
             />
           )}
-          {activePopup === 'Bonus' && (
+          {activePopup === "Bonus" && (
             <BonusPopup
               isOpen={true}
               onClose={handleCloseForm}
@@ -760,7 +878,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
               type={typeComponentSalary.Bonus}
             />
           )}
-          {activePopup === 'Allow' && (
+          {activePopup === "Allow" && (
             <AllowPopup
               isOpen={true}
               onClose={handleCloseForm}
@@ -770,7 +888,7 @@ const SalaryTable = ({ data }: SalaryTableInterface) => {
               type={typeComponentSalary.Allowance}
             />
           )}
-          {activePopup === 'Cover' && (
+          {activePopup === "Cover" && (
             <CoverPopup
               isOpen={true}
               onClose={handleCloseForm}
