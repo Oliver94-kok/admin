@@ -2,7 +2,7 @@ export interface SalaryUser {
   id: string;
   month: number;
   year: number;
-  workingDay: number;
+  workingDay: number | null;
   fine: number | null;
   late: number | null;
   overTimeHour: number | null;
@@ -19,7 +19,7 @@ export interface userInvoice {
   id: string;
   month: number;
   year: number;
-  workingDay: number;
+  workingDay: number | null;
   fine: number | null;
   late: number | null;
   overTimeHour: number | null;
