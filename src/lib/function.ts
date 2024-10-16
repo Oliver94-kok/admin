@@ -84,26 +84,31 @@ export const randomPassword = async () => {
 export const SentNoti = async (
   title: string,
   message: string,
+  leaveid: string,
   externalUserId?: string,
   externalUserIds?: [],
 ) => {
+  console.log("🚀 ~ externalUserId:", externalUserId);
   const ONESIGNAL_REST_API_KEY = process.env.ONESIGNALAPIKEY;
   const ONESIGNAL_APP_ID = process.env.ONESIGNALAPPID;
   let user = await getUserById(externalUserId!);
   let targetUserIds;
 
-  if (externalUserId) {
-    // Single user
-    targetUserIds = [user?.username];
-  } else if (Array.isArray(externalUserIds) && externalUserIds.length > 0) {
-    // Multiple users
-    targetUserIds = externalUserIds;
-  } else {
-    return {
-      error:
-        "Please provide either externalUserId or a non-empty externalUserIds array",
-    };
-  }
+  // if (externalUserId) {
+  //   // Single user
+  //   targetUserIds = [user?.username];
+  // } else if (Array.isArray(externalUserIds) && externalUserIds.length > 0) {
+  //   // Multiple users
+  //   targetUserIds = externalUserIds;
+  // } else {
+  //   return {
+  //     error:
+  //       "Please provide either externalUserId or a non-empty externalUserIds array",
+  //   };
+  // }
+  const additionalData = {
+    leaveId: leaveid,
+  };
   // return { targetUserIds };
   const response = await fetch("https://onesignal.com/api/v1/notifications", {
     method: "POST",
@@ -112,15 +117,19 @@ export const SentNoti = async (
       Authorization: `Basic ${ONESIGNAL_REST_API_KEY}`,
     },
     body: JSON.stringify({
-      app_id: ONESIGNAL_APP_ID,
-      include_external_user_ids: targetUserIds,
+      app_id: "48db9e0a-c176-4c30-ba58-44630340624f",
+      target_channel: "push",
+      include_aliases: {
+        external_id: [externalUserId],
+      },
       headings: { en: title },
       contents: { en: message },
+      data: additionalData,
     }),
   });
 
   const data = await response.json();
-
+  console.log(data);
   if (response.ok) {
     return { success: data };
   } else {

@@ -10,7 +10,7 @@ interface dataAttend {
 
 export const checkClockIn = async (userId: string) => {
   let a: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND date(clockIn) = CURDATE()`;
+    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND date(clockIn) = CURDATE() or date(clockOut) = CURDATE()`;
   if (Array.isArray(a)) {
     const firstRow = a[0];
     const jsonResult = firstRow;
@@ -109,6 +109,27 @@ export const calOverTime = async (userId: string, clockOut: string) => {
     var end = DateTime.fromISO(user.clockOut!);
     console.log("🚀 ~ calOverTime ~ end:", end);
     var hour = start.diff(end, ["hours", "minutes", "seconds"]);
+    console.log(hour);
+    var min = hour.minutes;
+    return hour.as("minute").toFixed();
+  }
+};
+export const testCalOverTime = async (userId: string, clockOut: string) => {
+  let user = await db.attendBranch.findFirst({ where: { userId } });
+  if (user) {
+    var start = DateTime.fromISO(clockOut);
+    console.log("🚀 ~ calOverTime ~ start:", start);
+
+    var end = DateTime.fromISO(user.clockOut!).set({
+      year: start.year,
+      month: start.month,
+      day: start.day,
+    });
+
+    console.log("🚀 ~ calOverTime ~ end:", end);
+
+    var hour = start.diff(end, ["hours", "minutes", "seconds"]);
+    console.log(hour);
     var min = hour.minutes;
     return hour.as("minute").toFixed();
   }

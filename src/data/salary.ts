@@ -66,24 +66,47 @@ const updateSalary = async (
 export const checkSalary = async (
   userId: string,
   fine: number,
+  fine2: number,
   overTimeHour: number,
+  workingHour?: number,
 ) => {
-  let month = new Date().getMonth() + 1;
-  let year = new Date().getFullYear();
   let salary = await getSalaryByUserId(userId);
-
   if (salary) {
     let late = 0;
+    let dbfine = 0;
     if (fine) {
-      late = salary.late! + fine;
+      late = salary.late! + 1;
+      dbfine = salary.fine! + fine;
     }
-    let day = salary.workingDay + 1;
+    let dbfine2 = 0;
+    let notClockIn = 0;
+    if (fine2) {
+      dbfine2 = salary.fine2! + fine2;
+      notClockIn = salary.notClockIn! + 1;
+    }
+    let day = salary.workingDay! + 1;
     let ot = salary.overTimeHour! + overTimeHour;
-    let salaryUpdate = await updateSalary(salary.id, late, ot, day);
-    return salaryUpdate;
+    let workingHoour = salary.workingHoour! + workingHour!;
+    let data = {
+      fine: dbfine,
+      fine2: dbfine2,
+      workingDay: day,
+      overTimeHour: ot,
+      workingHoour,
+      notClockIn,
+      late,
+    };
+    // let salaryUpdate = await updateSalary(salary.id, late, ot, day,fine2:dbfine2);
+    // return salaryUpdate;
+    await db.salary.update({
+      where: {
+        id: salary.id,
+      },
+      data,
+    });
   }
-  let result = await createSalary(userId, 1, overTimeHour, fine);
-  return result;
+  // let result = await createSalary(userId, 1, overTimeHour, fine);
+  // return result;
 };
 
 export const getSalaryLate = async (userId: string) => {
@@ -95,7 +118,35 @@ export const getSalaryLate = async (userId: string) => {
         year: new Date().getFullYear(),
       },
     });
-    return salary?.late;
+
+    if (salary?.late! > 1) {
+      return 100;
+    } else {
+      return 50;
+    }
+  } catch (error) {
+    return null;
+  }
+};
+export const getSalaryLate2 = async (userId: string) => {
+  try {
+    let salary = await db.salary.findFirst({
+      where: {
+        userId,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+      },
+    });
+
+    if (salary) {
+      if (salary?.notClockIn! > 1) {
+        return 100;
+      } else {
+        return 50;
+      }
+    } else {
+      return null;
+    }
   } catch (error) {
     return null;
   }

@@ -170,9 +170,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         prevUsers.map((user) =>
           user.id === idSalary
             ? {
-                ...user,
-                ...{ perDay: Number(salary), total: Number(result.total) },
-              }
+              ...user,
+              ...{ perDay: Number(salary), total: Number(result.total) },
+            }
             : user,
         ),
       );
@@ -205,6 +205,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         AddOverTime(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -212,14 +215,14 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               prevUsers.map((user) =>
                 user.id === id
                   ? {
-                      ...user,
-                      ...{ overTime: Number(item), total: data.total },
-                    }
+                    ...user,
+                    ...{ overTime: Number(item), total: data.total },
+                  }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success Notification !", {
+            toast.success("Success add overtime", {
               position: "top-center",
             });
             console.info(data.success);
@@ -231,6 +234,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         AddAllow(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -238,14 +244,14 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               prevUsers.map((user) =>
                 user.id === id
                   ? {
-                      ...user,
-                      ...{ allowance: Number(item), total: data.total },
-                    }
+                    ...user,
+                    ...{ allowance: Number(item), total: data.total },
+                  }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success Notification !", {
+            toast.success("Success add allowance", {
               position: "top-center",
             });
             return;
@@ -256,6 +262,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         AddBonus(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -267,7 +276,7 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success Notification !", {
+            toast.success("Success add bonus ", {
               position: "top-center",
             });
             return;
@@ -278,6 +287,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         AddCover(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -289,7 +301,7 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success Notification !", {
+            toast.success("Success cover", {
               position: "top-center",
             });
             return;
@@ -313,6 +325,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         delOvetime(id).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -324,6 +339,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               ),
             );
             mutate("/api/salary/dashboard");
+            toast.success("Success add overtime", {
+              position: "top-center",
+            });
             return;
           }
         });
@@ -332,6 +350,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         delAllow(id).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -343,6 +364,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               ),
             );
             mutate("/api/salary/dashboard");
+            toast.success("Success add allowance", {
+              position: "top-center",
+            });
             return;
           }
         });
@@ -351,6 +375,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         delBonus(id).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -362,6 +389,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               ),
             );
             mutate("/api/salary/dashboard");
+            toast.success("Success add bonus", {
+              position: "top-center",
+            });
             return;
           }
         });
@@ -370,6 +400,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         delCover(id).then((data) => {
           if (data.error) {
             console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center"
+            })
             return;
           }
           if (data.success) {
@@ -381,6 +414,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
               ),
             );
             mutate("/api/salary/dashboard");
+            toast.success("Success add cover", {
+              position: "top-center",
+            });
             return;
           }
         });
@@ -580,11 +616,10 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${
-            key === currentData.length - 1
-              ? ""
-              : "border-b border-stroke dark:border-dark-3"
-          }`}
+          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+            ? ""
+            : "border-b border-stroke dark:border-dark-3"
+            }`}
           key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
@@ -825,9 +860,8 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
-                currentPage === i + 1 ? "bg-primary text-white" : ""
-              }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
             >
               {i + 1}
             </button>

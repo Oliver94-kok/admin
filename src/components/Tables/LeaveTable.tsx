@@ -9,6 +9,7 @@ import { ApproveLeave } from '@/action/approveLeave';
 import { SentNoti } from '@/lib/function';
 import { DateTime } from 'luxon';
 import { mutate } from 'swr';
+import { toast, ToastContainer } from "react-toastify";
 interface LeaveTableInterface {
   data: LeavesInterface[]
 }
@@ -100,13 +101,18 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const handleConfirm = async () => {
     ApproveLeave(currentAction!, leaveId).then(async (data) => {
       if (data.error) {
+        toast.error(data.error, {
+          position: "top-center"
+        })
         return;
       }
       if (data.success) {
-        let d = await SentNoti("Leave", `Your leave ${currentAction}`, data.success);
+        let d = await SentNoti("Leave", `Your leave ${currentAction}`, data.leaveId, data.username);
         console.log(d)
-        fetchData();
-        mutate("/api/leave/dashboard")
+        mutate("/api/leave/dashboard");
+        toast.success("Success add overtime", {
+          position: "top-center",
+        });
         // window.location.reload();
       }
     })

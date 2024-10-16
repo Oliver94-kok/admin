@@ -40,6 +40,13 @@ export const AddUser = async (name: string) => {
       isLogin: false,
     };
     let user = await db.user.create({ data });
+    await db.salary.create({
+      data: {
+        userId: user.id,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+      },
+    });
     await db.attendBranch.create({ data: { team: "A", userId: user.id } });
     await db.notificationUser.create({ data: { userId: user.id } });
     return { username: "user01", password };

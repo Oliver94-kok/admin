@@ -43,7 +43,7 @@ model Attends {
   locationIn  String?
   locationOut String?
   overtime    Int?
-  fine        Float
+  fine        Float?
   fine2       Float?
   userId      String
   users       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -54,10 +54,12 @@ model Salary {
   day          Json?
   month        Int
   year         Int
-  workingDay   Int
-  workingHoour Int?
+  workingDay   Int?
+  workingHoour Int?   @map("workingHour")
   fine         Int?
-  late         Float?
+  fine2        Int?
+  late         Int?
+  notClockIn   Int?
   overTimeHour Float?
   overTime     Float?
   total        Float?

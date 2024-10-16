@@ -14,6 +14,7 @@ import { UpdateUserBranch } from "@/action/attendBranch";
 import { resetPasswordUser } from "@/action/resetpassword";
 import { deleteUsers } from "@/action/deleteUser";
 import { mutate } from "swr";
+import { toast, ToastContainer } from "react-toastify";
 interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
@@ -113,12 +114,18 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
       if (data.error) {
         console.error(data.error);
         setErrorMsg("has error");
+        toast.error(data.error, {
+          position: "top-center"
+        })
         return;
       }
       if (data.success) {
         console.log(data.success);
         setIsConfirmOpen(false);
-        refresh()
+        refresh();
+        toast.success("success update data", {
+          position: "top-center"
+        })
         // window.location.reload();
       }
     });
