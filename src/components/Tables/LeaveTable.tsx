@@ -116,6 +116,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         // window.location.reload();
       }
     })
+    console.log(`Action: ${currentAction}, Leave ID: ${leaveId}`);
     handleConfirmClose();
   };
 
@@ -266,18 +267,61 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center pl-20">
-            <button
-              onClick={() => handleConfirmOpen('Approve', leave.id)}
-              className="bg-green-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 hover:bg-green-600"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleConfirmOpen('Reject', leave.id)}
-              className="bg-red-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 hover:bg-red-600"
-            >
-              Reject
-            </button>
+            {/* Only show buttons if no action has been confirmed */}
+            {!currentAction ? (
+              <>
+                {/* Approval Button */}
+                <button
+                  onClick={() => handleConfirmOpen('Approve', leave.id)}
+                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 ${currentAction === 'Approve' ? 'bg-green-600' : 'bg-green-500 hover:bg-green-600'
+                    } text-white`}
+                >
+                  Approve
+                </button>
+
+                {/* Reject Button */}
+                <button
+                  onClick={() => handleConfirmOpen('Reject', leave.id)}
+                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === 'Reject' ? 'bg-red-600' : 'bg-red-500 hover:bg-red-600'
+                    } text-white`}
+                >
+                  Reject
+                </button>
+              </>
+            ) : null}
+
+            {/* Confirmation Modal */}
+            <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
+              <div className="text-center p-5">
+                <p className="mb-4">Are you sure you want to {currentAction} this leave request?</p>
+                <div className="flex justify-end items-center space-x-4 mt-6">
+                  <button
+                    onClick={handleConfirmClose}
+                    className="text-red-500 underline font-medium hover:text-red-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleConfirm(); // Call confirm logic
+                      setCurrentAction(currentAction); // Update the current action
+                    }}
+                    className="btn btn-primary bg-green-500 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </Modal>
+
+            {/* Update design based on current action */}
+            {currentAction && (
+              <div className="mt-4">
+                <p className={`font-bold ${currentAction === 'Approve' ? 'text-green-600' : 'text-red-600'}`}>
+                  This leave request has been {currentAction === 'Approve' ? 'approved' : 'rejected'}.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -323,27 +367,6 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           height={300}
           alt="leave"
         />
-      </Modal>
-
-      {/* Render the confirmation modal */}
-      <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
-        <div className="text-center p-5 ">
-          <p className="mb-4">Are you sure you want to {currentAction} this leave request?</p>
-          <div className="flex justify-end items-center space-x-4 mt-6">
-            <button
-              onClick={handleConfirmClose}
-              className="text-red-500 underline font-medium hover:text-red-600"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirm}
-              className="btn btn-primary bg-green-500 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
       </Modal>
     </div>
   );
