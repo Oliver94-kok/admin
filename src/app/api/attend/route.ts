@@ -38,7 +38,7 @@ export const POST = async (req: Request) => {
   const { userId, clockIn, imgClockIn, clockOut, late, location } =
     await req.json();
   // let check = await checkClockIn(userId);
-  // console.log("🚀 ~ POST ~ check:", check);
+  // // console.log("🚀 ~ POST ~ check:", check);
   // if (check)
   //   return Response.json({ error: "User aldready clock in" }, { status: 400 });
   const user = await getUserById(userId);
@@ -82,7 +82,7 @@ export const POST = async (req: Request) => {
 };
 
 export const PATCH = async (req: Request) => {
-  const { userId, clockOut, id } = await req.json();
+  const { userId, clockOut, id, location } = await req.json();
   let attend = await checkClockIn(userId);
   let overtime = await calOverTime(userId, clockOut);
   let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
@@ -90,6 +90,7 @@ export const PATCH = async (req: Request) => {
     clockOut,
     workingHour: workingHour,
     overtime: Number(overtime!),
+    locationOut: location,
   };
   let update = await db.attends.update({
     data,
