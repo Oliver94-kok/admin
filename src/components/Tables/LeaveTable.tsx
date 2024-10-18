@@ -266,18 +266,34 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center pl-20">
+            {/* Approval Button */}
             <button
               onClick={() => handleConfirmOpen('Approve', leave.id)}
-              className="bg-green-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 hover:bg-green-600"
+              className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 ${currentAction === 'Approve'
+                ? 'bg-green-600' // Change background color if approved
+                : 'bg-green-500 hover:bg-green-600' // Default styles
+                } text-white`}
             >
               Approve
             </button>
+
+            {/* Reject Button */}
             <button
               onClick={() => handleConfirmOpen('Reject', leave.id)}
-              className="bg-red-500 text-white rounded-full px-5 py-1 lg:px-10 xl:px-5 hover:bg-red-600"
+              className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === 'Reject'
+                ? 'bg-red-600' // Change background color if rejected
+                : 'bg-red-500 hover:bg-red-600' // Default styles
+                } text-white`}
             >
               Reject
             </button>
+
+            {/* Optional: Display current action status */}
+            {currentAction && (
+              <div className="mt-4 text-lg">
+                Current Action: {currentAction}
+              </div>
+            )}
           </div>
         </div>
       ))}
