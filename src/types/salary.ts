@@ -4,6 +4,7 @@ export interface SalaryUser {
   year: number;
   workingDay: number | null;
   fine: number | null;
+  fine2: number | null;
   late: number | null;
   overTimeHour: number | null;
   overTime: number | null;

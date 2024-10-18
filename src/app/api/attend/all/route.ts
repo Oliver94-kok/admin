@@ -5,7 +5,10 @@ export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("id");
   if (userId) {
-    var user = await db.attends.findMany({ where: { userId: userId! } });
+    var user = await db.attends.findMany({
+      where: { userId: userId! },
+      select: { id: true, clockIn: true, clockOut: true },
+    });
     console.log(user);
     return NextResponse.json(user);
   }

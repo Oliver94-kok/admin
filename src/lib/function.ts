@@ -144,3 +144,12 @@ export const slideDate = async (date: string) => {
 
   return { year: parseInt(year), month: parseInt(month), day: parseInt(day) };
 };
+
+export const getDateFromISOString = async (isoDateTimeString: string) => {
+  const dateTime = new Date(isoDateTimeString);
+  console.log(
+    "🚀 ~ getDateFromISOString ~ dateTime:",
+    isoDateTimeString.split("T")[0],
+  );
+  return isoDateTimeString.split("T")[0];
+};

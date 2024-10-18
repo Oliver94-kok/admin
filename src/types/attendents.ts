@@ -8,5 +8,8 @@ export interface AttendsInterface {
   username: string;
   userImg: string;
   name: string;
-  location: string;
+  locationIn: string;
+  locationOut: string;
+  fine: number;
+  fine2: number;
 }

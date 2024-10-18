@@ -9,8 +9,10 @@ interface dataAttend {
 }
 
 export const checkClockIn = async (userId: string) => {
+  console.log("🚀 ~ checkClockIn ~ userId:", userId);
   let a: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND date(clockIn) = CURDATE() or date(clockOut) = CURDATE()`;
+    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND (date(clockIn) = CURDATE() or date(clockOut) = CURDATE())`;
+  console.log("🚀 ~ checkClockIn ~ a:", a);
   if (Array.isArray(a)) {
     const firstRow = a[0];
     const jsonResult = firstRow;
@@ -150,4 +152,58 @@ export const lateClockIn = async (userId: string, clockIn: string) => {
     return 1;
   }
   return null;
+};
+
+export const leaveForgetClockAttend = async (dates: string, userId: string) => {
+  console.log("🚀 ~ leaveForgetClockAttend ~ userId:", userId);
+  const date = new Date(
+    Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
+  );
+  const formattedDate = date.toISOString().split("T")[0];
+  let attend: AttendsInterface[] =
+    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND date(clockIn) = ${formattedDate} or date(clockOut) = ${formattedDate}`;
+  let nAttend = attend[0];
+  await db.attends.update({ where: { id: nAttend.id }, data: { fine2: 0 } });
+  let salary = await db.salary.findFirst({
+    where: { userId, month: date.getMonth() + 1, year: date.getFullYear() },
+  });
+  let newFine2 = salary?.fine2! - nAttend.fine2;
+  console.log("🚀 ~ leaveForgetClockAttend ~ newFine2:", newFine2);
+  await db.salary.update({
+    where: { id: salary?.id },
+    data: { fine2: newFine2 },
+  });
+};
+
+export const deliveryClockAttend = async (dates: string, userId: string) => {
+  console.log("🚀 ~ deliveryClockAttend ~ dates:", dates);
+  console.log("🚀 ~ deliveryClockAttend ~ userId:", userId);
+  const date = new Date(
+    Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
+  );
+  const formattedDate = date.toISOString().split("T")[0];
+  let attend: AttendsInterface[] =
+    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND (date(clockIn) = ${formattedDate} or date(clockOut) = ${formattedDate})`;
+  let salary = await db.salary.findFirst({
+    where: { userId, month: date.getMonth() + 1, year: date.getFullYear() },
+  });
+  let nAttend = attend[0];
+  console.log("🚀 ~ deliveryClockAttend ~ nAttend:", nAttend);
+  if (nAttend.clockIn) {
+    await db.attends.update({ where: { id: nAttend.id }, data: { fine: 0 } });
+    let nfine = salary?.fine! - nAttend.fine;
+    console.log("🚀 ~ deliveryClockAttend ~ nfine:", nfine);
+    await db.salary.update({
+      where: { id: salary?.id },
+      data: { fine: nfine },
+    });
+    return;
+  }
+  let nfine2 = salary?.fine2! - nAttend.fine2;
+  await db.attends.update({ where: { id: nAttend.id }, data: { fine2: 0 } });
+  await db.salary.update({
+    where: { id: salary?.id },
+    data: { fine2: nfine2 },
+  });
+  return;
 };

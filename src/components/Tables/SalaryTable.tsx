@@ -671,7 +671,7 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-              {salary.fine}
+              {salary?.fine! + salary?.fine2!}
             </p>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">

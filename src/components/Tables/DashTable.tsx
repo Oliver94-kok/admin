@@ -209,35 +209,38 @@ const DashTable = ({ data }: dashTableInterface) => {
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white">
                 {/* {brand.clockIn?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                {displayTime(brand.clockIn)}
+                {brand.clockIn ? displayTime(brand.clockIn) : "No clock in"}
               </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-green-light-1">
                 {/* {brand.clockin?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                {displayTime(brand.clockOut)}
+                {brand.clockOut ? displayTime(brand.clockOut) : "No clock out "}
               </p>
             </div>
 
             <div className="flex items-center justify-center gap-3.5 px-2 py-4 ">
-              <div
-                className="h-12.5 w-15 rounded-md"
-                style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.img as string)}
-              >
-                <Image
-                  src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
-                  width={60}
-                  height={50}
-                  alt="leave"
-                />
-              </div>
+              {brand.img ? <>
+                <div
+                  className="h-12.5 w-15 rounded-md"
+                  style={{ position: "relative", paddingBottom: "20%" }}
+                  onClick={() => setSelectedImage(brand.img as string)}
+                >
+                  <Image
+                    src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
+                    width={60}
+                    height={50}
+                    alt="leave"
+                  />
+                </div>
+              </> : <>No image</>}
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
-              <p className="font-medium text-dark dark:text-white uppercase ">
-                {brand.workingHour}
+              <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
+                <i>clock in:{brand.locationIn} </i>
+                <i>clock out:{brand.locationOut}</i>
               </p>
             </div>
           </div>

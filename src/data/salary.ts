@@ -67,6 +67,7 @@ export const checkSalary = async (
   userId: string,
   fine: number,
   fine2: number,
+  days: any,
   overTimeHour: number,
   workingHour?: number,
 ) => {
@@ -84,6 +85,9 @@ export const checkSalary = async (
       dbfine2 = salary.fine2! + fine2;
       notClockIn = salary.notClockIn! + 1;
     }
+    const currentArray = Array.isArray(salary?.day) ? salary?.day : [];
+    const updatedArray = [...currentArray, days];
+
     let day = salary.workingDay! + 1;
     let ot = salary.overTimeHour! + overTimeHour;
     let workingHoour = salary.workingHoour! + workingHour!;
@@ -95,9 +99,9 @@ export const checkSalary = async (
       workingHoour,
       notClockIn,
       late,
+      day: updatedArray,
     };
-    // let salaryUpdate = await updateSalary(salary.id, late, ot, day,fine2:dbfine2);
-    // return salaryUpdate;
+
     await db.salary.update({
       where: {
         id: salary.id,
@@ -105,6 +109,7 @@ export const checkSalary = async (
       data,
     });
   }
+
   // let result = await createSalary(userId, 1, overTimeHour, fine);
   // return result;
 };
