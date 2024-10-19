@@ -319,6 +319,13 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
     id: string,
     type: typeComponentSalary,
   ) => {
+    const isConfirmed = window.confirm("Are you sure you want to remove this salary component?");
+
+    // If the user cancels the action, exit the function
+    if (!isConfirmed) {
+      return;
+    }
+
     console.log("🚀 ~ handleRemoveComponentSalary ~ id:", id);
     switch (type) {
       case typeComponentSalary.OverTime:
@@ -431,31 +438,35 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
       <div className="mb-5 flex justify-between">
         <div className="relative mb-5">
           {/* Year selection dropdown */}
-          {/* <div className="flex flex-col mt-4"> */}
-
           <select
             id="year"
             className="rounded bg-white p-2 pr-5 text-[24px] font-bold text-dark dark:bg-gray-dark dark:text-white"
+            defaultValue={new Date().getFullYear()}  // Set the default to current year
           >
             {/* Add year options */}
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            {/* Add more years as needed */}
+            <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+            <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
           </select>
 
-          {/* </div> */}
-
           {/* Month selection dropdown with Check button beside it */}
-
           <select
             id="month"
             className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
+            defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
           >
             {/* Add month options */}
             <option value="01">Jan</option>
             <option value="02">Feb</option>
             <option value="03">Mar</option>
-            {/* Add the rest of the months */}
+            <option value="04">Apr</option>
+            <option value="05">May</option>
+            <option value="06">Jun</option>
+            <option value="07">Jul</option>
+            <option value="08">Aug</option>
+            <option value="09">Sep</option>
+            <option value="10">Oct</option>
+            <option value="11">Nov</option>
+            <option value="12">Dec</option>
           </select>
 
           {/* Check button beside the month dropdown */}
@@ -463,6 +474,7 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
             Check
           </button>
         </div>
+
         <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"

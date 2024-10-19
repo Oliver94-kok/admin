@@ -46,9 +46,10 @@ const MultiInvoiceTable = () => {
       html2pdf().set(opt).from(element).save();
     }
   };
-  const generatePDF = () => {
+  const generatePDF = (isAll = false) => {
+    const usersToProcess = isAll ? salaryUsers : [salaryUsers[0]];
     // Loop through the salaryUsers array and generate a PDF for each user  
-    salaryUsers.forEach((salary) => {
+    usersToProcess.forEach((salary) => {
       const opt = {
         margin: [10, 0, 10, 0], // Adjust the margins for the PDF output  
         filename: `payslip_${salary.users?.name || 'unknown'}.pdf`,
@@ -84,18 +85,49 @@ const MultiInvoiceTable = () => {
               <p>Overtime:</p>  
               <p class="text-right">${salary.overTime || 'N/A'}</p>  
             </div>  
-            <div class="flex justify-between">  
-              <p>Deduction:</p>  
-              <p class="text-right">-${salary.fine || 'N/A'}</p>  
-            </div>  
-            <div class="flex justify-between">  
-              <p>Allowance:</p>  
-              <p class="text-right">${salary.allowance || 'N/A'}</p>  
-            </div>  
-            <div class="border-t border-stroke mt-4 pt-4 flex justify-between font-bold">  
-              <p>Total Salary:</p>  
-              <p class="text-right">${salary.total || 'N/A'}</p>  
-            </div>  
+             <div class="flex justify-between">
+              <p>Bonus:</p>
+              <p class="text-right">-${salary.bonus || 'N/A'}</p>
+            </div>
+            <div class="flex justify-between">
+              <p>Allowance:</p>
+              <p class="text-right">-${salary.allowance || 'N/A'}</p> 
+            </div>
+            <div class="flex justify-between">
+              <p>Cover:</p>
+              <p class="text-right">-${salary.cover || 'N/A'}</p> 
+            </div>
+            <br />
+            <div style="color: red;">
+              <p>
+                *Absent 2Day -Basic Day Salary
+              </p>
+              <p>*Lateness:</p>
+              <ul>
+                {lateEntries.map((entry, index) => (
+                  <li key={index}>
+                    {entry.date} {entry.reason} {entry.penalty}
+                  </li>
+                ))}
+              </ul>
+              <p>*Not Clocked in:</p>
+              <ul>
+                {notClockedInEntries.map((entry, index) => (
+                  <li key={index}>
+                    {entry.date} {entry.reason} {entry.penalty}
+                  </li>
+                ))}
+              </ul>
+              <br />
+            </div>
+            <div class="flex justify-between">
+              <p >Deduction:</p>
+              <p class="text-right" style="color: red;">-${salary.fine}</p> 
+            </div>
+            <div class="border-t border-stroke mt-10 pt-4 flex justify-between font-bold"> 
+              <p>Total Salary:</p>
+              <p class="text-right">${salary.total}</p> 
+            </div>
           </div>  
         </div>  
       `;
@@ -114,12 +146,20 @@ const MultiInvoiceTable = () => {
         </h4>
         <div className="flex gap-4">
           <button
-            onClick={() => generatePDF()}
+            onClick={() => generatePDF(false)}
             className="inline-flex items-center gap-2.5 rounded bg-primary px-4 py-[7px] font-medium text-white hover:bg-opacity-90"
           >
             Save as PDF
           </button>
+
+          <button
+            onClick={() => generatePDF(true)}
+            className="inline-flex items-center gap-2.5 rounded bg-green-600 px-4 py-[7px] font-medium text-white hover:bg-opacity-90"
+          >
+            Save All
+          </button>
         </div>
+
       </div>
 
       {/* Payslip details */}
