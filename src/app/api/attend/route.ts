@@ -28,10 +28,10 @@ export const GET = async (req: Request) => {
   //   "2024-10-17T09:11:00.000Z",
   // );
   // console.log(d);
-  let date = await getDateFromISOString("2024-01-14T01:11:00.000Z");
-  let id = date.substring(8);
-  // let d = await db.attends.findMany();
-  return Response.json({ date, id }, { status: 200 });
+  // let date = await getDateFromISOString("2024-01-14T01:11:00.000Z");
+  // let id = date.substring(8);
+  let d = await db.attends.findMany();
+  return Response.json({ d}, { status: 200 });
 };
 
 export const POST = async (req: Request) => {

@@ -35,7 +35,7 @@ export const POST = async (req: Request) => {
       name: user.name,
       username,
       token,
-      attend: user.AttendBranch,
+      AttendBranch: user.AttendBranch,
     },
     branch,
   });
