@@ -25,7 +25,7 @@ const Dashboard = () => {
     //             signal,
     //         }),
     // });
-    const { data, error, isLoading } = useSWR('/api/attend/dashboard', fetcher)
+    const { data, error, isLoading } = useSWR('/api/attend/dashboard', fetcher, { refreshInterval: 5000, revalidateOnMount: true, })
     console.log("🚀 ~ Dashboard ~ data:", data)
     // if (isLoading) return <Loader />
 

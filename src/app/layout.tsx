@@ -38,13 +38,13 @@ export default function RootLayout({
   }, []);
 
   return (
-    <ReactQueryClientProvider>
-      <html lang="en">
-        <body suppressHydrationWarning={true}>
-          {loading ? <Loader /> : children}
-          <ToastContainer />
-        </body>
-      </html>
-    </ReactQueryClientProvider>
+
+    <html lang="en">
+      <body suppressHydrationWarning={true}>
+        {loading ? <Loader /> : children}
+        <ToastContainer />
+      </body>
+    </html>
+
   );
 }

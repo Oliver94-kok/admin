@@ -75,20 +75,22 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
           checkperday.push(d.users?.name);
         }
       });
-      if (checkperday.length != 0) {
-        checkperday.forEach((e) => {
-          alert(`${e} not have input per day salary`);
-        });
-        return;
-      }
+
       const allSelectedItems = currentData.map((salary) => ({
         id: salary.id, // Ensure to provide the correct id
         item: salary.users?.name || "", // Adjust based on your data structure
         idSalary: salary.id, // Adjust based on your data structure
       }));
       setSelectedItems(allSelectedItems);
-
+      if (checkperday.length != 0) {
+        checkperday.forEach((e) => {
+          alert(`${e} not have input per day salary`);
+        });
+        return;
+      }
       const newUser: SalaryUser[] = dataSalary;
+      console.log("🚀 ~ handleSelectAllChange ~ newUser:", newUser)
+
       addSalaryUsers(newUser);
       console.log(selectedItems.length);
     } else {

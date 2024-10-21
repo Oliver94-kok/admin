@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BRAND } from "@/types/brand";
 import Image from "next/image";
 import Modal from "../modal";
@@ -15,6 +15,7 @@ interface dashTableInterface {
 
 const DashTable = ({ data }: dashTableInterface) => {
   const [tableDate, setTableData] = useState(data);
+  console.log("🚀 ~ DashTable ~ tableDate:", tableDate)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
@@ -22,7 +23,11 @@ const DashTable = ({ data }: dashTableInterface) => {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const itemsPerPage = 10;
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
-
+  useEffect(() => {
+    if (data) {
+      setTableData(data);
+    }
+  }, [data]);
   // Generate the last three days' options including today
   const getLastThreeDays = () => {
     const today = dayjs();
@@ -187,10 +192,10 @@ const DashTable = ({ data }: dashTableInterface) => {
               <div
                 className="h-12.5 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.userImg as string)}
+                onClick={() => setSelectedImage(brand.userImg ? brand.userImg : "/uploads/user/defaultUser.jpg")}
               >
                 <Image
-                  src={brand.userImg ? brand.userImg : "/uploads/user/f5fb4bbf-36f5-452d-8d51-e03c51921645.jpg"}
+                  src={brand.userImg ? brand.userImg : "/uploads/user/defaultUser.jpg"}
                   width={60}
                   height={50}
                   alt="leave"

@@ -31,12 +31,13 @@ export const GET = async (req: Request) => {
   // let date = await getDateFromISOString("2024-01-14T01:11:00.000Z");
   // let id = date.substring(8);
   let d = await db.attends.findMany();
-  return Response.json({ d}, { status: 200 });
+  return Response.json({ d }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
-  const { userId, clockIn, imgClockIn, clockOut, late, location } =
+  const { userId, clockIn, imgClockIn, clockOut, late, location, notify } =
     await req.json();
+  console.log("🚀 ~ POST ~ notify:", notify);
   // let check = await checkClockIn(userId);
   // // console.log("🚀 ~ POST ~ check:", check);
   // if (check)
@@ -56,6 +57,13 @@ export const POST = async (req: Request) => {
       locationIn: location,
     };
     let t = await db.attends.create({ data });
+    let noti = await db.notificationUser.findFirst({ where: { userId } });
+    const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
+    const updatedArray = [...currentArray, notify];
+    await db.notificationUser.update({
+      where: { id: noti?.id },
+      data: { clock: updatedArray },
+    });
     return Response.json({ id: t.id }, { status: 201 });
   }
   let date = await getDateFromISOString(clockOut);
@@ -78,11 +86,18 @@ export const POST = async (req: Request) => {
   };
   let t = await db.attends.create({ data });
   await checkSalary(t.userId, t.fine!, t.fine2!, day, Number(overtime));
+  let noti = await db.notificationUser.findFirst({ where: { userId } });
+  const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
+  const updatedArray = [...currentArray, notify];
+  await db.notificationUser.update({
+    where: { id: noti?.id },
+    data: { clock: updatedArray },
+  });
   return Response.json({ id: t.id }, { status: 201 });
 };
 
 export const PATCH = async (req: Request) => {
-  const { userId, clockOut, id, location } = await req.json();
+  const { userId, clockOut, id, location, notify } = await req.json();
   let attend = await checkClockIn(userId);
   let overtime = await calOverTime(userId, clockOut);
   let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
@@ -113,5 +128,12 @@ export const PATCH = async (req: Request) => {
     Number(overtime),
     workingHour,
   );
+  let noti = await db.notificationUser.findFirst({ where: { userId } });
+  const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
+  const updatedArray = [...currentArray, notify];
+  await db.notificationUser.update({
+    where: { id: noti?.id },
+    data: { clock: updatedArray },
+  });
   return Response.json({ data }, { status: 200 });
 };

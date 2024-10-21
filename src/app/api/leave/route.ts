@@ -30,7 +30,7 @@ export const GET = async () => {
 };
 
 export const POST = async (req: Request) => {
-  const { userId, reason, type, startDate, endDate, status, imgs } =
+  const { userId, reason, type, startDate, endDate, status, imgs, notify } =
     await req.json();
   console.log("🚀 ~ POST ~ startDate:", startDate);
   console.log("🚀 ~ POST ~ endDate:", endDate);
@@ -49,5 +49,15 @@ export const POST = async (req: Request) => {
     img: imgname,
   };
   let user = await db.leave.create({ data });
-  return Response.json({ user }, { status: 201 });
+  let noti = await db.notificationUser.findFirst({
+    where: { userId },
+    select: { leave: true, id: true },
+  });
+  const currentArray = Array.isArray(noti?.leave) ? noti?.leave : [];
+  const updatedArray = [...currentArray, notify];
+  await db.notificationUser.update({
+    where: { id: noti?.id },
+    data: { leave: updatedArray },
+  });
+  return Response.json({ id: user.id }, { status: 201 });
 };

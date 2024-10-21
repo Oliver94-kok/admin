@@ -268,7 +268,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           </div>
           <div className="col-span-1 flex items-center justify-center pl-20">
             {/* Only show buttons if no action has been confirmed */}
-            {!currentAction ? (
+            {leave.status == "Pending" ? (
               <>
                 {/* Approval Button */}
                 <button
@@ -288,7 +288,14 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                   Reject
                 </button>
               </>
-            ) : null}
+            ) : (
+              <>
+                <div className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 text-white ${leave.status == "Approve" ? "bg-green-600" : "bg-red-600"}`}>
+                  {leave.status}
+                </div>
+
+              </>
+            )}
 
             {/* Confirmation Modal */}
             <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
