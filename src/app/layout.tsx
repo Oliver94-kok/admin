@@ -9,6 +9,7 @@ import OneSignal from "react-onesignal";
 import { ReactQueryClientProvider } from "@/components/QueryClientProvider ";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,18 +22,28 @@ export default function RootLayout({
   useEffect(() => {
     // Ensure this code runs only on the client side
     if (typeof window !== 'undefined') {
-      OneSignal.init({
-        appId: '48db9e0a-c176-4c30-ba58-44630340624f',
-        // You can add other initialization options here
-        notifyButton: {
-          enable: true,
-        },
-        // Uncomment the below line to run on localhost. See: https://documentation.onesignal.com/docs/local-testing
-        allowLocalhostAsSecureOrigin: true,
-      });
-
+      initializeOneSignal()
     }
   }, []);
+  const initializeOneSignal = async () => {
+    OneSignal.init({
+      appId: '48db9e0a-c176-4c30-ba58-44630340624f',
+      // You can add other initialization options here
+      notifyButton: {
+        enable: true,
+      },
+      // Uncomment the below line to run on localhost. See: https://documentation.onesignal.com/docs/local-testing
+      allowLocalhostAsSecureOrigin: true,
+
+    }).then(async () => {
+      // OneSignal.Debug.setLogLevel('trace');
+      await OneSignal.Slidedown.promptPush();
+      await OneSignal.Notifications.requestPermission();
+      OneSignal.User.addTag('role', 'admin')
+    })
+
+
+  }
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);

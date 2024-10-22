@@ -2,7 +2,8 @@
 
 import { deliveryClockAttend, leaveForgetClockAttend } from "@/data/attend";
 import { db } from "@/lib/db";
-
+import { formatDateTime } from "@/lib/function";
+import { v7 as uuidv7 } from "uuid";
 export const ApproveLeave = async (status: string, id: string) => {
   try {
     let check = await db.leave.findFirst({ where: { id } });
@@ -20,6 +21,32 @@ export const ApproveLeave = async (status: string, id: string) => {
     }
     let a = await db.leave.update({ where: { id }, data: { status } });
     let user = await db.user.findFirst({ where: { id: a.userId } });
+    let randomid = uuidv7();
+    let smdate = await formatDateTime(new Date());
+    const currentDateTime = new Date();
+    const formattedDateTime = currentDateTime
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+    let newnoti = {
+      id: randomid,
+      type: a.type,
+      status: a.status,
+      endDate: a.endDate,
+      smallDate: smdate,
+      startDate: a.startDate,
+      create: formattedDateTime,
+    };
+    let noti = await db.notificationUser.findFirst({
+      where: { userId: a.userId },
+      select: { leave: true, id: true },
+    });
+    const currentArray = Array.isArray(noti?.leave) ? noti?.leave : [];
+    const updatedArray = [...currentArray, newnoti];
+    await db.notificationUser.update({
+      where: { id: noti?.id },
+      data: { leave: updatedArray },
+    });
     return { success: "success", leaveId: a.id, username: user?.username };
   } catch (error) {
     return { error: "error " };

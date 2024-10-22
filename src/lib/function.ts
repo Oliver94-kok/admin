@@ -91,21 +91,6 @@ export const SentNoti = async (
   console.log("🚀 ~ externalUserId:", externalUserId);
   const ONESIGNAL_REST_API_KEY = process.env.ONESIGNALAPIKEY;
   const ONESIGNAL_APP_ID = process.env.ONESIGNALAPPID;
-  let user = await getUserById(externalUserId!);
-  let targetUserIds;
-
-  // if (externalUserId) {
-  //   // Single user
-  //   targetUserIds = [user?.username];
-  // } else if (Array.isArray(externalUserIds) && externalUserIds.length > 0) {
-  //   // Multiple users
-  //   targetUserIds = externalUserIds;
-  // } else {
-  //   return {
-  //     error:
-  //       "Please provide either externalUserId or a non-empty externalUserIds array",
-  //   };
-  // }
   const additionalData = {
     leaveId: leaveid,
   };
@@ -136,6 +121,32 @@ export const SentNoti = async (
     return { error: data };
   }
 };
+export const sendtoAdmin = async (title: string, message: string) => {
+  const ONESIGNAL_REST_API_KEY = process.env.ONESIGNALAPIKEY;
+  const ONESIGNAL_APP_ID = process.env.ONESIGNALAPPID;
+  const response = await fetch("https://onesignal.com/api/v1/notifications", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${ONESIGNAL_REST_API_KEY}`,
+    },
+    body: JSON.stringify({
+      app_id: "48db9e0a-c176-4c30-ba58-44630340624f",
+      target_channel: "push",
+      included_segments: ["admin", "Inactive Users"],
+      headings: { en: title },
+      contents: { en: message },
+    }),
+  });
+
+  const data = await response.json();
+  console.log(data);
+  if (response.ok) {
+    return { success: data };
+  } else {
+    return { error: data };
+  }
+};
 
 export const slideDate = async (date: string) => {
   const year = date.slice(0, 4);
@@ -152,4 +163,27 @@ export const getDateFromISOString = async (isoDateTimeString: string) => {
     isoDateTimeString.split("T")[0],
   );
   return isoDateTimeString.split("T")[0];
+};
+
+export const formatDateTime = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  return `${day}/${month} ${hours}:${minutes}`;
+};
+export const formatDateTimeIntl = (date: Date): string => {
+  const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+  }).format(date);
+
+  const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+
+  return `${dateFormatter} ${timeFormatter}`;
 };

@@ -107,7 +107,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         return;
       }
       if (data.success) {
-        let d = await SentNoti("Leave", `Your leave ${currentAction}`, data.leaveId, data.username);
+        let d = await SentNoti("Leave", `Your leave has been ${currentAction}`, data.leaveId, data.username);
         console.log(d)
         mutate("/api/leave/dashboard");
         toast.success("Success add overtime", {
@@ -290,8 +290,11 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               </>
             ) : (
               <>
-                <div className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 text-white ${leave.status == "Approve" ? "bg-green-600" : "bg-red-600"}`}>
-                  {leave.status}
+                <div >
+
+                  <p className={`font-bold ${leave.status === 'Approve' ? 'text-green-600' : 'text-red-600'}`}>
+                    This leave request has been {leave.status === 'Approve' ? 'approved' : 'rejected'}.
+                  </p>
                 </div>
 
               </>
@@ -322,13 +325,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             </Modal>
 
             {/* Update design based on current action */}
-            {currentAction && (
-              <div className="mt-4">
-                <p className={`font-bold ${currentAction === 'Approve' ? 'text-green-600' : 'text-red-600'}`}>
-                  This leave request has been {currentAction === 'Approve' ? 'approved' : 'rejected'}.
-                </p>
-              </div>
-            )}
+
           </div>
         </div>
       ))}

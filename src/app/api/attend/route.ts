@@ -16,6 +16,7 @@ import {
   checkWorkingHour,
   getDateFromISOString,
   saveImage,
+  SentNoti,
 } from "@/lib/function";
 import { AttendsInterface } from "@/types/attendents";
 import { NextRequest } from "next/server";
@@ -64,6 +65,7 @@ export const POST = async (req: Request) => {
       where: { id: noti?.id },
       data: { clock: updatedArray },
     });
+    await SentNoti("Clock in", "You have clock in", "", user?.username);
     return Response.json({ id: t.id }, { status: 201 });
   }
   let date = await getDateFromISOString(clockOut);
@@ -93,6 +95,7 @@ export const POST = async (req: Request) => {
     where: { id: noti?.id },
     data: { clock: updatedArray },
   });
+  await SentNoti("Clock out", "You have clock out", "", user?.username);
   return Response.json({ id: t.id }, { status: 201 });
 };
 
@@ -135,5 +138,10 @@ export const PATCH = async (req: Request) => {
     where: { id: noti?.id },
     data: { clock: updatedArray },
   });
+  let user = await db.user.findFirst({
+    where: { id: userId },
+    select: { username: true },
+  });
+  await SentNoti("Clock in", "You have clock in", "", user?.username);
   return Response.json({ data }, { status: 200 });
 };
