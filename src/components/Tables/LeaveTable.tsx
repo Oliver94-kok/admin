@@ -293,7 +293,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 <div >
 
                   <p className={`font-bold ${leave.status === 'Approve' ? 'text-green-600' : 'text-red-600'}`}>
-                    This leave request has been {leave.status === 'Approve' ? 'approved' : 'rejected'}.
+                    This request has been {leave.status === 'Approve' ? 'approved' : 'rejected'}.
                   </p>
                 </div>
 

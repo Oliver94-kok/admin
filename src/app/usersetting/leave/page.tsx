@@ -26,7 +26,7 @@ const Leave = () => {
   //       signal,
   //     }),
   // });
-  const { data, error, isLoading } = useSWR("/api/leave/dashboard", fetcher);
+  const { data, error, isLoading } = useSWR("/api/leave/dashboard", fetcher, { refreshInterval: 5000, revalidateOnMount: true, });
   const refreshData = () => {
     mutate("/api/leave/dashboard"); // Re-fetch data from the server
   };

@@ -145,10 +145,15 @@ const DashTable = ({ data }: dashTableInterface) => {
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-5 sm:grid-cols-5">
+        <div className="grid grid-cols-6 sm:grid-cols-6">
           <div className="px-2 pb-3.5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
               Username
+            </h5>
+          </div>
+          <div className="px-2 pb-3.5 text-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Branch
             </h5>
           </div>
           <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('clockin')}>
@@ -184,7 +189,7 @@ const DashTable = ({ data }: dashTableInterface) => {
 
         {currentData.map((brand, key) => (
           <div
-            className={`grid grid-cols-5 sm:grid-cols-5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
+            className={`grid grid-cols-6 sm:grid-cols-6 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
               }`}
             key={key}
           >
@@ -209,6 +214,11 @@ const DashTable = ({ data }: dashTableInterface) => {
                   {brand.username}
                 </p>
               </div>
+            </div>
+            <div className="flex items-center justify-center px-2 py-4">
+              <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
+                <i>{branchs.team} </i>
+              </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
