@@ -31,6 +31,7 @@ yarn install
 2. Okay, you're almost there. Now all you need to do is start the development server. If you're using **npm**, the command is:
 
 3. npx prisma migrate dev --name init
+4. pm2 start npm --name "nextjs" -- start
 
 ```
 npm run dev

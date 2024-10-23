@@ -1,4 +1,4 @@
-import { getUserById } from "@/data/user";
+import { checkUsername, getUserById } from "@/data/user";
 import { db } from "@/lib/db";
 import {
   formatDateTime,
@@ -10,24 +10,22 @@ import {
 import { NextResponse } from "next/server";
 const { DateTime } = require("luxon");
 export const GET = async () => {
-  // let randomid = uuidv7();
-  // let smdate = await formatDateTime(new Date());
-  const currentDates = new Date();
-  const currentDate = DateTime.local(currentDates);
-  const currentDateInAsia = currentDate.setZone("Asia/Kuala_Lumpur");
-  const formattedDateInAsia = currentDateInAsia.toFormat("yyyy-MM-dd HH:mm:ss");
-  let smdate = currentDateInAsia.toFormat("MM/dd HH:mm");
-  let newnoti = {
-    id: "randomid",
-    type: "a.type",
-    status: "a.status",
-    endDate: "a.endDate",
-    smallDate: smdate,
-    startDate: " a.startDate",
-    create: formattedDateInAsia,
-  };
-
-  return Response.json({ newnoti }, { status: 200 });
+  let checkuser = await checkUsername();
+  let username = "";
+  if (checkuser) {
+    let lastest = parseInt(checkuser?.username.substring(5));
+    console.log("🚀 ~ GET ~ lastest:", lastest);
+    if (lastest < 9) {
+      username = `user0${lastest + 1}`;
+    } else {
+      username = `user${lastest + 1}`;
+    }
+  }
+  let u = await db.user.findMany({
+    orderBy: { username: "desc" },
+    where: { role: "USER" },
+  });
+  return Response.json({ username, u }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
