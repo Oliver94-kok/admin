@@ -3,6 +3,7 @@
 import { deliveryClockAttend, leaveForgetClockAttend } from "@/data/attend";
 import { db } from "@/lib/db";
 import { formatDateTime } from "@/lib/function";
+const { DateTime } = require("luxon");
 import { v7 as uuidv7 } from "uuid";
 export const ApproveLeave = async (status: string, id: string) => {
   try {
@@ -22,12 +23,14 @@ export const ApproveLeave = async (status: string, id: string) => {
     let a = await db.leave.update({ where: { id }, data: { status } });
     let user = await db.user.findFirst({ where: { id: a.userId } });
     let randomid = uuidv7();
-    let smdate = await formatDateTime(new Date());
-    const currentDateTime = new Date();
-    const formattedDateTime = currentDateTime
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
+    // let smdate = await formatDateTime(new Date());
+    const currentDates = new Date();
+    const currentDate = DateTime.local(currentDates);
+    const currentDateInAsia = currentDate.setZone("Asia/Kuala_Lumpur");
+    const formattedDateInAsia = currentDateInAsia.toFormat(
+      "yyyy-MM-dd HH:mm:ss",
+    );
+    let smdate = currentDateInAsia.toFormat("MM/dd HH:mm");
     let newnoti = {
       id: randomid,
       type: a.type,
@@ -35,7 +38,7 @@ export const ApproveLeave = async (status: string, id: string) => {
       endDate: a.endDate,
       smallDate: smdate,
       startDate: a.startDate,
-      create: formattedDateTime,
+      create: formattedDateInAsia,
     };
     let noti = await db.notificationUser.findFirst({
       where: { userId: a.userId },

@@ -10,10 +10,24 @@ import {
 import { NextResponse } from "next/server";
 const { DateTime } = require("luxon");
 export const GET = async () => {
-  const currentDate = new Date();
-  let user = await formatDateTimeIntl(currentDate);
-  console.log("🚀 ~ GET ~ user:", user);
-  return Response.json({ currentDate }, { status: 200 });
+  // let randomid = uuidv7();
+  // let smdate = await formatDateTime(new Date());
+  const currentDates = new Date();
+  const currentDate = DateTime.local(currentDates);
+  const currentDateInAsia = currentDate.setZone("Asia/Kuala_Lumpur");
+  const formattedDateInAsia = currentDateInAsia.toFormat("yyyy-MM-dd HH:mm:ss");
+  let smdate = currentDateInAsia.toFormat("MM/dd HH:mm");
+  let newnoti = {
+    id: "randomid",
+    type: "a.type",
+    status: "a.status",
+    endDate: "a.endDate",
+    smallDate: smdate,
+    startDate: " a.startDate",
+    create: formattedDateInAsia,
+  };
+
+  return Response.json({ newnoti }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
