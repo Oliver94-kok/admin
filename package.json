@@ -26,6 +26,7 @@
     "jsvectormap": "^1.5.3",
     "luxon": "^3.5.0",
     "next": "^14.2.15",
+    "next-auth": "^5.0.0-beta.25",
     "react": "^18.3.1",
     "react-apexcharts": "^1.4.1",
     "react-bootstrap": "^2.10.4",

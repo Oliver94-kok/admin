@@ -14,7 +14,7 @@ export const AddUser = async (name: string) => {
     if (lastest < 10) {
       username = `user0${lastest + 1}`;
     } else {
-      username = `user${lastest}`;
+      username = `user${lastest + 1}`;
     }
     let data = {
       name,

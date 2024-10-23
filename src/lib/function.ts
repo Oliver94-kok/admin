@@ -35,7 +35,7 @@ export const saveImageUser = async (img: string, username: string) => {
   const uniqueSuffix = uuidv4();
   const paths = path.join(process.cwd(), `public/uploads/user/`);
   try {
-    await writeFile(`${paths}/${username}.JPEG`, buffer);
+    await writeFile(`${paths}/${username}.JPEG`, buffer, { mode: 0o777 });
   } catch (err) {}
   return `/uploads/user/${username}.JPEG`;
 };
@@ -46,7 +46,7 @@ export const saveImage = async (img: string, username: string) => {
   const paths = await checkFolder(now);
 
   try {
-    await writeFile(`${paths}/${username}.jpg`, buffer);
+    await writeFile(`${paths}/${username}.jpg`, buffer, { mode: 0o777 });
   } catch (error) {
     console.log(error);
   }
@@ -58,7 +58,7 @@ export const saveImageLeaveUser = async (img: string, username: string) => {
   const paths = path.join(process.cwd(), `public/uploads/leave/`);
   const now = DateTime.now().toFormat("dd-LL-y");
   try {
-    await writeFile(`${paths}/${username}_${now}.jpg`, buffer);
+    await writeFile(`${paths}/${username}_${now}.jpg`, buffer, { mode: 0o777 });
   } catch (err) {}
   return `/uploads/leave/${username}_${now}.jpg`;
 };

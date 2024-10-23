@@ -65,7 +65,7 @@ export const POST = async (req: Request) => {
       where: { id: noti?.id },
       data: { clock: updatedArray },
     });
-    await SentNoti("Clock in", "You have clock in", "", user?.username);
+    await SentNoti("Clock", "You have clock in", "", user?.username);
     return Response.json({ id: t.id }, { status: 201 });
   }
   let date = await getDateFromISOString(clockOut);
@@ -95,7 +95,7 @@ export const POST = async (req: Request) => {
     where: { id: noti?.id },
     data: { clock: updatedArray },
   });
-  await SentNoti("Clock out", "You have clock out", "", user?.username);
+  await SentNoti("Clock", "You have clock out", "", user?.username);
   return Response.json({ id: t.id }, { status: 201 });
 };
 
@@ -142,6 +142,6 @@ export const PATCH = async (req: Request) => {
     where: { id: userId },
     select: { username: true },
   });
-  await SentNoti("Clock in", "You have clock in", "", user?.username);
+  await SentNoti("Clock", "You have clock out", "", user?.username);
   return Response.json({ data }, { status: 200 });
 };
