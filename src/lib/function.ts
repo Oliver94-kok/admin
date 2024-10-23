@@ -2,7 +2,7 @@
 var bcrypt = require("bcryptjs");
 import { v4 as uuidv4 } from "uuid";
 const { DateTime } = require("luxon");
-import { access, constants, mkdir, writeFile } from "fs/promises";
+import { access, chmod, constants, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { getUserById } from "@/data/user";
 import axios from "axios";
@@ -26,6 +26,7 @@ const checkFolder = async (folder: String) => {
   } catch (error) {
     // Directory doesn't exist, create it
     await mkdir(p, { recursive: true });
+    await chmod(p, 0o777);
   }
   return p;
 };

@@ -9,6 +9,7 @@ export const POST = async (req: Request) => {
   if (nuser)
     return Response.json(
       {
+        id: nuser.id,
         clockin: nuser.clockIn,
         clockout: nuser.clockOut,
         locationIn: nuser.locationIn,
