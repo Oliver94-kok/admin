@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
     await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour, ab.team
     FROM Attends AS a
     JOIN User AS u ON a.userId = u.id
-    JOIN Attendbranch as ab on u.id = ab.userId
+    JOIN AttendBranch as ab on u.id = ab.userId
   WHERE (date(a.clockIn) = date(${date}) OR date(a.clockOut) = date(${date}))`;
   return Response.json({ date, data }, { status: 200 });
 };
