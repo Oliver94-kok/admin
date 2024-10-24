@@ -10,10 +10,12 @@ import { DateTime } from "luxon";
 
 
 interface dashTableInterface {
-  data: AttendsInterface[]
+  data: AttendsInterface[];
+  onDateChange: (date: string) => void;
+  currentDate: string;
 }
 
-const DashTable = ({ data }: dashTableInterface) => {
+const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
   const [tableDate, setTableData] = useState(data);
   console.log("🚀 ~ DashTable ~ tableDate:", tableDate)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -74,15 +76,9 @@ const DashTable = ({ data }: dashTableInterface) => {
     // }
     // return false; // Explicitly return false to avoid accidental inclusions
   });
-
-  const onchangeDate = async (value: any) => {
-    setSelectedDate(value);
-    let d = await getDataByDate(value);
-    if (d) {
-      setTableData(d);
-    }
-
-  }
+  const onchangeDate = (value: string) => {
+    onDateChange(value); // This will trigger SWR refetch in parent
+  };
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -98,7 +94,7 @@ const DashTable = ({ data }: dashTableInterface) => {
       <div className="flex justify-between mb-5">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           <select
-            value={selectedDate}
+            value={dayjs(currentDate).format('DD/MM')}
             onChange={(e) => onchangeDate(e.target.value)}
             className="pr-3 uppercase rounded text-body-2xlg font-bold text-dark dark:text-white bg-white dark:bg-gray-dark"
           >
@@ -217,7 +213,7 @@ const DashTable = ({ data }: dashTableInterface) => {
             </div>
             <div className="flex items-center justify-center px-2 py-4">
               <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
-                <i>{branchs.team} </i>
+                <i>{brand.team} </i>
               </p>
             </div>
 

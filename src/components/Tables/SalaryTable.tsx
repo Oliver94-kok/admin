@@ -1,6 +1,6 @@
 // src/components/SalaryTable.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Modal from "../modal";
 import Link from "next/link";
@@ -29,6 +29,10 @@ export type SelectedItem = {
 interface SalaryTableInterface {
   data: SalaryUser[];
   refresh?: () => void;
+  onMonthChange: (month: string) => void;
+  currentMonth: string,
+  onYearChange: (year: string) => void;
+  currentYear: string;
 }
 
 export enum typeComponentSalary {
@@ -38,7 +42,7 @@ export enum typeComponentSalary {
   Cover,
 }
 
-const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
+const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearChange }: SalaryTableInterface) => {
   const router = useRouter();
   const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -65,6 +69,11 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
     saveSalaryUsersToStorage,
   } = useSalaryStore();
 
+  useEffect(() => {
+    if (data) {
+      setDataSalary(data)
+    }
+  }, [data])
   // Handle Select All Logic
   const handleSelectAllChange = () => {
     setSelectAll(!selectAll);
@@ -86,7 +95,7 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
         checkperday.forEach((e) => {
           alert(`${e} not have input per day salary`);
         });
-        return;
+        // return;
       }
       const newUser: SalaryUser[] = dataSalary;
       console.log("🚀 ~ handleSelectAllChange ~ newUser:", newUser)
@@ -443,7 +452,8 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
           <select
             id="year"
             className="rounded bg-white p-2 pr-5 text-[24px] font-bold text-dark dark:bg-gray-dark dark:text-white"
-            defaultValue={new Date().getFullYear()}  // Set the default to current year
+            value={currentYear}
+            onChange={(e) => onYearChange(e.target.value)}
           >
             {/* Add year options */}
             <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
@@ -454,7 +464,9 @@ const SalaryTable = ({ data, refresh }: SalaryTableInterface) => {
           <select
             id="month"
             className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
-            defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
+            // defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
+            value={currentMonth}
+            onChange={(e) => onMonthChange(e.target.value)}
           >
             {/* Add month options */}
             <option value="01">Jan</option>

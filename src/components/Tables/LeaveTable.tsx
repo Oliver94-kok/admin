@@ -1,6 +1,6 @@
 // src/components/LeaveTable.tsx
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Leave } from '@/types/product';
 import Modal from '../modal';
@@ -26,7 +26,11 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const itemsPerPage = 10;
   const [dataLeave, setDataLeave] = useState(data);
   const [leaveId, setLeaveId] = useState("");
-
+  useEffect(() => {
+    if (data) {
+      setDataLeave(data);
+    }
+  }, [data]);
 
 
 

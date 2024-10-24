@@ -21,18 +21,23 @@ import {
 import { AttendsInterface } from "@/types/attendents";
 import { NextRequest } from "next/server";
 import { DateTime } from "luxon";
-import { getUserById } from "@/data/user";
+import { checkUsername, getUserById } from "@/data/user";
 
 export const GET = async (req: Request) => {
-  // let d = await testCalOverTime(
-  //   "cm28ouovu0001odoju89wj8bs",
-  //   "2024-10-17T09:11:00.000Z",
-  // );
-  // console.log(d);
-  // let date = await getDateFromISOString("2024-01-14T01:11:00.000Z");
-  // let id = date.substring(8);
-  let d = await db.attends.findMany();
-  return Response.json({ d }, { status: 200 });
+  let checkuser = await checkUsername();
+  let username = "";
+  if (checkuser) {
+    // let lastest = parseInt(checkuser?.username.substring(4));
+    let lastest = parseInt("user10".substring(4));
+    console.log("🚀 ~ GET ~ lastest:", lastest);
+    if (lastest < 9) {
+      username = `user0${lastest + 1}`;
+    } else {
+      username = `user${lastest + 1}`;
+    }
+  }
+  // let d = await db.attends.findMany();
+  return Response.json({ username }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {

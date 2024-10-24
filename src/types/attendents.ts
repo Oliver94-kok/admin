@@ -12,4 +12,5 @@ export interface AttendsInterface {
   locationOut: string;
   fine: number;
   fine2: number;
+  team: string;
 }

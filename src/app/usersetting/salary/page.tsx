@@ -1,7 +1,7 @@
 "use client";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
-import React from "react";
+import React, { useState } from "react";
 import SalaryTable from "@/components/Tables/SalaryTable";
 import { db } from "@/lib/db";
 import { SalaryUser } from "@/types/salary";
@@ -14,27 +14,29 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/common/Loader";
 import useSWR, { mutate } from "swr";
+import { DateTime } from "luxon";
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 // Correctly set revalidate value
 // export const revalidate = 1;
 const Salary = () => {
-  // const { isPending, isError, data, error } = useQuery({
-  //   queryKey: ['todos'],
-  //   queryFn: ({ signal }) =>
-  //     axios.get('/api/salary/dashboard', {
-  //       signal,
-  //     }),
-  // });
-  const { data, error, isLoading } = useSWR("/api/salary/dashboard", fetcher);
+  const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
+  const [year, setYear] = useState(DateTime.now().toFormat('yyyy'))
+  const { data, error, isLoading } = useSWR(`/api/salary/dashboard?month=${month}&year=${year}`, fetcher);
   const refreshData = () => {
     mutate("/api/salary/dashboard"); // Re-fetch data from the server
+  };
+  const handleMonthChange = (month: string) => {
+    selectMonth(month);
+  };
+  const handleYearChange = (year: string) => {
+    setYear(year);
   };
   return (
     <>
       <DefaultLayout>
-        {isLoading ? <Loader /> : <SalaryTable data={data.salary} />}
+        {isLoading ? <Loader /> : <SalaryTable data={data.salary} onMonthChange={handleMonthChange} currentMonth={month} onYearChange={handleYearChange} currentYear={year} />}
       </DefaultLayout>
     </>
   );

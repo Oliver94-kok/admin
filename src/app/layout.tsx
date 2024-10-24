@@ -7,8 +7,9 @@ import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import OneSignal from "react-onesignal";
 import { ReactQueryClientProvider } from "@/components/QueryClientProvider ";
+import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 
 export default function RootLayout({
   children,
@@ -22,7 +23,7 @@ export default function RootLayout({
   useEffect(() => {
     // Ensure this code runs only on the client side
     if (typeof window !== 'undefined') {
-      initializeOneSignal()
+      // initializeOneSignal()
     }
   }, []);
   const initializeOneSignal = async () => {
