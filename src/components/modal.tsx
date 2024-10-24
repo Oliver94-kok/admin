@@ -59,11 +59,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, imageUrl, username, pass
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
             <div
-                className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg mx-4 md:mx-auto p-6"
+                className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg mx-4 md:mx-auto p-8"
             >
                 <button
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-black dark:text-gray-100 hover:text-gray-800 dark:hover:text-gray-300 text-3xl font-bold"
+                    className="absolute top-2 right-2 text-black dark:text-gray-100 hover:text-gray-800 dark:hover:text-gray-300 text-3xl font-bold p-2"
                     aria-label="Close modal"
                 >
                     &times;
@@ -74,7 +74,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, imageUrl, username, pass
                     <div className="p-6">{children}</div>
                 )} */}
                 {imageUrl ? (
-                    <div ref={modalRefImage} className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg mx-4 md:mx-auto p-6">
+                    <div ref={modalRefImage} className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg mx-4 md:mx-auto p-8">
                         <img
                             src={imageUrl}
                             alt="Modal"
@@ -82,7 +82,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, imageUrl, username, pass
                         />
                     </div>
                 ) : username && password ? (
-                    <div ref={modalRefCredentials} className="relative bg-white dark:bg-gray-800 rounded-lg w-[300px] h-[300px] mx-4 md:mx-auto p-6">
+                    <div ref={modalRefCredentials} className="relative bg-white dark:bg-gray-800 rounded-lg w-[300px] h-[300px] mx-4 md:mx-auto p-8">
                         <div>
                             <h4 className="text-lg font-semibold mb-4">Credentials</h4>
                             <div className="mb-4">

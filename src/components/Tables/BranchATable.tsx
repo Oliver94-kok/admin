@@ -567,19 +567,21 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
         }}
       >
         <div className="p-5">
+          {/* Conditional rendering based on password state */}
           {!password ? (
             <>
-              <p className="mb-4 justify-center text-center">
-                {!errorMsg && (
-                  <> Are you sure want to Reset this {name} Password?</>
+              <p className="mb-4 justify-center text-center text-lg font-semibold">
+                {!errorMsg ? (
+                  <>Are you sure you want to reset the password for {name}?</>
+                ) : (
+                  <span className="text-red-600">{errorMsg}</span>
                 )}
-                {errorMsg && <p className="text-red-600">{errorMsg}</p>}
               </p>
             </>
           ) : (
             <>
               <div>
-                <h4 className="mb-4 text-lg font-semibold">Credentials</h4>
+                <h4 className="mb-4 text-lg font-semibold text-center">New Credentials</h4>
                 <div className="mb-4">
                   <p className="font-medium">Username:</p>
                   <p className="text-gray-800">{username}</p>
@@ -593,7 +595,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
           )}
 
           {/* Buttons positioned at the bottom right */}
-          <div className="mt-6 flex items-center justify-end space-x-4">
+          <div className="mt-6 flex items-center justify-end space-x-14">
             <button
               onClick={() => {
                 setIsResetOpen(false);
@@ -606,13 +608,10 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
             </button>
             {password && (
               <>
-                {" "}
                 <button
-                  className="mt-1 text-blue-500 underline"
+                  className="font-medium text-blue-500 underline hover:text-blue-600"
                   onClick={() =>
-                    handleCopy(
-                      "Username:" + username + "  " + "Password:" + password,
-                    )
+                    handleCopy("Username:" + username + "  " + "Password:" + password)
                   }
                 >
                   Copy
@@ -621,10 +620,9 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
             )}
             {!password && (
               <>
-                {" "}
                 <button
                   onClick={() => resetPassword()}
-                  className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
+                  className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-green-600"
                 >
                   Confirm
                 </button>
@@ -633,6 +631,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
           </div>
         </div>
       </Modal>
+
 
       <Modal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}>
         <div className="p-5">

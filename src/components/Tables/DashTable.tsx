@@ -231,10 +231,10 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-3.5 px-2 py-4 ">
+            <div className="flex items-center justify-center gap-3.5 px-2 py-2 ">
               {brand.img ? <>
                 <div
-                  className="h-12.5 w-15 rounded-md"
+                  className="h-15 w-15 rounded-md"
                   style={{ position: "relative", paddingBottom: "20%" }}
                   onClick={() => setSelectedImage(brand.img as string)}
                 >
