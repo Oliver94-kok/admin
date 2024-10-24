@@ -270,7 +270,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               </>}
             </div>
           </div>
-          <div className="col-span-1 flex items-center justify-center pl-20">
+          <div className="col-span-1 flex items-center justify-center pl-12">
             {/* Only show buttons if no action has been confirmed */}
             {leave.status == "Pending" ? (
               <>
