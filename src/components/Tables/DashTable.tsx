@@ -251,8 +251,10 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
-                <i>clock in:{brand.locationIn} </i>
-                <i>clock out:{brand.locationOut}</i>
+                <i>
+                  <span className="text-green-500">Clock in:</span> {brand.locationIn}
+                </i>
+                <i><span className="text-orange-500">Clock out:</span>{brand.locationOut}</i>
               </p>
             </div>
           </div>
