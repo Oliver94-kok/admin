@@ -103,21 +103,7 @@ const MultiInvoiceTable = () => {
                 *Absent 2Day -Basic Day Salary
               </p>
               <p>*Lateness:</p>
-              <ul>
-                {lateEntries.map((entry, index) => (
-                  <li key={index}>
-                    {entry.date} {entry.reason} {entry.penalty}
-                  </li>
-                ))}
-              </ul>
               <p>*Not Clocked in:</p>
-              <ul>
-                {notClockedInEntries.map((entry, index) => (
-                  <li key={index}>
-                    {entry.date} {entry.reason} {entry.penalty}
-                  </li>
-                ))}
-              </ul>
               <br />
             </div>
             <div class="flex justify-between">
