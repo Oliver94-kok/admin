@@ -445,7 +445,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
   };
 
   return (
-    <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
+           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="mb-5 flex justify-between">
         <div className="relative mb-5">
           {/* Year selection dropdown */}
@@ -703,14 +704,14 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("OT", id, salary.id)}
             >
               Add{" "}
             </button>
 
             {/* MultiSelect component */}
-            <div className="w-full items-center justify-center px-5">
+            <div className="items-center justify-center px-5">
               {/* <MultiSelect
                 items={selectedItems}
                 onRemove={handleRemoveOverTime}
@@ -732,14 +733,14 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
             {/* ButtonPopup component */}
 
             <button
-              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Bonus", id, salary.id)}
             >
               Add{" "}
             </button>
 
             {/* MultiSelect component */}
-            <div className="w-full items-center justify-center px-5">
+            <div className="items-center justify-center px-5">
               {salary.bonus && (
                 <>
                   <ComponentSalary
@@ -755,13 +756,13 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Allow", id, salary.id)}
             >
               Add{" "}
             </button>
             {/* MultiSelect component */}
-            <div className="w-full items-center justify-center px-5">
+            <div className="items-center justify-center px-5">
               {salary.allowance && (
                 <>
                   {" "}
@@ -778,14 +779,14 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              className="mb-4 rounded-[2px] rounded-full border border-primary text-primary lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Cover", id, salary.id)}
             >
               Add{" "}
             </button>
 
             {/* MultiSelect component */}
-            <div className="w-full items-center justify-center px-5">
+            <div className="items-center justify-center px-5">
               {salary.cover && (
                 <>
                   {" "}
@@ -909,7 +910,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image
           src={selectedImage || ""}
-          width={600}
+          width={500}
           height={500}
           alt="Product"
         />

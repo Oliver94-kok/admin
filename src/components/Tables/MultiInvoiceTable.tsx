@@ -71,7 +71,7 @@ const MultiInvoiceTable = () => {
               <p>Branch: ${salary.users?.name || 'N/A'}</p>  
             </div>  
             <div class="text-right">  
-              <p>Total Hours: ${salary.allowance || 'N/A'} hrs</p>  
+              <p>Total Hours: ${salary.overTimeHour || 'N/A'} hrs</p>  
               <p>Total Working Days: ${salary.workingDay || 'N/A'} days</p>  
             </div>  
           </div>  
@@ -87,15 +87,15 @@ const MultiInvoiceTable = () => {
             </div>  
              <div class="flex justify-between">
               <p>Bonus:</p>
-              <p class="text-right">-${salary.bonus || 'N/A'}</p>
+              <p class="text-right">${salary.bonus || 'N/A'}</p>
             </div>
             <div class="flex justify-between">
               <p>Allowance:</p>
-              <p class="text-right">-${salary.allowance || 'N/A'}</p> 
+              <p class="text-right">${salary.allowance || 'N/A'}</p> 
             </div>
             <div class="flex justify-between">
               <p>Cover:</p>
-              <p class="text-right">-${salary.cover || 'N/A'}</p> 
+              <p class="text-right">${salary.cover || 'N/A'}</p> 
             </div>
             <br />
             <div style="color: red;">
@@ -138,7 +138,8 @@ const MultiInvoiceTable = () => {
   };
 
   return (
-    <div className=" min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
+           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {/* Header with Save PDF button */}
       <div className="header flex justify-between mb-5">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
@@ -176,7 +177,7 @@ const MultiInvoiceTable = () => {
                   <p>Branch: {salary?.late}</p>
                 </div>
                 <div className="text-right">
-                  <p>Total Hours: {salary?.workingDay} hrs</p>
+                  <p>Total Hours: {salary?.overTimeHour} hrs</p>
                   <p>Total Working Days: {salary?.workingDay} days</p> {/* Moved here */}
                 </div>
               </div>

@@ -89,7 +89,8 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
     return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
   };
   return (
-    <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
+           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {/* Search Input */}
       <div className="flex justify-between mb-5">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
@@ -173,13 +174,13 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               Photo
             </h5>
           </div>
-          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('location')}>
+          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5">
             <p className="text-sm font-medium uppercase xsm:text-base">Location</p>
-            {sortColumn === 'location' && (
+            {/* {sortColumn === 'location' && (
               <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
                 {sortOrder === 'asc' ? '▲' : '▼'}
               </span>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -260,7 +261,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
         <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
           <Image
             src={selectedImage || ''}
-            width={600}
+            width={500}
             height={500}
             alt="leave"
           />

@@ -10,53 +10,53 @@ import DatePickerOne from "../Form/FormElements/DatePicker/DatePickerOne";
 import { BranchsUser } from "@/types/branchs";
 import { BranchATable } from "./BranchATable";
 
-const branchData: Branch[] = [
-  {
-    image: "/images/product/product-01.png",
-    username: "001",
-    name: "tester",
-    branches: "Electronics",
-    setclockin: "08:00",
-    setclockout: "16:00",
-    starton: "Sep 2, 2024",
-  },
-  {
-    image: "/images/product/product-01.png",
-    username: "006",
-    name: "test",
-    branches: "Electronics",
-    setclockin: "08:00",
-    setclockout: "16:00",
-    starton: "Sep 2, 2024",
-  },
-  {
-    image: "/images/product/product-01.png",
-    username: "005",
-    name: "tes",
-    branches: "Electronics",
-    setclockin: "08:00",
-    setclockout: "16:00",
-    starton: "Sep 2, 2024",
-  },
-  {
-    image: "/images/product/product-01.png",
-    username: "004",
-    name: "tester",
-    branches: "Electronics",
-    setclockin: "08:00",
-    setclockout: "16:00",
-    starton: "Sep 2, 2024",
-  },
-  {
-    image: "/images/product/product-01.png",
-    username: "002",
-    name: "tester",
-    branches: "Electronics",
-    setclockin: "08:00",
-    setclockout: "16:00",
-    starton: "Sep 2, 2024",
-  },
-];
+// const branchData: Branch[] = [
+//   {
+//     image: "/images/product/product-01.png",
+//     username: "001",
+//     name: "tester",
+//     branches: "Electronics",
+//     setclockin: "08:00",
+//     setclockout: "16:00",
+//     starton: "Sep 2, 2024",
+//   },
+//   {
+//     image: "/images/product/product-01.png",
+//     username: "006",
+//     name: "test",
+//     branches: "Electronics",
+//     setclockin: "08:00",
+//     setclockout: "16:00",
+//     starton: "Sep 2, 2024",
+//   },
+//   {
+//     image: "/images/product/product-01.png",
+//     username: "005",
+//     name: "tes",
+//     branches: "Electronics",
+//     setclockin: "08:00",
+//     setclockout: "16:00",
+//     starton: "Sep 2, 2024",
+//   },
+//   {
+//     image: "/images/product/product-01.png",
+//     username: "004",
+//     name: "tester",
+//     branches: "Electronics",
+//     setclockin: "08:00",
+//     setclockout: "16:00",
+//     starton: "Sep 2, 2024",
+//   },
+//   {
+//     image: "/images/product/product-01.png",
+//     username: "002",
+//     name: "tester",
+//     branches: "Electronics",
+//     setclockin: "08:00",
+//     setclockout: "16:00",
+//     starton: "Sep 2, 2024",
+//   },
+// ];
 
 interface BranchTableInterface {
   A: BranchsUser[];
@@ -71,7 +71,8 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
   const totalPages = 4; // Since there are 3 teams (A, B, C)
 
   return (
-    <div className="min-w-full rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
+           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {currentPage === 1 && <BranchATable data={A} team="Team A" refresh={refreshData} />}
       {currentPage === 2 && <BranchATable data={B} team="Team B" refresh={refreshData} />}
       {currentPage === 3 && <BranchATable data={C} team="Team C" refresh={refreshData} />}

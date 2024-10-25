@@ -252,7 +252,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
             <div
-              className="h-12.5 w-15 rounded-md"
+              className="h-15 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
               onClick={() =>
                 setSelectedImage(
@@ -513,7 +513,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image
           src={selectedImage || ""}
-          width={600}
+          width={500}
           height={500}
           alt="Product"
         />

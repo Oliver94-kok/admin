@@ -25,7 +25,7 @@ export default function DefaultLayout({
 
           {/* <!-- ===== Main Content Star ===== --> */}
           <main>
-            <div className=" w-[1920px] h-[1080px] max-w-full p-4 md:p-6 2xl:p-10 overflow-auto">
+            <div className="w-[1920px] h-[1280px] max-w-full p-4 md:p-6 2xl:p-10 overflow-auto">
               {children}
             </div>
           </main>
