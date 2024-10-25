@@ -24,30 +24,19 @@ import { DateTime } from "luxon";
 import { checkUsername, getUserById } from "@/data/user";
 
 export const GET = async (req: Request) => {
-  let checkuser = await checkUsername();
-  let username = "";
-  if (checkuser) {
-    // let lastest = parseInt(checkuser?.username.substring(4));
-    let lastest = parseInt("user10".substring(4));
-    console.log("🚀 ~ GET ~ lastest:", lastest);
-    if (lastest < 9) {
-      username = `user0${lastest + 1}`;
-    } else {
-      username = `user${lastest + 1}`;
-    }
-  }
+  let date = DateTime.now().toFormat("dd");
+
   // let d = await db.attends.findMany();
-  return Response.json({ username }, { status: 200 });
+  return Response.json({ date }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
   const { userId, clockIn, imgClockIn, clockOut, late, location, notify } =
     await req.json();
   console.log("🚀 ~ POST ~ notify:", notify);
-  // let check = await checkClockIn(userId);
-  // // console.log("🚀 ~ POST ~ check:", check);
-  // if (check)
-  //   return Response.json({ error: "User aldready clock in" }, { status: 400 });
+  let check = await checkClockIn(userId);
+  if (check)
+    return Response.json({ error: "User aldready clock in" }, { status: 400 });
   const user = await getUserById(userId);
 
   if (clockIn) {
@@ -73,17 +62,19 @@ export const POST = async (req: Request) => {
     await SentNoti("Clock", "You have clock in", "", user?.username);
     return Response.json({ id: t.id }, { status: 201 });
   }
-  let date = await getDateFromISOString(clockOut);
+  let date = DateTime.now().toFormat("dd");
+  let fine2 = await getSalaryLate2(userId);
+  let overtime = await calOverTime(userId, clockOut);
   let day = {
-    id: date.substring(8),
+    id: parseInt(date),
     date,
     clockIn: null,
     clockOut,
     late: 0,
     noClockin: 1,
+    fine: fine2,
   };
-  let fine2 = await getSalaryLate2(userId);
-  let overtime = await calOverTime(userId, clockOut);
+
   let data = {
     userId,
     clockOut,
@@ -119,14 +110,15 @@ export const PATCH = async (req: Request) => {
     data,
     where: { id: id },
   });
-  let date = await getDateFromISOString(clockOut);
+  let date = DateTime.now().toFormat("dd");
   let day = {
-    id: date.substring(8),
+    id: parseInt(date),
     date,
     clockIn: attend.clockIn,
     clockOut,
     late: attend.fine ? 1 : 0,
     noClockin: 0,
+    fine: attend.fine,
   };
   await checkSalary(
     update.userId,
