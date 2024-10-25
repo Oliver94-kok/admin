@@ -268,7 +268,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
                     ? teamA.users?.userImg
                     : "/uploads/user/defaultUser.jpg"
                 }
-                width={60}
+                width={50}
                 height={50}
                 alt="leave"
               />

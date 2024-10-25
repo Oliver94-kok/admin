@@ -207,15 +207,15 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           className="grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
           key={key}
         >
-          <div className="flex items-center gap-3.5 px-2 py-4">
+          <div className="flex items-center gap-3.5 ">
             <div
-              className="h-12.5 w-15 rounded-md"
+              className="h-15 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
               onClick={() => setSelectedImage(leave.users?.userImg ? leave.users?.userImg : "/uploads/user/defaultUser.jpg")}
             >
               <Image
                 src={leave.users?.userImg ? leave.users?.userImg : "/uploads/user/defaultUser.jpg"}
-                width={60}
+                width={50}
                 height={50}
                 alt="leave"
               />

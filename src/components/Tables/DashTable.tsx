@@ -190,15 +190,15 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               }`}
             key={key}
           >
-            <div className="flex items-center gap-3.5 px-2 py-4">
+            <div className="flex items-center gap-3.5">
               <div
-                className="h-12.5 w-15 rounded-md"
+                className="h-15 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
                 onClick={() => setSelectedImage(brand.userImg ? brand.userImg : "/uploads/user/defaultUser.jpg")}
               >
                 <Image
                   src={brand.userImg ? brand.userImg : "/uploads/user/defaultUser.jpg"}
-                  width={60}
+                  width={50}
                   height={50}
                   alt="leave"
                 />
@@ -241,7 +241,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                 >
                   <Image
                     src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
-                    width={60}
+                    width={50}
                     height={50}
                     alt="leave"
                   />
