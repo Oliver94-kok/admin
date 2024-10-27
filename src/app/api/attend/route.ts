@@ -1,5 +1,6 @@
 import {
   calOverTime,
+  calOverTime2,
   checkClockIn,
   createNotClockIn,
   lateClockIn,
@@ -24,10 +25,18 @@ import { DateTime } from "luxon";
 import { checkUsername, getUserById } from "@/data/user";
 
 export const GET = async (req: Request) => {
-  let date = DateTime.now().toFormat("dd");
-
+  let attend = await checkClockIn("cm2n0xyj70007yzt6vct3z8rw");
+  const currentTime = new Date();
+  console.log("🚀 ~ GET ~ currentTime:", currentTime)
+  const expiryTime = new Date(currentTime.getTime() + 15 * 60 * 1000);
+  console.log("🚀 ~ GET ~ expiryTime:", expiryTime)
+  
+  let resutl = currentTime < expiryTime;
+  if(!resutl){
+    return Response.json({error:"Cannot clock out"},{status:400})
+  }
   // let d = await db.attends.findMany();
-  return Response.json({ date }, { status: 200 });
+  return Response.json({ resutl }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
@@ -51,6 +60,7 @@ export const POST = async (req: Request) => {
       fine: userlate!,
       locationIn: location,
     };
+    console.log("🚀 ~ POST ~ data:", data)
     let t = await db.attends.create({ data });
     let noti = await db.notificationUser.findFirst({ where: { userId } });
     const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
@@ -64,7 +74,7 @@ export const POST = async (req: Request) => {
   }
   let date = DateTime.now().toFormat("dd");
   let fine2 = await getSalaryLate2(userId);
-  let overtime = await calOverTime(userId, clockOut);
+  let overtime = await calOverTime2(userId, clockOut);
   let day = {
     id: parseInt(date),
     date,
@@ -98,8 +108,14 @@ export const POST = async (req: Request) => {
 export const PATCH = async (req: Request) => {
   const { userId, clockOut, id, location, notify } = await req.json();
   let attend = await checkClockIn(userId);
-  let overtime = await calOverTime(userId, clockOut);
+  let overtime = await calOverTime2(userId, clockOut);
   let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
+  const expiryTime = new Date(attend.clockIn.getTime() + 15 * 60 * 1000);
+  const currentTime = new Date();
+  let result = currentTime < expiryTime
+  if(result){
+    return Response.json({error:"Cannot clock out"},{status:400})
+  }
   let data = {
     clockOut,
     workingHour: workingHour,

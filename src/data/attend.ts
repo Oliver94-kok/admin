@@ -116,7 +116,7 @@ export const calOverTime = async (userId: string, clockOut: string) => {
     return hour.as("minute").toFixed();
   }
 };
-export const testCalOverTime = async (userId: string, clockOut: string) => {
+export const calOverTime2 = async (userId: string, clockOut: string) => {
   let user = await db.attendBranch.findFirst({ where: { userId } });
   if (user) {
     var start = DateTime.fromISO(clockOut);
