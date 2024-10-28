@@ -208,3 +208,10 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
   });
   return;
 };
+
+export const cronAttend = async () => {
+  let date = DateTime.now().toFormat("yyyy-MM-dd");
+  let data: AttendsInterface[] = await db.$queryRaw`SELECT userId
+    FROM Attends WHERE (date(clockIn) = date(${date}) OR date(clockOut) = date(${date}))`;
+  return data;
+};

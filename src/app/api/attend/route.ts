@@ -27,8 +27,8 @@ import { checkUsername, getUserById } from "@/data/user";
 export const GET = async (req: Request) => {
   let image;
   let result = await postImage("image", "user04", "user");
-  // let d = await db.attends.findMany();
-  return Response.json({ result }, { status: 200 });
+  let d = await db.attends.findMany();
+  return Response.json({ d }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
