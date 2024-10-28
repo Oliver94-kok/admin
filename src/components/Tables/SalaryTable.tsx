@@ -30,7 +30,7 @@ interface SalaryTableInterface {
   data: SalaryUser[];
   refresh?: () => void;
   onMonthChange: (month: string) => void;
-  currentMonth: string,
+  currentMonth: string;
   onYearChange: (year: string) => void;
   currentYear: string;
 }
@@ -42,7 +42,13 @@ export enum typeComponentSalary {
   Cover,
 }
 
-const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearChange }: SalaryTableInterface) => {
+const SalaryTable = ({
+  data,
+  onMonthChange,
+  currentMonth,
+  currentYear,
+  onYearChange,
+}: SalaryTableInterface) => {
   const router = useRouter();
   const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -71,9 +77,9 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
 
   useEffect(() => {
     if (data) {
-      setDataSalary(data)
+      setDataSalary(data);
     }
-  }, [data])
+  }, [data]);
   // Handle Select All Logic
   const handleSelectAllChange = () => {
     setSelectAll(!selectAll);
@@ -98,7 +104,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
         // return;
       }
       const newUser: SalaryUser[] = dataSalary;
-      console.log("🚀 ~ handleSelectAllChange ~ newUser:", newUser)
+      console.log("🚀 ~ handleSelectAllChange ~ newUser:", newUser);
 
       addSalaryUsers(newUser);
       console.log(selectedItems.length);
@@ -181,9 +187,9 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
         prevUsers.map((user) =>
           user.id === idSalary
             ? {
-              ...user,
-              ...{ perDay: Number(salary), total: Number(result.total) },
-            }
+                ...user,
+                ...{ perDay: Number(salary), total: Number(result.total) },
+              }
             : user,
         ),
       );
@@ -217,8 +223,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -226,9 +232,9 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               prevUsers.map((user) =>
                 user.id === id
                   ? {
-                    ...user,
-                    ...{ overTime: Number(item), total: data.total },
-                  }
+                      ...user,
+                      ...{ overTime: Number(item), total: data.total },
+                    }
                   : user,
               ),
             );
@@ -246,8 +252,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -255,9 +261,9 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               prevUsers.map((user) =>
                 user.id === id
                   ? {
-                    ...user,
-                    ...{ allowance: Number(item), total: data.total },
-                  }
+                      ...user,
+                      ...{ allowance: Number(item), total: data.total },
+                    }
                   : user,
               ),
             );
@@ -274,8 +280,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -299,8 +305,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -330,7 +336,9 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
     id: string,
     type: typeComponentSalary,
   ) => {
-    const isConfirmed = window.confirm("Are you sure you want to remove this salary component?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to remove this salary component?",
+    );
 
     // If the user cancels the action, exit the function
     if (!isConfirmed) {
@@ -344,8 +352,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -369,8 +377,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -394,8 +402,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -419,8 +427,8 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
-              position: "top-center"
-            })
+              position: "top-center",
+            });
             return;
           }
           if (data.success) {
@@ -445,8 +453,10 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
   };
 
   return (
-    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
-           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div
+      className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
+           px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10"
+    >
       <div className="mb-5 flex justify-between">
         <div className="relative mb-5">
           {/* Year selection dropdown */}
@@ -457,8 +467,12 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
             onChange={(e) => onYearChange(e.target.value)}
           >
             {/* Add year options */}
-            <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
-            <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+            <option value={new Date().getFullYear() - 1}>
+              {new Date().getFullYear() - 1}
+            </option>
+            <option value={new Date().getFullYear()}>
+              {new Date().getFullYear()}
+            </option>
           </select>
 
           {/* Month selection dropdown with Check button beside it */}
@@ -643,10 +657,11 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
-            ? ""
-            : "border-b border-stroke dark:border-dark-3"
-            }`}
+          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${
+            key === currentData.length - 1
+              ? ""
+              : "border-b border-stroke dark:border-dark-3"
+          }`}
           key={key}
         >
           <div className="flex items-center gap-3.5">
@@ -656,7 +671,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               onClick={() =>
                 setSelectedImage(
                   salary.users?.userImg
-                    ? `http://localhost:3001${salary.users?.userImg}`
+                    ? `http://image.ocean00.com${salary.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg",
                 )
               }
@@ -664,7 +679,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               <Image
                 src={
                   salary.users?.userImg
-                    ? `http://localhost:3001${salary.users?.userImg}`
+                    ? `http://image.ocean00.com${salary.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg"
                 }
                 width={50}
@@ -704,7 +719,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("OT", id, salary.id)}
             >
               Add{" "}
@@ -733,7 +748,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
             {/* ButtonPopup component */}
 
             <button
-              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Bonus", id, salary.id)}
             >
               Add{" "}
@@ -756,7 +771,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Allow", id, salary.id)}
             >
               Add{" "}
@@ -779,7 +794,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              className="mb-4 rounded-full border border-primary text-primary px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Cover", id, salary.id)}
             >
               Add{" "}
@@ -887,8 +902,9 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
+                currentPage === i + 1 ? "bg-primary text-white" : ""
+              }`}
             >
               {i + 1}
             </button>
@@ -968,7 +984,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
         onClose={() => {
           handleConfirmClose();
           setSalary(""); // Clear the salary input
-          setError("");  // Clear any error messages
+          setError(""); // Clear any error messages
         }}
       >
         <div className="p-5">
@@ -996,7 +1012,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               onClick={() => {
                 handleConfirmClose();
                 setSalary(""); // Clear the salary input
-                setError("");  // Clear any error messages
+                setError(""); // Clear any error messages
               }}
               className="font-medium text-red-500 underline hover:text-red-600"
             >
@@ -1006,7 +1022,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               onClick={() => {
                 handleConfirm();
                 setSalary(""); // Clear the salary input after confirming
-                setError("");  // Clear any error messages
+                setError(""); // Clear any error messages
               }}
               className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
             >

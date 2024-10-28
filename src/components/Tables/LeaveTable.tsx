@@ -1,27 +1,26 @@
 // src/components/LeaveTable.tsx
-"use client"
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { Leave } from '@/types/product';
-import Modal from '../modal';
-import { LeavesInterface } from '@/types/leave';
-import { ApproveLeave } from '@/action/approveLeave';
-import { SentNoti } from '@/lib/function';
-import { DateTime } from 'luxon';
-import { mutate } from 'swr';
+"use client";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import { Leave } from "@/types/product";
+import Modal from "../modal";
+import { LeavesInterface } from "@/types/leave";
+import { ApproveLeave } from "@/action/approveLeave";
+import { SentNoti } from "@/lib/function";
+import { DateTime } from "luxon";
+import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
 interface LeaveTableInterface {
-  data: LeavesInterface[]
+  data: LeavesInterface[];
 }
-
 
 const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const itemsPerPage = 10;
   const [dataLeave, setDataLeave] = useState(data);
@@ -32,11 +31,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     }
   }, [data]);
 
-
-
   // Function to handle sorting
   const handleSort = (column: string) => {
-    const newSortOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortOrder =
+      sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortOrder(newSortOrder);
   };
@@ -48,24 +46,24 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     const aValue = a[sortColumn as keyof LeavesInterface];
     const bValue = b[sortColumn as keyof LeavesInterface];
 
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortOrder === 'asc'
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortOrder === "asc"
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
-    } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return sortOrder === 'asc'
-        ? aValue - bValue
-        : bValue - aValue;
+    } else if (typeof aValue === "number" && typeof bValue === "number") {
+      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
     }
     return 0;
   });
 
   // Paginate the data
-  const filteredData = sortedData.filter(attend => {
+  const filteredData = sortedData.filter((attend) => {
     // if (attend.name && attend.username && attend.workingHour) {
     const searchText = searchQuery.toLowerCase(); // Lowercase searchQuery once
-    return attend.users?.name.toLowerCase().includes(searchText) ||
+    return (
+      attend.users?.name.toLowerCase().includes(searchText) ||
       attend.users?.username.toLowerCase().includes(searchText)
+    );
     //   attend?.workingHour.toString().includes(searchText);
     // }
     // return false; // Explicitly return false to avoid accidental inclusions
@@ -73,25 +71,25 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const fetchData = async () => {
     try {
       // Replace this with your actual data-fetching logic
-      console.log('Fetching new data...');
+      console.log("Fetching new data...");
 
       // Simulate a delay or an API call
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Handle your data (e.g., update state, store response)
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
   const handleConfirmOpen = (action: string, id: string) => {
-    setLeaveId(id)
+    setLeaveId(id);
     setCurrentAction(action);
     setIsConfirmOpen(true);
   };
@@ -106,31 +104,36 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     ApproveLeave(currentAction!, leaveId).then(async (data) => {
       if (data.error) {
         toast.error(data.error, {
-          position: "top-center"
-        })
+          position: "top-center",
+        });
         return;
       }
       if (data.success) {
-        let d = await SentNoti("Leave", `Your leave has been ${currentAction}`, data.leaveId, data.username);
-        console.log(d)
+        let d = await SentNoti(
+          "Leave",
+          `Your leave has been ${currentAction}`,
+          data.leaveId,
+          data.username,
+        );
+        console.log(d);
         mutate("/api/leave/dashboard");
         toast.success("Success add overtime", {
           position: "top-center",
         });
         // window.location.reload();
       }
-    })
+    });
     console.log(`Action: ${currentAction}, Leave ID: ${leaveId}`);
     handleConfirmClose();
   };
 
   return (
-    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
-           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-
-
+    <div
+      className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
+           px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10"
+    >
       {/* Search Input */}
-      <div className="flex justify-between mb-5">
+      <div className="mb-5 flex justify-between">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           User Leave
         </h4>
@@ -170,35 +173,59 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
 
       <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Username</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Username
+          </h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('leavetype')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Leave Type</h5>
-          {sortColumn === 'leavetype' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
+          onClick={() => handleSort("leavetype")}
+        >
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Leave Type
+          </h5>
+          {sortColumn === "leavetype" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
-        <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('branch')}>
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Branch</h5>
-          {sortColumn === 'branch' && (
-            <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-              {sortOrder === 'asc' ? '▲' : '▼'}
+        <div
+          className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
+          onClick={() => handleSort("branch")}
+        >
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Branch
+          </h5>
+          {sortColumn === "branch" && (
+            <span
+              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
             </span>
           )}
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Leave Date</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Leave Date
+          </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Leave Reason</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            Leave Reason
+          </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
-          <h5 className="text-sm font-medium uppercase xsm:text-base pl-5">Image</h5>
+          <h5 className="pl-5 text-sm font-medium uppercase xsm:text-base">
+            Image
+          </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
-          <h5 className="text-sm font-medium uppercase xsm:text-base pl-20">Actions</h5>
+          <h5 className="pl-20 text-sm font-medium uppercase xsm:text-base">
+            Actions
+          </h5>
         </div>
       </div>
 
@@ -211,10 +238,20 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             <div
               className="h-15 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
-              onClick={() => setSelectedImage(leave.users?.userImg ? `http://localhost:3001${leave.users?.userImg}` : "/uploads/user/defaultUser.jpg")}
+              onClick={() =>
+                setSelectedImage(
+                  leave.users?.userImg
+                    ? `http://image.ocean00.com${leave.users?.userImg}`
+                    : "/uploads/user/defaultUser.jpg",
+                )
+              }
             >
               <Image
-                src={leave.users?.userImg ? `http://localhost:3001${leave.users?.userImg}` : "/uploads/user/defaultUser.jpg"}
+                src={
+                  leave.users?.userImg
+                    ? `http://image.ocean00.com${leave.users?.userImg}`
+                    : "/uploads/user/defaultUser.jpg"
+                }
                 width={50}
                 height={50}
                 alt="leave"
@@ -224,7 +261,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               <p className="flex font-medium text-dark dark:text-white sm:block">
                 {leave.users?.name}
               </p>
-              <p className="flex text-gray-500 text-sm sm:block">
+              <p className="flex text-sm text-gray-500 sm:block">
                 {leave.users?.username}
               </p>
             </div>
@@ -246,29 +283,40 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
-            <div className="flex-col flex-1 transition-opacity duration-500 relative -mr-2 pr-2 pl-2 h-28 overflow-y-auto">
+            <div className="relative -mr-2 h-28 flex-1 flex-col overflow-y-auto pl-2 pr-2 transition-opacity duration-500">
               <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-                {leave.reason} </p>
+                {leave.reason}{" "}
+              </p>
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              {leave.img ? <>
-                <div
-                  className="h-25 w-15 rounded-md pl-5"
-                  style={{ position: "relative", width: "100%", paddingBottom: "20%" }}
-                  onClick={() => setSelectedImage(leave.img)}
-                >
-                  <Image
-                    src={leave.img ? leave.img : ""}
-                    width={100}
-                    height={90}
-                    alt="leave"
-                  />
-                </div></> : <>
-                No image
-
-              </>}
+              {leave.img ? (
+                <>
+                  <div
+                    className="h-25 w-15 rounded-md pl-5"
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      paddingBottom: "20%",
+                    }}
+                    onClick={() =>
+                      setSelectedImage(`http://image.ocean00.com${leave.img}`)
+                    }
+                  >
+                    <Image
+                      src={
+                        leave.img ? `http://image.ocean00.com${leave.img}` : ""
+                      }
+                      width={100}
+                      height={90}
+                      alt="leave"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>No image</>
+              )}
             </div>
           </div>
           <div className="col-span-1 flex items-center justify-center pl-12">
@@ -277,42 +325,51 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               <>
                 {/* Approval Button */}
                 <button
-                  onClick={() => handleConfirmOpen('Approve', leave.id)}
-                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 mr-2 ${currentAction === 'Approve' ? 'bg-green-600' : 'bg-green-500 hover:bg-green-600'
-                    } text-white`}
+                  onClick={() => handleConfirmOpen("Approve", leave.id)}
+                  className={`mr-2 rounded-full px-5 py-1 lg:px-10 xl:px-5 ${
+                    currentAction === "Approve"
+                      ? "bg-green-600"
+                      : "bg-green-500 hover:bg-green-600"
+                  } text-white`}
                 >
                   Approve
                 </button>
 
                 {/* Reject Button */}
                 <button
-                  onClick={() => handleConfirmOpen('Reject', leave.id)}
-                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === 'Reject' ? 'bg-red-600' : 'bg-red-500 hover:bg-red-600'
-                    } text-white`}
+                  onClick={() => handleConfirmOpen("Reject", leave.id)}
+                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${
+                    currentAction === "Reject"
+                      ? "bg-red-600"
+                      : "bg-red-500 hover:bg-red-600"
+                  } text-white`}
                 >
                   Reject
                 </button>
               </>
             ) : (
               <>
-                <div >
-
-                  <p className={`font-bold ${leave.status === 'Approve' ? 'text-green-600' : 'text-red-600'}`}>
-                    This request has been {leave.status === 'Approve' ? 'approved' : 'rejected'}.
+                <div>
+                  <p
+                    className={`font-bold ${leave.status === "Approve" ? "text-green-600" : "text-red-600"}`}
+                  >
+                    This request has been{" "}
+                    {leave.status === "Approve" ? "approved" : "rejected"}.
                   </p>
                 </div>
-
               </>
             )}
 
             {/* Confirmation Modal */}
             <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
-              <div className="text-center p-5">
-                <p className="mb-4">Are you sure you want to {currentAction} this leave request?</p>
-                <div className="flex justify-end items-center space-x-4 mt-6">
+              <div className="p-5 text-center">
+                <p className="mb-4">
+                  Are you sure you want to {currentAction} this leave request?
+                </p>
+                <div className="mt-6 flex items-center justify-end space-x-4">
                   <button
                     onClick={handleConfirmClose}
-                    className="text-red-500 underline font-medium hover:text-red-600"
+                    className="font-medium text-red-500 underline hover:text-red-600"
                   >
                     Cancel
                   </button>
@@ -321,7 +378,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                       handleConfirm(); // Call confirm logic
                       setCurrentAction(currentAction); // Update the current action
                     }}
-                    className="btn btn-primary bg-green-500 text-white rounded-[5px] px-6 py-2 font-medium hover:bg-opacity-90"
+                    className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
                   >
                     Confirm
                   </button>
@@ -330,7 +387,6 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             </Modal>
 
             {/* Update design based on current action */}
-
           </div>
         </div>
       ))}
@@ -349,8 +405,9 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
+                currentPage === i + 1 ? "bg-primary text-white" : ""
+              }`}
             >
               {i + 1}
             </button>
@@ -370,12 +427,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
 
       {/* Render the image modal */}
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
-        <Image
-          src={selectedImage || ''}
-          width={500}
-          height={500}
-          alt="leave"
-        />
+        <Image src={selectedImage || ""} width={500} height={500} alt="leave" />
       </Modal>
     </div>
   );

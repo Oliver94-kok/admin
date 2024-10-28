@@ -1,13 +1,12 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { BRAND } from "@/types/brand";
 import Image from "next/image";
 import Modal from "../modal";
 import { AttendsInterface } from "@/types/attendents";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { getDataByDate } from "@/data/attend";
 import { DateTime } from "luxon";
-
 
 interface dashTableInterface {
   data: AttendsInterface[];
@@ -17,14 +16,16 @@ interface dashTableInterface {
 
 const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
   const [tableDate, setTableData] = useState(data);
-  console.log("🚀 ~ DashTable ~ tableDate:", tableDate)
+  console.log("🚀 ~ DashTable ~ tableDate:", tableDate);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Add sort order state
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const itemsPerPage = 10;
-  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [selectedDate, setSelectedDate] = useState(
+    dayjs().format("YYYY-MM-DD"),
+  );
   useEffect(() => {
     if (data) {
       setTableData(data);
@@ -35,43 +36,43 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
     const today = dayjs();
     const dates = [];
     for (let i = 0; i < 3; i++) {
-      dates.push(today.subtract(i, 'day').format('DD/MM'));
+      dates.push(today.subtract(i, "day").format("DD/MM"));
     }
     return dates;
   };
 
   // Function to handle sorting
   const handleSort = (column: string) => {
-    const newSortOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortOrder =
+      sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortOrder(newSortOrder);
   };
 
   // Sort the filtered data
   const sortedData = [...tableDate].sort((a, b) => {
-
     if (!sortColumn) return 0;
 
     const aValue = a[sortColumn as keyof AttendsInterface];
     const bValue = b[sortColumn as keyof AttendsInterface];
 
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortOrder === 'asc'
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortOrder === "asc"
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
-    } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return sortOrder === 'asc'
-        ? aValue - bValue
-        : bValue - aValue;
+    } else if (typeof aValue === "number" && typeof bValue === "number") {
+      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
     }
     return 0;
   });
   // Filtering data by search query
-  const filteredData = sortedData.filter(attend => {
+  const filteredData = sortedData.filter((attend) => {
     // if (attend.name && attend.username && attend.workingHour) {
     const searchText = searchQuery.toLowerCase(); // Lowercase searchQuery once
-    return attend.name.toLowerCase().includes(searchText) ||
+    return (
+      attend.name.toLowerCase().includes(searchText) ||
       attend.username.toLowerCase().includes(searchText)
+    );
     //   attend?.workingHour.toString().includes(searchText);
     // }
     // return false; // Explicitly return false to avoid accidental inclusions
@@ -82,31 +83,33 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
   const displayTime = (clock: any) => {
     const dateTime = DateTime.fromISO(clock);
     return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
   };
   return (
-    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
-           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div
+      className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
+           px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10"
+    >
       {/* Search Input */}
-      <div className="flex justify-between mb-5">
+      <div className="mb-5 flex justify-between">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
           <select
-            value={dayjs(currentDate).format('DD/MM')}
+            value={dayjs(currentDate).format("DD/MM")}
             onChange={(e) => onchangeDate(e.target.value)}
-            className="pr-3 uppercase rounded text-body-2xlg font-bold text-dark dark:text-white bg-white dark:bg-gray-dark"
+            className="rounded bg-white pr-3 text-body-2xlg font-bold uppercase text-dark dark:bg-gray-dark dark:text-white"
           >
             {getLastThreeDays().map((date) => (
               <option key={date} value={date}>
                 {date}
               </option>
             ))}
-          </select> Clock in User
+          </select>{" "}
+          Clock in User
         </h4>
-
 
         <div className="relative mb-5 w-full max-w-[414px]">
           <input
@@ -153,19 +156,33 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               Branch
             </h5>
           </div>
-          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('clockin')}>
-            <p className="text-sm font-medium uppercase xsm:text-base">Clock-In</p>
-            {sortColumn === 'clockin' && (
-              <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-                {sortOrder === 'asc' ? '▲' : '▼'}
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
+            onClick={() => handleSort("clockin")}
+          >
+            <p className="text-sm font-medium uppercase xsm:text-base">
+              Clock-In
+            </p>
+            {sortColumn === "clockin" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
               </span>
             )}
           </div>
-          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5" onClick={() => handleSort('clockout')}>
-            <p className="text-sm font-medium uppercase xsm:text-base">Clock-Out</p>
-            {sortColumn === 'clockout' && (
-              <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-                {sortOrder === 'asc' ? '▲' : '▼'}
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
+            onClick={() => handleSort("clockout")}
+          >
+            <p className="text-sm font-medium uppercase xsm:text-base">
+              Clock-Out
+            </p>
+            {sortColumn === "clockout" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
               </span>
             )}
           </div>
@@ -174,8 +191,10 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               Photo
             </h5>
           </div>
-          <div className="col-span-1 flex items-center justify-center cursor-pointer px-2 pb-3.5">
-            <p className="text-sm font-medium uppercase xsm:text-base">Location</p>
+          <div className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5">
+            <p className="text-sm font-medium uppercase xsm:text-base">
+              Location
+            </p>
             {/* {sortColumn === 'location' && (
               <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
                 {sortOrder === 'asc' ? '▲' : '▼'}
@@ -186,18 +205,31 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
 
         {currentData.map((brand, key) => (
           <div
-            className={`grid grid-cols-6 sm:grid-cols-6 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
-              }`}
+            className={`grid grid-cols-6 sm:grid-cols-6 ${
+              key === currentData.length - 1
+                ? ""
+                : "border-b border-stroke dark:border-dark-3"
+            }`}
             key={key}
           >
             <div className="flex items-center gap-3.5">
               <div
                 className="h-15 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.userImg ? `http://localhost:3001${brand.userImg}` : "/uploads/user/defaultUser.jpg")}
+                onClick={() =>
+                  setSelectedImage(
+                    brand.userImg
+                      ? `http://localhost:3001${brand.userImg}`
+                      : "/uploads/user/defaultUser.jpg",
+                  )
+                }
               >
                 <Image
-                  src={brand.userImg ? `http://localhost:3001${brand.userImg}` : "/uploads/user/defaultUser.jpg"}
+                  src={
+                    brand.userImg
+                      ? `http://localhost:3001${brand.userImg}`
+                      : "/uploads/user/defaultUser.jpg"
+                  }
                   width={50}
                   height={50}
                   alt="leave"
@@ -207,7 +239,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                 <p className="flex font-medium text-dark dark:text-white sm:block">
                   {brand.name}
                 </p>
-                <p className="flex text-gray-500 text-sm sm:block">
+                <p className="flex text-sm text-gray-500 sm:block">
                   {brand.username}
                 </p>
               </div>
@@ -233,28 +265,36 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             </div>
 
             <div className="flex items-center justify-center gap-3.5 px-2 py-2 ">
-              {brand.img ? <>
-                <div
-                  className="h-15 w-15 rounded-md"
-                  style={{ position: "relative", paddingBottom: "20%" }}
-                  onClick={() => setSelectedImage(brand.img as string)}
-                >
-                  <Image
-                    src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
-                    width={50}
-                    height={50}
-                    alt="leave"
-                  />
-                </div>
-              </> : <>No image</>}
+              {brand.img ? (
+                <>
+                  <div
+                    className="h-15 w-15 rounded-md"
+                    style={{ position: "relative", paddingBottom: "20%" }}
+                    onClick={() => setSelectedImage(brand.img as string)}
+                  >
+                    <Image
+                      src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
+                      width={50}
+                      height={50}
+                      alt="leave"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>No image</>
+              )}
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
                 <i>
-                  <span className="text-green-500">Clock in:</span> {brand.locationIn}
+                  <span className="text-green-500">Clock in:</span>{" "}
+                  {brand.locationIn}
                 </i>
-                <i><span className="text-orange-500">Clock out:</span>{brand.locationOut}</i>
+                <i>
+                  <span className="text-orange-500">Clock out:</span>
+                  {brand.locationOut}
+                </i>
               </p>
             </div>
           </div>
@@ -262,7 +302,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
         {/* Render the image modal */}
         <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
           <Image
-            src={selectedImage || ''}
+            src={selectedImage || ""}
             width={500}
             height={500}
             alt="leave"
@@ -284,8 +324,9 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
+                currentPage === i + 1 ? "bg-primary text-white" : ""
+              }`}
             >
               {i + 1}
             </button>

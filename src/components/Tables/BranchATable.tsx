@@ -18,7 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
-  refresh: () => void
+  refresh: () => void;
 }
 
 export enum typeData {
@@ -29,7 +29,11 @@ export enum typeData {
   OFFDAY,
 }
 
-export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) => {
+export const BranchATable = ({
+  data,
+  team,
+  refresh,
+}: BranchTableAInterfface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
@@ -115,8 +119,8 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
         console.error(data.error);
         setErrorMsg("has error");
         toast.error(data.error, {
-          position: "top-center"
-        })
+          position: "top-center",
+        });
         return;
       }
       if (data.success) {
@@ -124,8 +128,8 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
         setIsConfirmOpen(false);
         refresh();
         toast.success("success update data", {
-          position: "top-center"
-        })
+          position: "top-center",
+        });
         // window.location.reload();
       }
     });
@@ -140,7 +144,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
       }
       if (data.success) {
         setPassword(data.success);
-        refresh()
+        refresh();
       }
     });
   };
@@ -156,8 +160,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
       if (data.success) {
         setIsDeleteOpen(false);
         fetchData();
-        refresh()
-
+        refresh();
       }
     });
   };
@@ -244,10 +247,11 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
 
       {currentData.map((teamA, key) => (
         <div
-          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
-            ? ""
-            : "border-b border-stroke dark:border-dark-3"
-            }`}
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${
+            key === currentData.length - 1
+              ? ""
+              : "border-b border-stroke dark:border-dark-3"
+          }`}
           key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
@@ -257,7 +261,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
               onClick={() =>
                 setSelectedImage(
                   teamA.users?.userImg
-                    ? `http://localhost:3001${teamA.users?.userImg}`
+                    ? `http://image.ocean00.com${teamA.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg",
                 )
               }
@@ -265,7 +269,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
               <Image
                 src={
                   teamA.users?.userImg
-                    ? `http://localhost:3001${teamA.users?.userImg}`
+                    ? `http://image.ocean00.com${teamA.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg"
                 }
                 width={50}
@@ -345,7 +349,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
                   console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
                   onSendData(typeData.STARTON, tarikh);
                 }}
-              // value={clockIn}
+                // value={clockIn}
               />
             </p>
           </div>
@@ -386,7 +390,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
                   console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
                   onSendData(typeData.OFFDAY, tarikh);
                 }}
-              // value={clockIn}
+                // value={clockIn}
               />
             </p>
           </div>
@@ -581,7 +585,9 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
           ) : (
             <>
               <div>
-                <h4 className="mb-4 text-lg font-semibold text-center">New Credentials</h4>
+                <h4 className="mb-4 text-center text-lg font-semibold">
+                  New Credentials
+                </h4>
                 <div className="mb-4">
                   <p className="font-medium">Username:</p>
                   <p className="text-gray-800">{username}</p>
@@ -611,7 +617,9 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
                 <button
                   className="font-medium text-blue-500 underline hover:text-blue-600"
                   onClick={() =>
-                    handleCopy("Username:" + username + "  " + "Password:" + password)
+                    handleCopy(
+                      "Username:" + username + "  " + "Password:" + password,
+                    )
                   }
                 >
                   Copy
@@ -631,7 +639,6 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
           </div>
         </div>
       </Modal>
-
 
       <Modal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}>
         <div className="p-5">
