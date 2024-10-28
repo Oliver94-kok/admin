@@ -4,7 +4,6 @@ import {
   checkClockIn,
   createNotClockIn,
   lateClockIn,
-  testCalOverTime,
 } from "@/data/attend";
 import {
   checkSalary,
@@ -16,6 +15,7 @@ import { db } from "@/lib/db";
 import {
   checkWorkingHour,
   getDateFromISOString,
+  postImage,
   saveImage,
   SentNoti,
 } from "@/lib/function";
@@ -25,18 +25,10 @@ import { DateTime } from "luxon";
 import { checkUsername, getUserById } from "@/data/user";
 
 export const GET = async (req: Request) => {
-  let attend = await checkClockIn("cm2n0xyj70007yzt6vct3z8rw");
-  const currentTime = new Date();
-  console.log("🚀 ~ GET ~ currentTime:", currentTime)
-  const expiryTime = new Date(currentTime.getTime() + 15 * 60 * 1000);
-  console.log("🚀 ~ GET ~ expiryTime:", expiryTime)
-  
-  let resutl = currentTime < expiryTime;
-  if(!resutl){
-    return Response.json({error:"Cannot clock out"},{status:400})
-  }
+  let image;
+  let result = await postImage("image", "user04", "user");
   // let d = await db.attends.findMany();
-  return Response.json({ resutl }, { status: 200 });
+  return Response.json({ result }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
@@ -52,7 +44,11 @@ export const POST = async (req: Request) => {
     if (late == 1) {
       var userlate = await getSalaryLate(userId);
     }
-    let attendImg = await saveImage(imgClockIn, user?.username!);
+    let result = await postImage(imgClockIn, user?.username!, "clock");
+    if (result?.error)
+      return Response.json({ error: "Error upload image" }, { status: 400 });
+    let attendImg = result?.success;
+    // let attendImg = await saveImage(imgClockIn, user?.username!);
     let data = {
       userId,
       clockIn,
@@ -60,7 +56,7 @@ export const POST = async (req: Request) => {
       fine: userlate!,
       locationIn: location,
     };
-    console.log("🚀 ~ POST ~ data:", data)
+    console.log("🚀 ~ POST ~ data:", data);
     let t = await db.attends.create({ data });
     let noti = await db.notificationUser.findFirst({ where: { userId } });
     const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
@@ -84,10 +80,10 @@ export const POST = async (req: Request) => {
     noClockin: 1,
     fine: fine2,
   };
-
+  var start = DateTime.fromISO(clockOut);
   let data = {
     userId,
-    clockOut,
+    clockOut: start.toISO(),
     fine2: fine2!,
     locationOut: location,
     overtime: Number(overtime!),
@@ -112,9 +108,9 @@ export const PATCH = async (req: Request) => {
   let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
   const expiryTime = new Date(attend.clockIn.getTime() + 15 * 60 * 1000);
   const currentTime = new Date();
-  let result = currentTime < expiryTime
-  if(result){
-    return Response.json({error:"Cannot clock out"},{status:400})
+  let result = currentTime < expiryTime;
+  if (result) {
+    return Response.json({ error: "Cannot clock out" }, { status: 400 });
   }
   let data = {
     clockOut,

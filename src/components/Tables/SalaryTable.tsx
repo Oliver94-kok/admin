@@ -656,7 +656,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               onClick={() =>
                 setSelectedImage(
                   salary.users?.userImg
-                    ? salary.users?.userImg
+                    ? `http://localhost:3001${salary.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg",
                 )
               }
@@ -664,7 +664,7 @@ const SalaryTable = ({ data, onMonthChange, currentMonth, currentYear, onYearCha
               <Image
                 src={
                   salary.users?.userImg
-                    ? salary.users?.userImg
+                    ? `http://localhost:3001${salary.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg"
                 }
                 width={50}

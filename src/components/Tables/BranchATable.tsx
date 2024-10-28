@@ -257,7 +257,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
               onClick={() =>
                 setSelectedImage(
                   teamA.users?.userImg
-                    ? teamA.users?.userImg
+                    ? `http://localhost:3001${teamA.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg",
                 )
               }
@@ -265,7 +265,7 @@ export const BranchATable = ({ data, team, refresh }: BranchTableAInterfface) =>
               <Image
                 src={
                   teamA.users?.userImg
-                    ? teamA.users?.userImg
+                    ? `http://localhost:3001${teamA.users?.userImg}`
                     : "/uploads/user/defaultUser.jpg"
                 }
                 width={50}

@@ -4,6 +4,7 @@ import {
   formatDateTime,
   formatDateTimeIntl,
   hashPassword,
+  postImage,
   saveImageLeaveUser,
   sendtoAdmin,
 } from "@/lib/function";
@@ -35,7 +36,10 @@ export const POST = async (req: Request) => {
   const users = await getUserById(userId);
   let imgname = "";
   if (imgs) {
-    imgname = await saveImageLeaveUser(imgs, users?.username!);
+    let result = await postImage(imgs, users?.username!, "leave");
+    if (result?.error)
+      return Response.json({ error: "Error upload image" }, { status: 400 });
+    imgname = result?.success;
   }
   let data = {
     userId,

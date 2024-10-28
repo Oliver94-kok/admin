@@ -194,10 +194,10 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               <div
                 className="h-15 w-15 rounded-md"
                 style={{ position: "relative", paddingBottom: "20%" }}
-                onClick={() => setSelectedImage(brand.userImg ? brand.userImg : "/uploads/user/defaultUser.jpg")}
+                onClick={() => setSelectedImage(brand.userImg ? `http://localhost:3001${brand.userImg}` : "/uploads/user/defaultUser.jpg")}
               >
                 <Image
-                  src={brand.userImg ? brand.userImg : "/uploads/user/defaultUser.jpg"}
+                  src={brand.userImg ? `http://localhost:3001${brand.userImg}` : "/uploads/user/defaultUser.jpg"}
                   width={50}
                   height={50}
                   alt="leave"

@@ -211,10 +211,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             <div
               className="h-15 w-15 rounded-md"
               style={{ position: "relative", paddingBottom: "20%" }}
-              onClick={() => setSelectedImage(leave.users?.userImg ? leave.users?.userImg : "/uploads/user/defaultUser.jpg")}
+              onClick={() => setSelectedImage(leave.users?.userImg ? `http://localhost:3001${leave.users?.userImg}` : "/uploads/user/defaultUser.jpg")}
             >
               <Image
-                src={leave.users?.userImg ? leave.users?.userImg : "/uploads/user/defaultUser.jpg"}
+                src={leave.users?.userImg ? `http://localhost:3001${leave.users?.userImg}` : "/uploads/user/defaultUser.jpg"}
                 width={50}
                 height={50}
                 alt="leave"

@@ -35,6 +35,7 @@ export const POST = async (req: Request) => {
       name: user.name,
       username,
       token,
+      userImg: user.userImg,
       AttendBranch: user.AttendBranch,
     },
     branch,

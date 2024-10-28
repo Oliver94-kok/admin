@@ -117,6 +117,7 @@ export const calOverTime = async (userId: string, clockOut: string) => {
   }
 };
 export const calOverTime2 = async (userId: string, clockOut: string) => {
+  console.log("🚀 ~ calOverTime2 ~ clockOut:", clockOut);
   let user = await db.attendBranch.findFirst({ where: { userId } });
   if (user) {
     var start = DateTime.fromISO(clockOut);

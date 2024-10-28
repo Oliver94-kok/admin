@@ -191,3 +191,28 @@ export const formatDateTimeIntl = (date: Date): string => {
 
   return `${dateFormatter} ${timeFormatter}`;
 };
+
+export const postImage = async (
+  image: string,
+  username: string,
+  type: string,
+) => {
+  try {
+    let data = {
+      image,
+      username,
+      type,
+    };
+    var res = await axios.post("http://localhost:3001/api/saveImage", data);
+    console.log("🚀 ~ res:", res.status);
+    if (res.status == 201) {
+      console.log(res.data);
+      return { success: res.data };
+    }
+    if (res.status == 400 || res.status == 500) {
+      return { error: res.data.error };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
