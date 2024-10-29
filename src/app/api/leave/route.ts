@@ -11,22 +11,8 @@ import {
 import { NextResponse } from "next/server";
 const { DateTime } = require("luxon");
 export const GET = async () => {
-  let checkuser = await checkUsername();
-  let username = "";
-  if (checkuser) {
-    let lastest = parseInt(checkuser?.username.substring(5));
-    console.log("🚀 ~ GET ~ lastest:", lastest);
-    if (lastest < 9) {
-      username = `user0${lastest + 1}`;
-    } else {
-      username = `user${lastest + 1}`;
-    }
-  }
-  let u = await db.user.findMany({
-    orderBy: { username: "desc" },
-    where: { role: "USER" },
-  });
-  return Response.json({ username, u }, { status: 200 });
+  let data = db.leave.findMany();
+  return Response.json({ data }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {

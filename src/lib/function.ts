@@ -216,3 +216,21 @@ export const postImage = async (
     console.log(error);
   }
 };
+export function extractDateAndDay(dateTimeString: string) {
+  const [dateString] = dateTimeString.split(" ");
+  const [day, month, year] = dateString.split("-");
+  return {
+    date: dateString,
+    day: parseInt(day, 10),
+  };
+}
+export function countDaysBetween(startDate: string, endDate: string): number {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Calculate the time difference in milliseconds
+  const timeDiff = end.getTime() - start.getTime();
+
+  // Convert milliseconds to days
+  return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+}

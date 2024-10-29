@@ -2,7 +2,11 @@
 
 import { deliveryClockAttend, leaveForgetClockAttend } from "@/data/attend";
 import { db } from "@/lib/db";
-import { formatDateTime } from "@/lib/function";
+import {
+  countDaysBetween,
+  extractDateAndDay,
+  formatDateTime,
+} from "@/lib/function";
 const { DateTime } = require("luxon");
 import { v7 as uuidv7 } from "uuid";
 export const ApproveLeave = async (status: string, id: string) => {
@@ -18,6 +22,40 @@ export const ApproveLeave = async (status: string, id: string) => {
       let clockdate = check.startDate.split(" ")[0];
       if (status == "Approve") {
         deliveryClockAttend(clockdate, check.userId);
+      }
+    }
+    if (status == "Approve") {
+      if (check?.type == "Delivery leave" || check?.type == "Forget clock") {
+        return;
+      }
+      const startLeave = extractDateAndDay(check?.startDate!);
+      const endLeave = extractDateAndDay(check?.endDate!);
+      if (startLeave.day == endLeave.day) {
+        var day = {
+          id: startLeave.day,
+          date: startLeave.date,
+          clockIn: null,
+          clockOut: null,
+          late: null,
+          noClockin: null,
+          fine: null,
+          absent: 0,
+          leave: 1,
+        };
+      } else {
+        let totalleave = countDaysBetween(startLeave.date, endLeave.date);
+
+        // var day = {
+        //   id: parseInt(date),
+        //   date,
+        //   clockIn: null,
+        //   clockOut: null,
+        //   late: null,
+        //   noClockin: null,
+        //   fine: null,
+        //   absent: 0,
+        //   leave: 1,
+        // };
       }
     }
     let a = await db.leave.update({ where: { id }, data: { status } });
