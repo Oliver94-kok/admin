@@ -6,6 +6,8 @@ import { access, chmod, constants, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { getUserById } from "@/data/user";
 import axios from "axios";
+import { SalaryDay } from "@/types/salary";
+import { db } from "./db";
 
 export const checkPassword = async (password: string, hash: string) => {
   let p = bcrypt.compareSync(password, hash);
@@ -216,15 +218,17 @@ export const postImage = async (
     console.log(error);
   }
 };
-export function extractDateAndDay(dateTimeString: string) {
+export async function extractDateAndDay(dateTimeString: string) {
   const [dateString] = dateTimeString.split(" ");
   const [day, month, year] = dateString.split("-");
   return {
     date: dateString,
     day: parseInt(day, 10),
+    month:parseInt(month),
+    year:parseInt(year)
   };
 }
-export function countDaysBetween(startDate: string, endDate: string): number {
+export async function  countDaysBetween(startDate: string, endDate: string):Promise< number> {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -233,4 +237,52 @@ export function countDaysBetween(startDate: string, endDate: string): number {
 
   // Convert milliseconds to days
   return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+}
+export const mergeArrays = async (existing: SalaryDay[], newItems: SalaryDay[]): Promise<SalaryDay[]> => {
+  const map = new Map();
+  
+  // Add existing items first
+  existing.forEach(item => {
+    map.set(item.id, item);
+  });
+  
+  // Add or update with new items
+  newItems.forEach(item => {
+    map.set(item.id, item);
+  });
+  
+  return Promise.resolve(Array.from(map.values()));
+};
+interface updateSalaryDaysProp{
+  newData: SalaryDay[],
+  month:number,year:number,userId:string
+}
+export async function  updateSalaryDays({newData,month,year,userId}:updateSalaryDaysProp): Promise<SalaryDay[]> {
+  try {
+    let salary  =await db.salary.findFirst({where:{userId:userId,month:month,year:year}});
+    const rawData = (salary?.day as unknown) ?? [];
+    const currentArray:SalaryDay[] = Array.isArray(rawData) ? rawData : [];
+    const allData = [...currentArray, ...newData];
+    
+    const mergedArray = allData.reduce((acc: SalaryDay[], item: SalaryDay) => {
+      const existingIndex = acc.findIndex(x => x.id === item.id);
+      
+      if (existingIndex === -1) {
+        acc.push(item);
+      } else {
+        // Using spread operator for complete merge
+        acc[existingIndex] = {
+          ...item,
+        };
+      }
+      
+      return acc;
+    }, []);
+
+    // currentArray = mergedArray;
+    return Promise.resolve(mergedArray);
+  } catch (error) {
+    console.error('Error updating salary days:', error);
+    throw error;
+  }
 }
