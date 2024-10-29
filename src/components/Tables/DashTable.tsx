@@ -205,11 +205,10 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
 
         {currentData.map((brand, key) => (
           <div
-            className={`grid grid-cols-6 sm:grid-cols-6 ${
-              key === currentData.length - 1
-                ? ""
-                : "border-b border-stroke dark:border-dark-3"
-            }`}
+            className={`grid grid-cols-6 sm:grid-cols-6 ${key === currentData.length - 1
+              ? ""
+              : "border-b border-stroke dark:border-dark-3"
+              }`}
             key={key}
           >
             <div className="flex items-center gap-3.5">
@@ -219,7 +218,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                 onClick={() =>
                   setSelectedImage(
                     brand.userImg
-                      ? `http://localhost:3001${brand.userImg}`
+                      ? `https://image.ocean00.com${brand.userImg}`
                       : "/uploads/user/defaultUser.jpg",
                   )
                 }
@@ -227,7 +226,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                 <Image
                   src={
                     brand.userImg
-                      ? `http://localhost:3001${brand.userImg}`
+                      ? `https://image.ocean00.com${brand.userImg}`
                       : "/uploads/user/defaultUser.jpg"
                   }
                   width={50}
@@ -270,10 +269,10 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                   <div
                     className="h-15 w-15 rounded-md"
                     style={{ position: "relative", paddingBottom: "20%" }}
-                    onClick={() => setSelectedImage(brand.img as string)}
+                    onClick={() => setSelectedImage(`https://image.ocean00.com${brand.img}`)}
                   >
                     <Image
-                      src={brand.img ? brand.img : "/images/brand/brand-02.svg"}
+                      src={brand.img ? `https://image.ocean00.com${brand.img}` : "/images/brand/brand-02.svg"}
                       width={50}
                       height={50}
                       alt="leave"
@@ -324,9 +323,8 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
-                currentPage === i + 1 ? "bg-primary text-white" : ""
-              }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
             >
               {i + 1}
             </button>
