@@ -34,14 +34,14 @@ export interface userInvoice {
   users: { name: string; username: string } | null;
 }
 
-export interface SalaryDay{
-  id: number,
-  date: string,
-  clockIn: string |null,
-  clockOut:string| null,
-  late: number|null,
-  noClockin: number|null,
-  fine: number|null,
-  absent: number|null,
-  leave:number |null,
+export interface SalaryDay {
+  id: number;
+  date: string;
+  clockIn: string | null;
+  clockOut: string | null;
+  late: number | null;
+  noClockin: number | null;
+  fine: number | null;
+  absent: number | null;
+  leave: number | null;
 }

@@ -32,38 +32,51 @@ export const ApproveLeave = async (status: string, id: string) => {
       const startLeave = await extractDateAndDay(check?.startDate!);
       const endLeave = await extractDateAndDay(check?.endDate!);
       if (startLeave.day == endLeave.day) {
-        var day =[ {
-          id: startLeave.day,
-          date: startLeave.date,
-          clockIn: null,
-          clockOut: null,
-          late: null,
-          noClockin: null,
-          fine: null,
-          absent: 0,
-          leave: 1,
-        }];
-        
-        
-        // currentArray.find((e)=>e[''])
-        await updateSalaryDays({userId:check?.userId!,month:startLeave.month,year:startLeave.year,newData:day})
+        var day = [
+          {
+            id: startLeave.day,
+            date: startLeave.date,
+            clockIn: null,
+            clockOut: null,
+            late: null,
+            noClockin: null,
+            fine: null,
+            absent: 0,
+            leave: 1,
+          },
+        ];
+        await updateSalaryDays({
+          userId: check?.userId!,
+          month: startLeave.month,
+          year: startLeave.year,
+          newData: day,
+        });
       } else {
-       var nArray=[]
-        for(startLeave.day-1;startLeave.day<=endLeave.day;startLeave.day++){
-          var days={
-                      id: startLeave.day,
-          date:startLeave.date,
-          clockIn: null,
-          clockOut: null,
-          late: null,
-          noClockin: null,
-          fine: null,
-          absent: 0,
-          leave: 1,
-          }
+        var nArray = [];
+        for (
+          startLeave.day - 1;
+          startLeave.day <= endLeave.day;
+          startLeave.day++
+        ) {
+          var days = {
+            id: startLeave.day,
+            date: startLeave.date,
+            clockIn: null,
+            clockOut: null,
+            late: null,
+            noClockin: null,
+            fine: null,
+            absent: 0,
+            leave: 1,
+          };
           nArray.push(days);
         }
-  
+        await updateSalaryDays({
+          userId: check?.userId!,
+          month: startLeave.month,
+          year: startLeave.year,
+          newData: nArray,
+        });
       }
     }
     let a = await db.leave.update({ where: { id }, data: { status } });

@@ -16,7 +16,6 @@ import {
   checkWorkingHour,
   getDateFromISOString,
   postImage,
-  saveImage,
   SentNoti,
 } from "@/lib/function";
 import { AttendsInterface } from "@/types/attendents";
@@ -79,7 +78,10 @@ export const POST = async (req: Request) => {
     late: 0,
     noClockin: 1,
     fine: fine2,
+    absent: null,
+    leave: null,
   };
+
   var start = DateTime.fromISO(clockOut);
   let data = {
     userId,
@@ -131,6 +133,8 @@ export const PATCH = async (req: Request) => {
     late: attend.fine ? 1 : 0,
     noClockin: 0,
     fine: attend.fine,
+    absent: null,
+    leave: null,
   };
   await checkSalary(
     update.userId,

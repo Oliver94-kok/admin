@@ -32,41 +32,41 @@ const checkFolder = async (folder: String) => {
   }
   return p;
 };
-export const saveImageUser = async (img: string, username: string) => {
-  const buffer = Buffer.from(img, "base64");
-  const uniqueSuffix = uuidv4();
-  const paths = path.join(process.cwd(), `public/uploads/user/`);
-  try {
-    await writeFile(`${paths}/${username}.JPEG`, buffer, { mode: 0o777 });
-    // await chmod(`${paths}/${username}.JPEG`, 0o777);
-  } catch (err) {}
-  return `/uploads/user/${username}.JPEG`;
-};
-export const saveImage = async (img: string, username: string) => {
-  const buffer = Buffer.from(img, "base64");
-  const uniqueSuffix = uuidv4();
-  const now = DateTime.now().toFormat("dd-LL-y");
-  const paths = await checkFolder(now);
+// export const saveImageUser = async (img: string, username: string) => {
+//   const buffer = Buffer.from(img, "base64");
+//   const uniqueSuffix = uuidv4();
+//   const paths = path.join(process.cwd(), `public/uploads/user/`);
+//   try {
+//     await writeFile(`${paths}/${username}.JPEG`, buffer, { mode: 0o777 });
+//     // await chmod(`${paths}/${username}.JPEG`, 0o777);
+//   } catch (err) {}
+//   return `/uploads/user/${username}.JPEG`;
+// };
+// export const saveImage = async (img: string, username: string) => {
+//   const buffer = Buffer.from(img, "base64");
+//   const uniqueSuffix = uuidv4();
+//   const now = DateTime.now().toFormat("dd-LL-y");
+//   const paths = await checkFolder(now);
 
-  try {
-    await writeFile(`${paths}/${username}.jpg`, buffer, { mode: 0o777 });
-    // await chmod(`${paths}/${username}.JPEG`, 0o777);
-  } catch (error) {
-    console.log(error);
-  }
-  return `/uploads/${now}/${username}.jpg`;
-};
-export const saveImageLeaveUser = async (img: string, username: string) => {
-  const buffer = Buffer.from(img, "base64");
-  const uniqueSuffix = uuidv4();
-  const paths = path.join(process.cwd(), `public/uploads/leave/`);
-  const now = DateTime.now().toFormat("dd-LL-y");
-  try {
-    await writeFile(`${paths}/${username}_${now}.jpg`, buffer, { mode: 0o777 });
-    // await chmod(`${paths}/${username}.JPEG`, 0o777);
-  } catch (err) {}
-  return `/uploads/leave/${username}_${now}.jpg`;
-};
+//   try {
+//     await writeFile(`${paths}/${username}.jpg`, buffer, { mode: 0o777 });
+//     // await chmod(`${paths}/${username}.JPEG`, 0o777);
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   return `/uploads/${now}/${username}.jpg`;
+// };
+// export const saveImageLeaveUser = async (img: string, username: string) => {
+//   const buffer = Buffer.from(img, "base64");
+//   const uniqueSuffix = uuidv4();
+//   const paths = path.join(process.cwd(), `public/uploads/leave/`);
+//   const now = DateTime.now().toFormat("dd-LL-y");
+//   try {
+//     await writeFile(`${paths}/${username}_${now}.jpg`, buffer, { mode: 0o777 });
+//     // await chmod(`${paths}/${username}.JPEG`, 0o777);
+//   } catch (err) {}
+//   return `/uploads/leave/${username}_${now}.jpg`;
+// };
 export const checkWorkingHour = async (clockIn: Date, clockOut: Date) => {
   let c = clockIn.toISOString();
   var start = DateTime.fromISO(c);
@@ -224,11 +224,14 @@ export async function extractDateAndDay(dateTimeString: string) {
   return {
     date: dateString,
     day: parseInt(day, 10),
-    month:parseInt(month),
-    year:parseInt(year)
+    month: parseInt(month),
+    year: parseInt(year),
   };
 }
-export async function  countDaysBetween(startDate: string, endDate: string):Promise< number> {
+export async function countDaysBetween(
+  startDate: string,
+  endDate: string,
+): Promise<number> {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -238,35 +241,47 @@ export async function  countDaysBetween(startDate: string, endDate: string):Prom
   // Convert milliseconds to days
   return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 }
-export const mergeArrays = async (existing: SalaryDay[], newItems: SalaryDay[]): Promise<SalaryDay[]> => {
+export const mergeArrays = async (
+  existing: SalaryDay[],
+  newItems: SalaryDay[],
+): Promise<SalaryDay[]> => {
   const map = new Map();
-  
+
   // Add existing items first
-  existing.forEach(item => {
+  existing.forEach((item) => {
     map.set(item.id, item);
   });
-  
+
   // Add or update with new items
-  newItems.forEach(item => {
+  newItems.forEach((item) => {
     map.set(item.id, item);
   });
-  
+
   return Promise.resolve(Array.from(map.values()));
 };
-interface updateSalaryDaysProp{
-  newData: SalaryDay[],
-  month:number,year:number,userId:string
+interface updateSalaryDaysProp {
+  newData: SalaryDay[];
+  month: number;
+  year: number;
+  userId: string;
 }
-export async function  updateSalaryDays({newData,month,year,userId}:updateSalaryDaysProp): Promise<SalaryDay[]> {
+export async function updateSalaryDays({
+  newData,
+  month,
+  year,
+  userId,
+}: updateSalaryDaysProp): Promise<SalaryDay[]> {
   try {
-    let salary  =await db.salary.findFirst({where:{userId:userId,month:month,year:year}});
+    let salary = await db.salary.findFirst({
+      where: { userId: userId, month: month, year: year },
+    });
     const rawData = (salary?.day as unknown) ?? [];
-    const currentArray:SalaryDay[] = Array.isArray(rawData) ? rawData : [];
+    const currentArray: SalaryDay[] = Array.isArray(rawData) ? rawData : [];
     const allData = [...currentArray, ...newData];
-    
+
     const mergedArray = allData.reduce((acc: SalaryDay[], item: SalaryDay) => {
-      const existingIndex = acc.findIndex(x => x.id === item.id);
-      
+      const existingIndex = acc.findIndex((x) => x.id === item.id);
+
       if (existingIndex === -1) {
         acc.push(item);
       } else {
@@ -275,14 +290,14 @@ export async function  updateSalaryDays({newData,month,year,userId}:updateSalary
           ...item,
         };
       }
-      
+
       return acc;
     }, []);
 
     // currentArray = mergedArray;
     return Promise.resolve(mergedArray);
   } catch (error) {
-    console.error('Error updating salary days:', error);
+    console.error("Error updating salary days:", error);
     throw error;
   }
 }
