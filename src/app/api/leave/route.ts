@@ -8,7 +8,6 @@ import {
   hashPassword,
   mergeArrays,
   postImage,
-  saveImageLeaveUser,
   sendtoAdmin,
   updateSalaryDays,
 } from "@/lib/function";
@@ -17,39 +16,41 @@ const { DateTime } = require("luxon");
 export const GET = async () => {
   const startLeave = await extractDateAndDay("29-10-2024");
   const endLeave = await extractDateAndDay("31-10-2024");
-  let totalleave =  countDaysBetween(startLeave.date, endLeave.date);
-  let old = [{
-    id:28,
-   
-          date:" startLeave.date",
-          clockIn: null,
-          clockOut: null,
-          late: null,
-          noClockin: null,
-          fine: null,
-          absent: 0,
-          leave: 1,
-  }]
+  let totalleave = countDaysBetween(startLeave.date, endLeave.date);
+  let old = [
+    {
+      id: 28,
+
+      date: " startLeave.date",
+      clockIn: null,
+      clockOut: null,
+      late: null,
+      noClockin: null,
+      fine: null,
+      absent: 0,
+      leave: 1,
+    },
+  ];
   let newd = [];
-  for(startLeave.day -1;startLeave.day<=endLeave.day;startLeave.day++){
-    console.log("🚀 ~ GET ~ startLeave.day:", startLeave.day)
+  for (startLeave.day - 1; startLeave.day <= endLeave.day; startLeave.day++) {
+    console.log("🚀 ~ GET ~ startLeave.day:", startLeave.day);
     let data = {
-      id : startLeave.day,
-      date:" startLeave",
-          clockIn: null,
-          clockOut: null,
-          late: null,
-          noClockin: null,
-          fine: null,
-          absent: 0,
-          leave: 1,
-    }
+      id: startLeave.day,
+      date: " startLeave",
+      clockIn: null,
+      clockOut: null,
+      late: null,
+      noClockin: null,
+      fine: null,
+      absent: 0,
+      leave: 1,
+    };
     newd.push(data);
   }
   const currentArray = Array.isArray(newd) ? newd : [];
-  const updatedSalary = await mergeArrays( currentArray,newd);
+  const updatedSalary = await mergeArrays(currentArray, newd);
   // const o =await updateSalaryDays(newd)
-  return Response.json({ old,newd,updatedSalary }, { status: 200 });
+  return Response.json({ old, newd, updatedSalary }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
@@ -87,4 +88,3 @@ export const POST = async (req: Request) => {
   await sendtoAdmin("Leave", `Has new request leave`);
   return Response.json({ id: user.id }, { status: 201 });
 };
-

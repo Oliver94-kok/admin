@@ -1,6 +1,6 @@
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db";
-import { postImage, saveImageUser } from "@/lib/function";
+import { postImage } from "@/lib/function";
 
 export const POST = async (req: Request) => {
   const { userId, img, name } = await req.json();
