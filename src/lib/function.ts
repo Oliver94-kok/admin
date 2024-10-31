@@ -205,7 +205,7 @@ export const postImage = async (
       username,
       type,
     };
-    var res = await axios.post("http://image.ocean00.com/api/saveImage", data,{
+    var res = await axios.post("http://localhost:3001/api/saveImage", data,{
       headers: {
         'Content-Type': 'application/json',
       }
