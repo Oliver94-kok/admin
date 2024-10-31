@@ -199,7 +199,7 @@ export const postImage = async (
   username: string,
   type: string,
 ) => {
-  try {
+  // try {
     let data = {
       image,
       username,
@@ -218,9 +218,9 @@ export const postImage = async (
     if (res.status == 400 || res.status == 500) {
       return { error: res.data.error };
     }
-  } catch (error) {
-    console.log(error);
-  }
+  // } catch (error) {
+  //   console.log(error);
+  // }
 };
 export async function extractDateAndDay(dateTimeString: string) {
   const [dateString] = dateTimeString.split(" ");
