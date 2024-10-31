@@ -18,6 +18,11 @@ enum UserRole {
   USER
 }
 
+enum AttendStatus {
+  Active
+  NotActive
+}
+
 model User {
   id               String            @id @default(cuid())
   name             String
@@ -35,7 +40,7 @@ model User {
 }
 
 model Attends {
-  id          String    @id @default(cuid())
+  id          String       @id @default(cuid())
   clockIn     DateTime?
   clockOut    DateTime?
   workingHour Float?
@@ -46,7 +51,8 @@ model Attends {
   fine        Float?
   fine2       Float?
   userId      String
-  users       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      AttendStatus @default(Active)
+  users       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Salary {

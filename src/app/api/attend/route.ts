@@ -22,6 +22,7 @@ import { AttendsInterface } from "@/types/attendents";
 import { NextRequest } from "next/server";
 import { DateTime } from "luxon";
 import { checkUsername, getUserById } from "@/data/user";
+import { AttendStatus } from "@prisma/client";
 
 export const GET = async (req: Request) => {
   let image;
@@ -119,6 +120,7 @@ export const PATCH = async (req: Request) => {
     workingHour: workingHour,
     overtime: Number(overtime!),
     locationOut: location,
+    status:AttendStatus.NotActive
   };
   let update = await db.attends.update({
     data,

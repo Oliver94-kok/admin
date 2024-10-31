@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { updateSalaryDays } from "@/lib/function";
+import { postImage, updateSalaryDays } from "@/lib/function";
 
 export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
@@ -25,19 +25,24 @@ export const GET = async (request: Request) => {
   return Response.json({ error: "no id" }, { status: 400 });
 };
 
+// export const POST = async (req: Request) => {
+//   const { data } = await req.json();
+//   let salary = await db.salary.findFirst({
+//     where: { userId: "cm2ogler90001kyrtwubtq1ky", month: 10, year: 2024 },
+//   });
+//   let result = await updateSalaryDays({
+//     month: 10,
+//     year: 2024,
+//     userId: "cm2ogler90001kyrtwubtq1ky",
+//     newData: data,
+//   });
+//   let sort = result.sort((a, b) => a.id - b.id);
+//   let rawjson = (sort as unknown) ?? [];
+//   await db.salary.update({ where: { id: salary?.id }, data: { day: rawjson } });
+//   return Response.json({ result }, { status: 201 });
+// };
 export const POST = async (req: Request) => {
-  const { data } = await req.json();
-  let salary = await db.salary.findFirst({
-    where: { userId: "cm2ogler90001kyrtwubtq1ky", month: 10, year: 2024 },
-  });
-  let result = await updateSalaryDays({
-    month: 10,
-    year: 2024,
-    userId: "cm2ogler90001kyrtwubtq1ky",
-    newData: data,
-  });
-  let sort = result.sort((a, b) => a.id - b.id);
-  let rawjson = (sort as unknown) ?? [];
-  await db.salary.update({ where: { id: salary?.id }, data: { day: rawjson } });
-  return Response.json({ result }, { status: 201 });
-};
+  const { image,type,username } = await req.json();
+  let result  =   await postImage(image, username, "clock");
+  return Response.json({result},{status:200})
+}

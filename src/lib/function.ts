@@ -209,7 +209,7 @@ export const postImage = async (
     console.log("🚀 ~ res:", res.status);
     if (res.status == 201) {
       console.log(res.data);
-      return { success: res.data };
+      return { success: res.data.url };
     }
     if (res.status == 400 || res.status == 500) {
       return { error: res.data.error };

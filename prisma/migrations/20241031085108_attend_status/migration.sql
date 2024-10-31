@@ -22,8 +22,10 @@ CREATE TABLE `Attends` (
     `locationIn` VARCHAR(191) NULL,
     `locationOut` VARCHAR(191) NULL,
     `overtime` INTEGER NULL,
-    `fine` DOUBLE NOT NULL,
+    `fine` DOUBLE NULL,
+    `fine2` DOUBLE NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `status` ENUM('Active', 'NotActive') NOT NULL DEFAULT 'Active',
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -31,12 +33,15 @@ CREATE TABLE `Attends` (
 -- CreateTable
 CREATE TABLE `Salary` (
     `id` VARCHAR(191) NOT NULL,
+    `day` JSON NULL,
     `month` INTEGER NOT NULL,
     `year` INTEGER NOT NULL,
-    `workingDay` INTEGER NOT NULL,
-    `workingHoour` INTEGER NULL,
+    `workingDay` INTEGER NULL,
+    `workingHour` INTEGER NULL,
     `fine` INTEGER NULL,
-    `late` DOUBLE NULL,
+    `fine2` INTEGER NULL,
+    `late` INTEGER NULL,
+    `notClockIn` INTEGER NULL,
     `overTimeHour` DOUBLE NULL,
     `overTime` DOUBLE NULL,
     `total` DOUBLE NULL,
