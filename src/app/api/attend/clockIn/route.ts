@@ -18,7 +18,7 @@ export const POST = async (req: Request) => {
   //     { status: 201 },
   //   );
   let user = await db.attends.findFirst({where:{userId,status:"Active"}});
-  if(user)return Response.json({user},{status:201})
+  if(user)return Response.json({"id":user.id,"clockIn":user.clockIn,"clockOut":user.clockOut,"locationIn":user.locationIn,"locationOut":user.locationOut},{status:201})
 
   return Response.json({ error: "not clock " }, { status: 400 });
 };
