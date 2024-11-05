@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
-
+import dayjs from "dayjs";
 export const POST = async (req: Request) => {
   const { userId } = await req.json();
   // let user: AttendsInterface[] =
@@ -17,8 +17,37 @@ export const POST = async (req: Request) => {
   //     },
   //     { status: 201 },
   //   );
-  let user = await db.attends.findFirst({where:{userId,status:"Active"}});
-  if(user)return Response.json({"id":user.id,"clockIn":user.clockIn,"clockOut":user.clockOut,"locationIn":user.locationIn,"locationOut":user.locationOut},{status:201})
+  // let user = await db.attends.findFirst({where:{userId,status:"Active"}});
+  let user = await db.attends.findFirst({
+    where: {
+      userId,
+      OR: [
+        {
+          clockIn: {
+            gte: dayjs().subtract(1, "day").startOf("day").toDate(),
+            lte: dayjs().endOf("day").toDate(),
+          },
+        },
+        {
+          clockOut: {
+            gte: dayjs().subtract(1, "day").startOf("day").toDate(),
+            lte: dayjs().endOf("day").toDate(),
+          },
+        },
+      ],
+    },
+  });
+  if (user)
+    return Response.json(
+      {
+        id: user.id,
+        clockIn: user.clockIn,
+        clockOut: user.clockOut,
+        locationIn: user.locationIn,
+        locationOut: user.locationOut,
+      },
+      { status: 201 },
+    );
 
   return Response.json({ error: "not clock " }, { status: 400 });
 };

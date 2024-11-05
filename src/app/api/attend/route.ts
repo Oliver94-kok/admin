@@ -106,21 +106,22 @@ export const POST = async (req: Request) => {
 
 export const PATCH = async (req: Request) => {
   const { userId, clockOut, id, location, notify } = await req.json();
+  console.log("🚀 ~ PATCH ~ clockOut:", clockOut);
   let attend = await checkClockIn(userId);
   let overtime = await calOverTime2(userId, clockOut);
   let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
-  const expiryTime = new Date(attend.clockIn.getTime() + 15 * 60 * 1000);
-  const currentTime = new Date();
-  let result = currentTime < expiryTime;
-  if (result) {
-    return Response.json({ error: "Cannot clock out" }, { status: 400 });
-  }
+  // const expiryTime = new Date(attend.clockIn.getTime() + 15 * 60 * 1000);
+  // const currentTime = new Date();
+  // let result = currentTime < expiryTime;
+  // if (result) {
+  //   return Response.json({ error: "Cannot clock out" }, { status: 400 });
+  // }
   let data = {
     clockOut,
     workingHour: workingHour,
     overtime: Number(overtime!),
     locationOut: location,
-    status:AttendStatus.NotActive
+    status: AttendStatus.NotActive,
   };
   let update = await db.attends.update({
     data,
