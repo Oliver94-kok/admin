@@ -45,15 +45,15 @@ export const POST = async (req: Request) => {
     if (late == 1) {
       var userlate = await getSalaryLate(userId);
     }
-    // let result = await postImage(imgClockIn, user?.username!, "clock");
-    // if (result?.error)
-    // return Response.json({ error: "Error upload image" }, { status: 400 });
-    // let attendImg = result?.success;
+    let result = await postImage(imgClockIn, user?.username!, "clock");
+    if (result?.error)
+      return Response.json({ error: "Error upload image" }, { status: 400 });
+    let attendImg = result?.success;
     // let attendImg = await saveImage(imgClockIn, user?.username!);
     let data = {
       userId,
       clockIn,
-      img: "attendImg",
+      img: attendImg,
       fine: userlate!,
       locationIn: location,
     };
