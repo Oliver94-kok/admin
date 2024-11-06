@@ -6,7 +6,7 @@ export const GET = async (req: NextRequest) => {
   const date = searchParams.get("month");
   console.log("🚀 ~ GET ~ date:", date);
   let data = await db.leave.findMany({
-    orderBy: { status: "desc" },
+    orderBy: { createdAt: "desc" },
     include: {
       users: {
         select: {

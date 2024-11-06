@@ -13,6 +13,7 @@ export const GET = async (req: NextRequest) => {
     include: {
       users: { select: { name: true, username: true, userImg: true } },
     },
+    orderBy: { users: { username: "asc" } },
   });
   return Response.json({ salary: data }, { status: 200 });
 };

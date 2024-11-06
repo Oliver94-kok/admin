@@ -70,8 +70,8 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
     // if (attend.name && attend.username && attend.workingHour) {
     const searchText = searchQuery.toLowerCase(); // Lowercase searchQuery once
     return (
-      attend.name.toLowerCase().includes(searchText) ||
-      attend.username.toLowerCase().includes(searchText)
+      attend.users.name.toLowerCase().includes(searchText) ||
+      attend.users.username.toLowerCase().includes(searchText)
     );
     //   attend?.workingHour.toString().includes(searchText);
     // }
@@ -217,16 +217,16 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                 style={{ position: "relative", paddingBottom: "20%" }}
                 onClick={() =>
                   setSelectedImage(
-                    brand.userImg
-                      ? `https://image.ocean00.com${brand.userImg}`
+                    brand.users.userImg
+                      ? `https://image.ocean00.com${brand.users.userImg}`
                       : "/uploads/user/defaultUser.jpg",
                   )
                 }
               >
                 <Image
                   src={
-                    brand.userImg
-                      ? `https://image.ocean00.com${brand.userImg}`
+                    brand.users.userImg
+                      ? `https://image.ocean00.com${brand.users.userImg}`
                       : "/uploads/user/defaultUser.jpg"
                   }
                   width={50}
@@ -236,16 +236,16 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               </div>
               <div className="flex flex-col">
                 <p className="flex font-medium text-dark dark:text-white sm:block">
-                  {brand.name}
+                  {brand.users.name}
                 </p>
                 <p className="flex text-sm text-gray-500 sm:block">
-                  {brand.username}
+                  {brand.users.username}
                 </p>
               </div>
             </div>
             <div className="flex items-center justify-center px-2 py-4">
               <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
-                <i>{brand.team} </i>
+                <i>{brand.users.AttendBranch.team} </i>
               </p>
             </div>
 

@@ -10,17 +10,11 @@ interface dataAttend {
 
 export const checkClockIn = async (userId: string) => {
   console.log("🚀 ~ checkClockIn ~ userId:", userId);
-  let a: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND (date(clockIn) = CURDATE() or date(clockOut) = CURDATE())`;
-  console.log("🚀 ~ checkClockIn ~ a:", a);
-  if (Array.isArray(a)) {
-    const firstRow = a[0];
-    const jsonResult = firstRow;
-    return jsonResult;
-  } else {
-    const jsonResult = a;
-    return jsonResult;
-  }
+
+  let user = await db.attends.findFirst({
+    where: { userId, status: "Active" },
+  });
+  return user;
 };
 
 export const checkClockLate = async (userid: string) => {

@@ -25,10 +25,11 @@ import { checkUsername, getUserById } from "@/data/user";
 import { AttendStatus } from "@prisma/client";
 
 export const GET = async (req: Request) => {
-  let image;
-  let result = await postImage("image", "user04", "user");
+  // let image;
+  // let result = await postImage("image", "user04", "user");
   let d = await db.attends.findMany();
-  return Response.json({ d }, { status: 200 });
+  let result = await checkClockIn("cm35j0iim0001zf548a2m162k");
+  return Response.json({ d, result }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
@@ -44,15 +45,15 @@ export const POST = async (req: Request) => {
     if (late == 1) {
       var userlate = await getSalaryLate(userId);
     }
-    let result = await postImage(imgClockIn, user?.username!, "clock");
-    if (result?.error)
-      return Response.json({ error: "Error upload image" }, { status: 400 });
-    let attendImg = result?.success;
+    // let result = await postImage(imgClockIn, user?.username!, "clock");
+    // if (result?.error)
+    // return Response.json({ error: "Error upload image" }, { status: 400 });
+    // let attendImg = result?.success;
     // let attendImg = await saveImage(imgClockIn, user?.username!);
     let data = {
       userId,
       clockIn,
-      img: attendImg,
+      img: "attendImg",
       fine: userlate!,
       locationIn: location,
     };
@@ -108,8 +109,9 @@ export const PATCH = async (req: Request) => {
   const { userId, clockOut, id, location, notify } = await req.json();
   console.log("🚀 ~ PATCH ~ clockOut:", clockOut);
   let attend = await checkClockIn(userId);
+  console.log("🚀 ~ PATCH ~ attend:", attend);
   let overtime = await calOverTime2(userId, clockOut);
-  let workingHour = await checkWorkingHour(attend.clockIn as Date, clockOut);
+  let workingHour = await checkWorkingHour(attend?.clockIn as Date, clockOut);
   // const expiryTime = new Date(attend.clockIn.getTime() + 15 * 60 * 1000);
   // const currentTime = new Date();
   // let result = currentTime < expiryTime;
@@ -131,11 +133,11 @@ export const PATCH = async (req: Request) => {
   let day = {
     id: parseInt(date),
     date,
-    clockIn: attend.clockIn,
+    clockIn: attend?.clockIn,
     clockOut,
-    late: attend.fine ? 1 : 0,
+    late: attend?.fine ? 1 : 0,
     noClockin: 0,
-    fine: attend.fine,
+    fine: attend?.fine,
     absent: null,
     leave: null,
   };

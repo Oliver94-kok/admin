@@ -5,12 +5,17 @@ export interface AttendsInterface {
   workingHour: number;
   img: string;
   userId: string;
-  username: string;
-  userImg: string;
-  name: string;
   locationIn: string;
   locationOut: string;
   fine: number;
   fine2: number;
   team: string;
+  users: {
+    username: string;
+    name: string;
+    userImg: string;
+    AttendBranch: {
+      team: string;
+    };
+  };
 }

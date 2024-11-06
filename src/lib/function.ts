@@ -68,6 +68,8 @@ const checkFolder = async (folder: String) => {
 //   return `/uploads/leave/${username}_${now}.jpg`;
 // };
 export const checkWorkingHour = async (clockIn: Date, clockOut: Date) => {
+  console.log("🚀 ~ checkWorkingHour ~ clockIn:", clockIn);
+
   let c = clockIn.toISOString();
   var start = DateTime.fromISO(c);
   var end = DateTime.fromISO(clockOut);
@@ -200,24 +202,24 @@ export const postImage = async (
   type: string,
 ) => {
   // try {
-    let data = {
-      image,
-      username,
-      type,
-    };
-    var res = await axios.post("http://localhost:3001/api/saveImage", data,{
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    console.log("🚀 ~ res:", res.status);
-    if (res.status == 201) {
-      console.log(res.data);
-      return { success: res.data.url };
-    }
-    if (res.status == 400 || res.status == 500) {
-      return { error: res.data.error };
-    }
+  let data = {
+    image,
+    username,
+    type,
+  };
+  var res = await axios.post("http://localhost:3001/api/saveImage", data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log("🚀 ~ res:", res.status);
+  if (res.status == 201) {
+    console.log(res.data);
+    return { success: res.data.url };
+  }
+  if (res.status == 400 || res.status == 500) {
+    return { error: res.data.error };
+  }
   // } catch (error) {
   //   console.log(error);
   // }
