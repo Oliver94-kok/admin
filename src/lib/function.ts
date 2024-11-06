@@ -79,7 +79,7 @@ export const checkWorkingHour = async (clockIn: Date, clockOut: Date) => {
 
 export const randomPassword = async () => {
   const charset =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let password = "";
   for (let i = 0; i < 6; i++) {
     const randomIndex = Math.floor(Math.random() * charset.length);

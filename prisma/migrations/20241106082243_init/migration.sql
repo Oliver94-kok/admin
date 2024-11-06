@@ -6,6 +6,8 @@ CREATE TABLE `User` (
     `password` VARCHAR(191) NOT NULL,
     `token` LONGTEXT NULL,
     `userImg` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
     `isLogin` BOOLEAN NOT NULL,
     `role` ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',
 
@@ -25,6 +27,8 @@ CREATE TABLE `Attends` (
     `fine` DOUBLE NULL,
     `fine2` DOUBLE NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
     `status` ENUM('Active', 'NotActive') NOT NULL DEFAULT 'Active',
 
     PRIMARY KEY (`id`)
@@ -50,6 +54,8 @@ CREATE TABLE `Salary` (
     `allowance` DOUBLE NULL,
     `cover` DOUBLE NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -62,6 +68,8 @@ CREATE TABLE `Branch` (
     `team` VARCHAR(191) NOT NULL,
     `longtitude` DOUBLE NOT NULL,
     `latitude` DOUBLE NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -75,6 +83,8 @@ CREATE TABLE `AttendBranch` (
     `team` VARCHAR(191) NOT NULL,
     `startOn` VARCHAR(191) NULL,
     `offDay` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `AttendBranch_userId_key`(`userId`),
     PRIMARY KEY (`id`)
@@ -90,6 +100,8 @@ CREATE TABLE `Leave` (
     `endDate` VARCHAR(191) NOT NULL,
     `status` VARCHAR(191) NOT NULL,
     `img` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -100,6 +112,8 @@ CREATE TABLE `NotificationUser` (
     `leave` JSON NULL,
     `clock` JSON NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `NotificationUser_userId_key`(`userId`),
     PRIMARY KEY (`id`)
