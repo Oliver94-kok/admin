@@ -13,8 +13,10 @@ import {
 } from "@/data/salary";
 import { db } from "@/lib/db";
 import {
+  checkShift,
   checkWorkingHour,
   getDateFromISOString,
+  getYesterday,
   postImage,
   SentNoti,
 } from "@/lib/function";
@@ -23,13 +25,13 @@ import { NextRequest } from "next/server";
 import { DateTime } from "luxon";
 import { checkUsername, getUserById } from "@/data/user";
 import { AttendStatus } from "@prisma/client";
+import dayjs from "dayjs";
 
 export const GET = async (req: Request) => {
   // let image;
   // let result = await postImage("image", "user04", "user");
-  let d = await db.attends.findMany();
-  let result = await checkClockIn("cm35j0iim0001zf548a2m162k");
-  return Response.json({ d, result }, { status: 200 });
+  let result = await checkShift({ userId: "cm36sgm990004nyn1sq6335vk" });
+  return Response.json({ result }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {
@@ -45,15 +47,15 @@ export const POST = async (req: Request) => {
     if (late == 1) {
       var userlate = await getSalaryLate(userId);
     }
-    let result = await postImage(imgClockIn, user?.username!, "clock");
-    if (result?.error)
-      return Response.json({ error: "Error upload image" }, { status: 400 });
-    let attendImg = result?.success;
+    // let result = await postImage(imgClockIn, user?.username!, "clock");
+    // if (result?.error)
+    //   return Response.json({ error: "Error upload image" }, { status: 400 });
+    // let attendImg = result?.success;
     // let attendImg = await saveImage(imgClockIn, user?.username!);
     let data = {
       userId,
       clockIn,
-      img: attendImg,
+      img: null,
       fine: userlate!,
       locationIn: location,
     };
@@ -70,11 +72,12 @@ export const POST = async (req: Request) => {
     return Response.json({ id: t.id }, { status: 201 });
   }
   let date = DateTime.now().toFormat("dd");
+  let result = await getYesterday(clockIn);
   let fine2 = await getSalaryLate2(userId);
   let overtime = await calOverTime2(userId, clockOut);
   let day = {
-    id: parseInt(date),
-    date,
+    id: parseInt(result.id),
+    date: result.yesterday,
     clockIn: null,
     clockOut,
     late: 0,
@@ -91,6 +94,7 @@ export const POST = async (req: Request) => {
     fine2: fine2!,
     locationOut: location,
     overtime: Number(overtime!),
+    status: AttendStatus.NotActive,
   };
   let t = await db.attends.create({ data });
   await checkSalary(t.userId, t.fine!, t.fine2!, day, Number(overtime));
@@ -129,10 +133,11 @@ export const PATCH = async (req: Request) => {
     data,
     where: { id: id },
   });
-  let date = DateTime.now().toFormat("dd");
+  let idDate = DateTime.now().toFormat("dd");
+  let fullDate = DateTime.now().toFormat("dd-MM-yyyy");
   let day = {
-    id: parseInt(date),
-    date,
+    id: parseInt(idDate),
+    date: fullDate,
     clockIn: attend?.clockIn,
     clockOut,
     late: attend?.fine ? 1 : 0,

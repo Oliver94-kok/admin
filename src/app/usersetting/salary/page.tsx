@@ -20,7 +20,9 @@ export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 // Correctly set revalidate value
 // export const revalidate = 1;
+import { useSession, SessionProvider } from 'next-auth/react';
 const Salary = () => {
+  const session = useSession();
   const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
   const [year, setYear] = useState(DateTime.now().toFormat('yyyy'))
   const { data, error, isLoading } = useSWR(`/api/salary/dashboard?month=${month}&year=${year}`, fetcher);
@@ -33,9 +35,15 @@ const Salary = () => {
   const handleYearChange = (year: string) => {
     setYear(year);
   };
+
+  if (session.data?.user.role == "MANAGER") {
+    return (<><DefaultLayout><p className="flex justify-center items-center h-screen text-red-700">You don&apos;t have permission in this page </p> </DefaultLayout></>)
+  }
+
   return (
     <>
       <DefaultLayout>
+        {` role user ${session.data?.user.role}`}
         {isLoading ? <Loader /> : <SalaryTable data={data.salary} onMonthChange={handleMonthChange} currentMonth={month} onYearChange={handleYearChange} currentYear={year} />}
       </DefaultLayout>
     </>

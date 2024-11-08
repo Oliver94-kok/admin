@@ -21,20 +21,21 @@ export const POST = async (req: Request) => {
   let user = await db.attends.findFirst({
     where: {
       userId,
-      OR: [
-        {
-          clockIn: {
-            gte: dayjs().subtract(1, "day").startOf("day").toDate(),
-            lte: dayjs().endOf("day").toDate(),
-          },
-        },
-        {
-          clockOut: {
-            gte: dayjs().subtract(1, "day").startOf("day").toDate(),
-            lte: dayjs().endOf("day").toDate(),
-          },
-        },
-      ],
+      status: "Active",
+      // OR: [
+      //   {
+      //     clockIn: {
+      //       gte: dayjs().subtract(1, "day").startOf("day").toDate(),
+      //       lte: dayjs().endOf("day").toDate(),
+      //     },
+      //   },
+      //   {
+      //     clockOut: {
+      //       gte: dayjs().subtract(1, "day").startOf("day").toDate(),
+      //       lte: dayjs().endOf("day").toDate(),
+      //     },
+      //   },
+      // ],
     },
   });
   if (user)

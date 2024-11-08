@@ -8,6 +8,7 @@ import { getUserById } from "@/data/user";
 import axios from "axios";
 import { SalaryDay } from "@/types/salary";
 import { db } from "./db";
+import { TimeUtils } from "./timeUtility";
 
 export const checkPassword = async (password: string, hash: string) => {
   let p = bcrypt.compareSync(password, hash);
@@ -299,7 +300,12 @@ export async function updateSalaryDays({
 
       return acc;
     }, []);
-
+    let sort = mergedArray.sort((a, b) => a.id - b.id);
+    let rawjson = (sort as unknown) ?? [];
+    await db.salary.update({
+      where: { id: salary?.id },
+      data: { day: rawjson },
+    });
     // currentArray = mergedArray;
     return Promise.resolve(mergedArray);
   } catch (error) {
@@ -307,3 +313,25 @@ export async function updateSalaryDays({
     throw error;
   }
 }
+export const getYesterday = async (date: string) => {
+  let dates = DateTime.fromISO(date);
+  let dateid = dates.minus({ days: 1 }).toFormat("dd");
+  return {
+    id: dateid,
+    yesterday: dates.minus({ days: 1 }).toFormat("dd-MM-yyyy"),
+  };
+};
+interface checkShiftProp {
+  date?: string;
+  userId: string;
+}
+export const checkShift = async ({ date, userId }: checkShiftProp) => {
+  let shift = await db.attendBranch.findFirst({
+    where: { userId },
+    select: { clockIn: true, clockOut: true },
+  });
+  const now = new Date();
+  let clockInShift = TimeUtils.createDateFromTimeString(now, shift?.clockIn!);
+  let clockOutShift = TimeUtils.createDateFromTimeString(now, shift?.clockOut!);
+  return { clockInShift, clockOutShift };
+};

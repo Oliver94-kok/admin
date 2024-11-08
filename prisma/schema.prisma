@@ -16,6 +16,7 @@ datasource db {
 enum UserRole {
   ADMIN
   USER
+  MANAGER
 }
 
 enum AttendStatus {

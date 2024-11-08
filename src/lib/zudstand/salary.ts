@@ -1,61 +1,61 @@
-import { SalaryUser } from "@/types/salary";
 import { create } from "zustand";
 
-interface SalaryState {
-  salaryUsers: SalaryUser[];
-  addSalaryUsers: (users: SalaryUser[]) => void;
-  addSalaryUser: (user: SalaryUser) => void;
-  editSalaryUser: (id: string, updatedFields: Partial<SalaryUser>) => void;
-  filterAndRemoveSalaryUsers: (filterParams: Partial<SalaryUser>) => void;
-  clearSalaryUsers: () => void;
-  loadSalaryUsersFromStorage: () => void;
-  saveSalaryUsersToStorage: () => void;
+interface IdState {
+  ids: string[];
+  // Setters
+  addIds: (newIds: string[]) => void;
+  addId: (id: string) => void;
+  removeId: (id: string) => void;
+  clearIds: () => void;
+  // Getters
+  getAllIds: () => string[];
+  getIdCount: () => number;
+  hasId: (id: string) => boolean;
+  // Storage
+  loadFromStorage: () => void;
+  saveToStorage: () => void;
 }
 
-export const useSalaryStore = create<SalaryState>((set, get) => ({
-  salaryUsers: [],
-  addSalaryUsers: (users) => {
-    const uniqueUsers = users.filter(
-      (user) =>
-        !get().salaryUsers.some((existingUser) => existingUser.id === user.id),
-    );
-    set((state) => ({ salaryUsers: [...state.salaryUsers, ...uniqueUsers] }));
+export const useIdStore = create<IdState>((set, get) => ({
+  ids: [],
+
+  // Setters
+  addIds: (newIds) => {
+    const uniqueIds = newIds.filter((id) => !get().ids.includes(id));
+    set((state) => ({ ids: [...state.ids, ...uniqueIds] }));
   },
-  addSalaryUser: (user) => {
-    if (
-      !get().salaryUsers.some((existingUser) => existingUser.id === user.id)
-    ) {
-      set((state) => ({ salaryUsers: [...state.salaryUsers, user] }));
+
+  addId: (id) => {
+    if (!get().ids.includes(id)) {
+      set((state) => ({ ids: [...state.ids, id] }));
     } else {
-      console.log(`Salary user with id ${user.id} already exists.`);
+      console.log(`ID ${id} already exists.`);
     }
   },
-  editSalaryUser: (id, updatedFields) =>
+
+  removeId: (id) =>
     set((state) => ({
-      salaryUsers: state.salaryUsers.map((user) =>
-        user.id === id ? { ...user, ...updatedFields } : user,
-      ),
+      ids: state.ids.filter((existingId) => existingId !== id),
     })),
-  filterAndRemoveSalaryUsers: (filterParams) =>
-    set((state) => ({
-      salaryUsers: state.salaryUsers.filter(
-        (user) =>
-          !Object.entries(filterParams).every(
-            ([key, value]) => user[key as keyof SalaryUser] === value,
-          ),
-      ),
-    })),
-  clearSalaryUsers: () =>
-    set((state) => ({
-      salaryUsers: [],
-    })),
-  loadSalaryUsersFromStorage: async () => {
-    const storedData = localStorage.getItem("myAppData");
+
+  clearIds: () => set({ ids: [] }),
+
+  // Getters
+  getAllIds: () => get().ids,
+
+  getIdCount: () => get().ids.length,
+
+  hasId: (id) => get().ids.includes(id),
+
+  // Storage
+  loadFromStorage: () => {
+    const storedData = localStorage.getItem("myAppIds");
     if (storedData) {
-      set({ salaryUsers: JSON.parse(storedData) });
+      set({ ids: JSON.parse(storedData) });
     }
   },
-  saveSalaryUsersToStorage: async () => {
-    localStorage.setItem("myAppData", JSON.stringify(get().salaryUsers));
+
+  saveToStorage: () => {
+    localStorage.setItem("myAppIds", JSON.stringify(get().ids));
   },
 }));

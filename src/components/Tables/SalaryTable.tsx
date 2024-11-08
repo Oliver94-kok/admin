@@ -15,10 +15,11 @@ import { AddBonus, delBonus } from "@/action/salaryBonus";
 import { AddCover, delCover } from "@/action/salaryCover";
 import OTPopup from "../Form/otpopup";
 import { ComponentSalary } from "../Form/componentSalary";
-import { useSalaryStore } from "@/lib/zudstand/salary";
+
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
+import { useIdStore } from "@/lib/zudstand/salary";
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -66,20 +67,27 @@ const SalaryTable = ({
   const [idSalary, setIdSalary] = useState<string>("");
   const [selectAll, setSelectAll] = useState(false); // State for Select All
   const [activePopup, setActivePopup] = useState<string | null>(null);
-  const {
-    salaryUsers,
-    addSalaryUser,
-    addSalaryUsers,
-    filterAndRemoveSalaryUsers,
-    clearSalaryUsers,
-    saveSalaryUsersToStorage,
-  } = useSalaryStore();
+  const [isDisabled, setIsDisabled] = useState(false);
+  const { ids, addId, addIds, removeId, clearIds } = useIdStore()
 
   useEffect(() => {
     if (data) {
       setDataSalary(data);
     }
   }, [data]);
+  useEffect(() => {
+    const checkDate = () => {
+      const currentDate = new Date();
+      const dayOfMonth = currentDate.getDate();
+      setIsDisabled(dayOfMonth > 5);
+    };
+    checkDate();
+
+    // Check every minute (in case user keeps the page open across days)
+    const interval = setInterval(checkDate, 60000);
+
+    return () => clearInterval(interval);
+  }, [])
   // Handle Select All Logic
   const handleSelectAllChange = () => {
     setSelectAll(!selectAll);
@@ -90,7 +98,7 @@ const SalaryTable = ({
           checkperday.push(d.users?.name);
         }
       });
-
+      let newdata: string[] = [];
       const allSelectedItems = currentData.map((salary) => ({
         id: salary.id, // Ensure to provide the correct id
         item: salary.users?.name || "", // Adjust based on your data structure
@@ -103,26 +111,29 @@ const SalaryTable = ({
         });
         // return;
       }
-      const newUser: SalaryUser[] = dataSalary;
-      console.log("🚀 ~ handleSelectAllChange ~ newUser:", newUser);
+      currentData.forEach((c) => {
+        newdata.push(c.id)
+      })
 
-      addSalaryUsers(newUser);
+      addIds(newdata);
+
+      //addSalaryUsers(newUser);
       console.log(selectedItems.length);
     } else {
-      clearSalaryUsers();
+      clearIds()
       setSelectedItems([]);
     }
   };
 
   // Function to handle printing of selected entries
   const handlePrint = () => {
-    if (salaryUsers.length == 0) {
+    if (ids.length == 0) {
       alert("No items selected for printing.");
       return;
     }
-    saveSalaryUsersToStorage();
+    // saveSalaryUsersToStorage();
     router.push("/invoice");
-    console.log("Printing selected items:", salaryUsers);
+    console.log("Printing selected items:", ids);
   };
 
   // Function to handle sorting
@@ -187,9 +198,9 @@ const SalaryTable = ({
         prevUsers.map((user) =>
           user.id === idSalary
             ? {
-                ...user,
-                ...{ perDay: Number(salary), total: Number(result.total) },
-              }
+              ...user,
+              ...{ perDay: Number(salary), total: Number(result.total) },
+            }
             : user,
         ),
       );
@@ -232,9 +243,9 @@ const SalaryTable = ({
               prevUsers.map((user) =>
                 user.id === id
                   ? {
-                      ...user,
-                      ...{ overTime: Number(item), total: data.total },
-                    }
+                    ...user,
+                    ...{ overTime: Number(item), total: data.total },
+                  }
                   : user,
               ),
             );
@@ -261,9 +272,9 @@ const SalaryTable = ({
               prevUsers.map((user) =>
                 user.id === id
                   ? {
-                      ...user,
-                      ...{ allowance: Number(item), total: data.total },
-                    }
+                    ...user,
+                    ...{ allowance: Number(item), total: data.total },
+                  }
                   : user,
               ),
             );
@@ -657,11 +668,10 @@ const SalaryTable = ({
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${
-            key === currentData.length - 1
-              ? ""
-              : "border-b border-stroke dark:border-dark-3"
-          }`}
+          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+            ? ""
+            : "border-b border-stroke dark:border-dark-3"
+            }`}
           key={key}
         >
           <div className="flex items-center gap-3.5">
@@ -719,6 +729,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
+              // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("OT", id, salary.id)}
             >
@@ -748,6 +759,7 @@ const SalaryTable = ({
             {/* ButtonPopup component */}
 
             <button
+              disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Bonus", id, salary.id)}
             >
@@ -771,6 +783,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
+              disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Allow", id, salary.id)}
             >
@@ -794,6 +807,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
+              // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Cover", id, salary.id)}
             >
@@ -830,12 +844,14 @@ const SalaryTable = ({
                     (item) => item.id === salary.id,
                   );
                   if (itemExists) {
-                    filterAndRemoveSalaryUsers({ id: salary.id });
+                    // filterAndRemoveSalaryUsers({ id: salary.id });
+                    removeId(salary.id);
                     setSelectedItems((prev) =>
                       prev.filter((item) => item.id !== salary.id),
                     );
                   } else {
-                    addSalaryUser(salary);
+                    // addSalaryUser(salary);
+                    addId(salary.id)
                     setSelectedItems((prev) => [
                       ...prev,
                       {
@@ -902,9 +918,8 @@ const SalaryTable = ({
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
-                currentPage === i + 1 ? "bg-primary text-white" : ""
-              }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
             >
               {i + 1}
             </button>

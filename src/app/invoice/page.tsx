@@ -1,11 +1,11 @@
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
-import MultiInvoiceTable from "@/components/Tables/MultiInvoiceTable";
+// import MultiInvoiceTable from "@/components/Tables/MultiInvoiceTable";
 
 const InvoiceAll = () => {
     return (
         <>
             <DefaultLayout>
-                <MultiInvoiceTable />
+                {/* <MultiInvoiceTable /> */}ll
             </DefaultLayout>
 
         </>

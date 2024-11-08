@@ -21,5 +21,9 @@ export const POST = async (req: Request) => {
     isLogin: false,
   };
   let user = await db.user.create({ data });
+  if (!user) {
+    console.log(user);
+    return Response.json({}, { status: 404 });
+  }
   return Response.json({ user }, { status: 201 });
 };

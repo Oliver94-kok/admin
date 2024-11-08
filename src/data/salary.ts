@@ -87,7 +87,7 @@ export const checkSalary = async (
     }
     const currentArray = Array.isArray(salary?.day) ? salary?.day : [];
     const updatedArray = [...currentArray, days];
-
+    let sortArray = updatedArray.sort((a, b) => a.id - b.id);
     let day = salary.workingDay! + 1;
     let ot = salary.overTimeHour! + overTimeHour;
     let workingHoour = salary.workingHoour! + workingHour!;
@@ -99,7 +99,7 @@ export const checkSalary = async (
       workingHoour,
       notClockIn,
       late,
-      day: updatedArray,
+      day: sortArray,
     };
 
     await db.salary.update({

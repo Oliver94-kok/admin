@@ -7,8 +7,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInSchema } from "@/lib/schema";
 import { z } from 'zod'
+import { useSession } from "next-auth/react";
 
 export default function SigninWithPassword() {
+  const { update } = useSession();
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof SignInSchema>>({
     resolver: zodResolver(SignInSchema)
   })
@@ -17,12 +19,14 @@ export default function SigninWithPassword() {
   const OnSubmit = async (values: z.infer<typeof SignInSchema>) => {
     // Handle any logic before navigating (e.g., form validation, authentication)
 
-    SignInAction(values).then((data) => {
+    SignInAction(values).then(async (data) => {
       if (data?.error) {
         setErrors(data.error)
         return
       }
       if (data.success) {
+        await update(); // Force session update
+        router.refresh(); // Force page refresh
         router.push("/dashboard");
       }
     })

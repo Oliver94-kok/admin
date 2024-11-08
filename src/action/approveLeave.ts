@@ -57,9 +57,10 @@ export const ApproveLeave = async (status: string, id: string) => {
               startLeave.day <= endLeave.day;
               startLeave.day++
             ) {
+              var d = `${startLeave.day}-${startLeave.month}-${startLeave.year}`;
               var days = {
                 id: startLeave.day,
-                date: startLeave.date,
+                date: d,
                 clockIn: null,
                 clockOut: null,
                 late: null,
@@ -70,6 +71,7 @@ export const ApproveLeave = async (status: string, id: string) => {
               };
               nArray.push(days);
             }
+            console.log(nArray);
             await updateSalaryDays({
               userId: check?.userId!,
               month: startLeave.month,
