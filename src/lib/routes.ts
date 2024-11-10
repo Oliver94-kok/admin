@@ -15,7 +15,7 @@ export const apiAuthPrefix = [
   "/api/attend",
   "/api/attend/dashboard",
   "/api/attend/all",
-  "/api/attend/clockin",
+  "/api/attend/clockIn",
   "/api/branch",
   "/api/branch/dashboard",
   "/api/cron",

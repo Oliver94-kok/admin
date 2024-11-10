@@ -26,12 +26,16 @@ export class TimeUtils {
    * @param scheduleTime The scheduled time in 24-hour format
    */
   static isNextDay(clockTime: Date, scheduleTime: string): boolean {
-    const { hours, minutes } = this.parseTimeString(scheduleTime);
-    const scheduleMoment = dayjs(clockTime).hour(hours).minute(minutes);
+    const { hours: scheduleHours, minutes: scheduleMinutes } = this.parseTimeString(scheduleTime);
+    const clockMoment = dayjs(clockTime);
+    const scheduleMoment = dayjs(clockTime)
+      .hour(scheduleHours)
+      .minute(scheduleMinutes)
+      .second(0)
+      .millisecond(0);
 
-    // If schedule time is early morning (like 00:00) and clock time is late night
-    // Then the schedule is for next day
-    return hours < 12 && dayjs(clockTime).hour() > 12;
+    // Compare the schedule time with clock time
+    return scheduleMoment.isBefore(clockMoment);
   }
 
   /**
@@ -41,13 +45,27 @@ export class TimeUtils {
    */
   static createDateFromTimeString(baseDate: Date, timeString: string): Date {
     const { hours, minutes } = this.parseTimeString(timeString);
-    let result = dayjs(baseDate).hour(hours).minute(minutes);
+    const baseMoment = dayjs(baseDate);
+    let result = baseMoment.hour(hours).minute(minutes).second(0).millisecond(0);
 
-    // If the time is early morning (like 05:00), it's the next day
-    if (hours < 12 && dayjs(baseDate).hour() > 12) {
-      result = result.add(1, "day");
+    // If the calculated time is before the base time, it should be for the next day
+    if (result.isBefore(baseMoment)) {
+      result = result.add(1, 'day');
     }
 
     return result.toDate();
+  }
+
+  /**
+   * Formats a date to ISO string with timezone consideration
+   * @param date The date to format
+   * @param timezone Optional timezone (defaults to UTC)
+   */
+  static formatToISO(date: Date, timezone?: string): string {
+    let moment = dayjs(date);
+    if (timezone) {
+      moment = moment.tz(timezone);
+    }
+    return moment.toISOString();
   }
 }

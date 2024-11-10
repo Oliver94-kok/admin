@@ -26,11 +26,13 @@ import { DateTime } from "luxon";
 import { checkUsername, getUserById } from "@/data/user";
 import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
+import { notificationClock } from "@/data/notification";
 
 export const GET = async (req: Request) => {
   // let image;
   // let result = await postImage("image", "user04", "user");
-  let result = await checkShift({ userId: "cm36sgm990004nyn1sq6335vk" });
+  // let result = await checkShift({ userId: "cm36sgm990004nyn1sq6335vk" });
+  let result  = await db.attends.findMany()
   return Response.json({ result }, { status: 200 });
 };
 
@@ -61,13 +63,7 @@ export const POST = async (req: Request) => {
     };
     console.log("🚀 ~ POST ~ data:", data);
     let t = await db.attends.create({ data });
-    let noti = await db.notificationUser.findFirst({ where: { userId } });
-    const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
-    const updatedArray = [...currentArray, notify];
-    await db.notificationUser.update({
-      where: { id: noti?.id },
-      data: { clock: updatedArray },
-    });
+    await notificationClock(userId,notify)
     await SentNoti("Clock", "You have clock in", "", user?.username);
     return Response.json({ id: t.id }, { status: 201 });
   }
@@ -98,13 +94,7 @@ export const POST = async (req: Request) => {
   };
   let t = await db.attends.create({ data });
   await checkSalary(t.userId, t.fine!, t.fine2!, day, Number(overtime));
-  let noti = await db.notificationUser.findFirst({ where: { userId } });
-  const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
-  const updatedArray = [...currentArray, notify];
-  await db.notificationUser.update({
-    where: { id: noti?.id },
-    data: { clock: updatedArray },
-  });
+  await notificationClock(userId,notify);
   await SentNoti("Clock", "You have clock out", "", user?.username);
   return Response.json({ id: t.id }, { status: 201 });
 };
@@ -113,15 +103,10 @@ export const PATCH = async (req: Request) => {
   const { userId, clockOut, id, location, notify } = await req.json();
   console.log("🚀 ~ PATCH ~ clockOut:", clockOut);
   let attend = await checkClockIn(userId);
+  if(!attend) return Response.json({error:"you have clock out"},{status:400})
   console.log("🚀 ~ PATCH ~ attend:", attend);
   let overtime = await calOverTime2(userId, clockOut);
   let workingHour = await checkWorkingHour(attend?.clockIn as Date, clockOut);
-  // const expiryTime = new Date(attend.clockIn.getTime() + 15 * 60 * 1000);
-  // const currentTime = new Date();
-  // let result = currentTime < expiryTime;
-  // if (result) {
-  //   return Response.json({ error: "Cannot clock out" }, { status: 400 });
-  // }
   let data = {
     clockOut,
     workingHour: workingHour,
@@ -154,17 +139,12 @@ export const PATCH = async (req: Request) => {
     Number(overtime),
     workingHour,
   );
-  let noti = await db.notificationUser.findFirst({ where: { userId } });
-  const currentArray = Array.isArray(noti?.clock) ? noti?.clock : [];
-  const updatedArray = [...currentArray, notify];
-  await db.notificationUser.update({
-    where: { id: noti?.id },
-    data: { clock: updatedArray },
-  });
+  
   let user = await db.user.findFirst({
     where: { id: userId },
     select: { username: true },
   });
+  await notificationClock(userId,notify)
   await SentNoti("Clock", "You have clock out", "", user?.username);
   return Response.json({ data }, { status: 200 });
 };

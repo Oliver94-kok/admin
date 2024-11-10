@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { TimeUtils } from "@/lib/timeUtility";
 import { AttendsInterface } from "@/types/attendents";
 import dayjs from "dayjs";
 export const POST = async (req: Request) => {
@@ -49,6 +50,11 @@ export const POST = async (req: Request) => {
       },
       { status: 201 },
     );
+    const now = new Date();
+  let shift  = await db.attendBranch.findFirst({where:{userId}});
+  let shiftIn = TimeUtils.createDateFromTimeString(now,shift?.clockIn!);
+  let shiftOut = TimeUtils.createDateFromTimeString(now,shift?.clockOut!);
+  let checkOutShift = TimeUtils.isNextDay(now,shift?.clockOut!)
 
-  return Response.json({ error: "not clock " }, { status: 400 });
+  return Response.json({ shiftIn,shiftOut,checkOutShift }, { status: 400 });
 };
