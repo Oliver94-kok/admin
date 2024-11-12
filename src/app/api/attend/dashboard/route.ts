@@ -2,6 +2,10 @@ import { db } from "@/lib/db";
 import { NextRequest } from "next/server";
 export const dynamic = "force-dynamic";
 import dayjs from "dayjs";
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
 export const GET = async (request: NextRequest) => {
   // let data =
   //   await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour, ab.team
@@ -20,29 +24,19 @@ export const GET = async (request: NextRequest) => {
   //   JOIN User AS u ON a.userId = u.id
   //   JOIN AttendBranch as ab on u.id = ab.userId
   // WHERE (date(a.clockIn) = date(${date}) OR date(a.clockOut) = date(${date}))`;
-  const startOfDay = dayjs(date).startOf("day").toDate();
-  console.log("🚀 ~ GET ~ startOfDay:", startOfDay);
-  const endOfDay = dayjs(date).endOf("day").toDate();
-  console.log("🚀 ~ GET ~ endOfDay:", endOfDay);
+  const targetDate = dayjs(date).tz("Asia/Kuala_Lumpur");
+  const startOfDay = targetDate.startOf("day").toISOString();
+  const endOfDay = targetDate.endOf("day").toISOString();
   let data = await db.attends.findMany({
     where: {
-      OR: [
-        {
-          clockIn: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
-        },
-        {
-          clockOut: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
-        },
-      ],
+      dates: {
+        gte: startOfDay, // Greater than or equal to start of day
+        lte: endOfDay, // Less than or equal to end of day
+      },
     },
     select: {
       id: true,
+      dates: true,
       clockIn: true,
       clockOut: true,
       img: true,

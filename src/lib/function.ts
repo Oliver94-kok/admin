@@ -272,47 +272,47 @@ interface updateSalaryDaysProp {
   year: number;
   userId: string;
 }
-export async function updateSalaryDays({
-  newData,
-  month,
-  year,
-  userId,
-}: updateSalaryDaysProp): Promise<SalaryDay[]> {
-  try {
-    let salary = await db.salary.findFirst({
-      where: { userId: userId, month: month, year: year },
-    });
-    const rawData = (salary?.day as unknown) ?? [];
-    const currentArray: SalaryDay[] = Array.isArray(rawData) ? rawData : [];
-    const allData = [...currentArray, ...newData];
+// export async function updateSalaryDays({
+//   newData,
+//   month,
+//   year,
+//   userId,
+// }: updateSalaryDaysProp): Promise<SalaryDay[]> {
+//   try {
+//     let salary = await db.salary.findFirst({
+//       where: { userId: userId, month: month, year: year },
+//     });
+//     const rawData = (salary?.day as unknown) ?? [];
+//     const currentArray: SalaryDay[] = Array.isArray(rawData) ? rawData : [];
+//     const allData = [...currentArray, ...newData];
 
-    const mergedArray = allData.reduce((acc: SalaryDay[], item: SalaryDay) => {
-      const existingIndex = acc.findIndex((x) => x.id === item.id);
+//     const mergedArray = allData.reduce((acc: SalaryDay[], item: SalaryDay) => {
+//       const existingIndex = acc.findIndex((x) => x.id === item.id);
 
-      if (existingIndex === -1) {
-        acc.push(item);
-      } else {
-        // Using spread operator for complete merge
-        acc[existingIndex] = {
-          ...item,
-        };
-      }
+//       if (existingIndex === -1) {
+//         acc.push(item);
+//       } else {
+//         // Using spread operator for complete merge
+//         acc[existingIndex] = {
+//           ...item,
+//         };
+//       }
 
-      return acc;
-    }, []);
-    let sort = mergedArray.sort((a, b) => a.id - b.id);
-    let rawjson = (sort as unknown) ?? [];
-    await db.salary.update({
-      where: { id: salary?.id },
-      data: { day: rawjson },
-    });
-    // currentArray = mergedArray;
-    return Promise.resolve(mergedArray);
-  } catch (error) {
-    console.error("Error updating salary days:", error);
-    throw error;
-  }
-}
+//       return acc;
+//     }, []);
+//     let sort = mergedArray.sort((a, b) => a.id - b.id);
+//     let rawjson = (sort as unknown) ?? [];
+//     await db.salary.update({
+//       where: { id: salary?.id },
+//       data: { day: rawjson },
+//     });
+//     // currentArray = mergedArray;
+//     return Promise.resolve(mergedArray);
+//   } catch (error) {
+//     console.error("Error updating salary days:", error);
+//     throw error;
+//   }
+// }
 export const getYesterday = async (date: string) => {
   let dates = DateTime.fromISO(date);
   let dateid = dates.minus({ days: 1 }).toFormat("dd");

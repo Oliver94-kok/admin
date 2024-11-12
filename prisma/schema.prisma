@@ -21,7 +21,12 @@ enum UserRole {
 
 enum AttendStatus {
   Active
-  NotActive
+  Full_Attend
+  No_ClockOut
+  No_ClockIn
+  Absent
+  Leave
+  Late
 }
 
 model User {
@@ -44,15 +49,15 @@ model User {
 
 model Attends {
   id          String       @id @default(cuid())
+  dates       DateTime     @db.Date
   clockIn     DateTime?
   clockOut    DateTime?
   workingHour Float?
   img         String?
   locationIn  String?
   locationOut String?
-  overtime    Int?
+  overtime    Float?
   fine        Float?
-  fine2       Float?
   userId      String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -61,27 +66,27 @@ model Attends {
 }
 
 model Salary {
-  id           String   @id @default(cuid())
-  day          Json?
-  month        Int
-  year         Int
-  workingDay   Int?
-  workingHoour Int?     @map("workingHour")
-  fine         Int?
-  fine2        Int?
-  late         Int?
-  notClockIn   Int?
-  overTimeHour Float?
-  overTime     Float?
-  total        Float?
-  perDay       Float?
-  bonus        Float?
-  allowance    Float?
-  cover        Float?
-  userId       String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  users        User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  month          Int
+  year           Int
+  workingDay     Int?
+  workingHoour   Int?     @map("workingHour")
+  fineLate       Int?
+  fineNoClockIn  Int?
+  fineNoClockOut Int?
+  late           Int?
+  notClockIn     Int?
+  overTimeHour   Float?
+  overTime       Float?
+  total          Float?
+  perDay         Float?
+  bonus          Float?
+  allowance      Float?
+  cover          Float?
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  users          User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Branch {

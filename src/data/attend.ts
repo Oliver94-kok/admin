@@ -3,10 +3,20 @@ import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
 import { DateTime } from "luxon";
 import { createSalary, getSalaryByUserId } from "./salary";
-interface dataAttend {
-  create?: AttendsInterface;
-  userId?: string;
-}
+import { AttendStatus } from "@prisma/client";
+import dayjs, { Dayjs } from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+// Enable required dayjs plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(customParseFormat);
 
 export const checkClockIn = async (userId: string) => {
   console.log("🚀 ~ checkClockIn ~ userId:", userId);
@@ -53,47 +63,6 @@ export const getDataByDate = async (tarikh: string) => {
   console.log(data);
   return data;
 };
-export const createNotClockIn = async (
-  userId: string,
-  clockOut: Date,
-  overtime: number,
-) => {
-  try {
-    let fine = 0;
-    let salary = await getSalaryByUserId(userId);
-    if (salary) {
-      if (salary?.late! >= 1) {
-        fine = 100;
-      } else {
-        fine = 50;
-      }
-      var ot = salary?.overTimeHour! + overtime;
-      var wd = salary?.workingDay! + 1;
-      var late = salary?.late! + 1;
-      await db.salary.update({
-        where: { id: salary?.id },
-        data: { overTimeHour: ot, workingDay: wd, late },
-      });
-    }
-
-    await createSalary(userId, 1, overtime);
-    let dataAttend = {
-      userId,
-      fine,
-      clockOut,
-      overtime,
-    };
-    console.log("🚀 ~ dataAttend:", dataAttend);
-    await db.attends.create({
-      data: { userId, fine, clockOut, overtime },
-    });
-
-    return { success: "success" };
-  } catch (error) {
-    console.log("🚀 ~ error:", error);
-    return null;
-  }
-};
 
 export const calOverTime = async (userId: string, clockOut: string) => {
   let user = await db.attendBranch.findFirst({ where: { userId } });
@@ -127,8 +96,12 @@ export const calOverTime2 = async (userId: string, clockOut: string) => {
     console.log("🚀 ~ calOverTime ~ end:", end);
 
     var hour = start.diff(end, ["hours", "minutes", "seconds"]);
-    console.log(hour);
+    console.log("hour sd ", hour);
     var min = hour.minutes;
+    var checkNegative = hour.as("minute").toFixed();
+    if (Number(checkNegative) < 0) {
+      return 0;
+    }
     return hour.as("minute").toFixed();
   }
 };
@@ -155,58 +128,135 @@ export const leaveForgetClockAttend = async (dates: string, userId: string) => {
   const date = new Date(
     Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
   );
+  console.log("🚀 ~ leaveForgetClockAttend ~ date:", date);
   const formattedDate = date.toISOString().split("T")[0];
-  let attend: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND date(clockIn) = ${formattedDate} or date(clockOut) = ${formattedDate}`;
-  let nAttend = attend[0];
-  await db.attends.update({ where: { id: nAttend.id }, data: { fine2: 0 } });
-  let salary = await db.salary.findFirst({
-    where: { userId, month: date.getMonth() + 1, year: date.getFullYear() },
+  let user = await db.attends.findFirst({
+    where: { userId, dates: { equals: date } },
   });
-  let newFine2 = salary?.fine2! - nAttend.fine2;
-  console.log("🚀 ~ leaveForgetClockAttend ~ newFine2:", newFine2);
-  await db.salary.update({
-    where: { id: salary?.id },
-    data: { fine2: newFine2 },
-  });
+  console.log("🚀 ~ leaveForgetClockAttend ~ user:", user);
+  if (user) {
+    let data = {
+      clockIn: null,
+      clockOut: null,
+      workingHour: null,
+      locationIn: null,
+      locationOut: "Address not available",
+      overtime: null,
+      fine: null,
+      status: AttendStatus.Leave,
+    };
+    await db.attends.update({ where: { id: user.id }, data });
+    return user;
+  }
+  let data = {
+    dates: date,
+    status: AttendStatus.Leave,
+  };
+  let attend = await db.attends.create({ data });
+  return attend;
 };
 
 export const deliveryClockAttend = async (dates: string, userId: string) => {
-  console.log("🚀 ~ deliveryClockAttend ~ dates:", dates);
-  console.log("🚀 ~ deliveryClockAttend ~ userId:", userId);
   const date = new Date(
     Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
   );
-  const formattedDate = date.toISOString().split("T")[0];
-  let attend: AttendsInterface[] =
-    await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND (date(clockIn) = ${formattedDate} or date(clockOut) = ${formattedDate})`;
-  let salary = await db.salary.findFirst({
-    where: { userId, month: date.getMonth() + 1, year: date.getFullYear() },
+  let user = await db.attends.findFirst({
+    where: { userId, dates: { equals: date } },
   });
-  let nAttend = attend[0];
-  console.log("🚀 ~ deliveryClockAttend ~ nAttend:", nAttend);
-  if (nAttend.clockIn) {
-    await db.attends.update({ where: { id: nAttend.id }, data: { fine: 0 } });
-    let nfine = salary?.fine! - nAttend.fine;
-    console.log("🚀 ~ deliveryClockAttend ~ nfine:", nfine);
-    await db.salary.update({
-      where: { id: salary?.id },
-      data: { fine: nfine },
-    });
-    return;
+  if (!user) {
+    let data = {
+      userId,
+      dates: date,
+      status: AttendStatus.Active,
+    };
+    let result = await db.attends.create({ data });
+    return result;
   }
-  let nfine2 = salary?.fine2! - nAttend.fine2;
-  await db.attends.update({ where: { id: nAttend.id }, data: { fine2: 0 } });
-  await db.salary.update({
-    where: { id: salary?.id },
-    data: { fine2: nfine2 },
-  });
-  return;
+  let data = {
+    status: AttendStatus.Active,
+    fine: null,
+  };
+  let result = await db.attends.update({ where: { id: user.id }, data });
+  return result;
 };
 
 export const cronAttend = async () => {
-  let date = DateTime.now().toFormat("yyyy-MM-dd");
-  let data: AttendsInterface[] = await db.$queryRaw`SELECT userId
-    FROM Attends WHERE (date(clockIn) = date(${date}) OR date(clockOut) = date(${date}))`;
-  return data;
+  let date = DateTime.now().toISO();
+  let resutl = await db.attends.findMany({
+    where: { dates: { equals: date } },
+  });
+  return resutl;
 };
+export const cronAttendCheckShift = async (shiftIn: Date, shiftOut: Date) => {
+  const baseMoment = dayjs();
+  const inShift = dayjs(shiftIn);
+  const outShift = dayjs(shiftOut).add(4, "hour");
+  if (baseMoment.isBefore(inShift)) {
+    return { result: "can clock in" };
+  }
+  if (baseMoment.isBefore(outShift)) {
+    return { result: "can clock out" };
+  }
+  return { result: "absent" };
+};
+
+export async function getLastThreeMonthsData() {
+  const currentDate = dayjs();
+  const startDate = currentDate.subtract(2, "month").startOf("month").toDate();
+  const endDate = currentDate.endOf("month").toDate();
+
+  const monthsData = await Promise.all(
+    [0, 1, 2].map(async (monthsAgo) => {
+      const date = currentDate.subtract(monthsAgo, "month");
+      const startOfMonth = date.startOf("month").toDate();
+      const endOfMonth = date.endOf("month").toDate();
+
+      const [attendanceData, counts] = await Promise.all([
+        db.attends.findMany({
+          where: {
+            dates: {
+              gte: startOfMonth,
+              lte: endOfMonth,
+            },
+          },
+          select: {
+            id: true,
+            clockIn: true,
+            clockOut: true,
+            status: true,
+            dates: true,
+          },
+          orderBy: {
+            dates: "desc",
+          },
+        }),
+        db.attends.groupBy({
+          by: ["status"],
+          where: {
+            dates: {
+              gte: startOfMonth,
+              lte: endOfMonth,
+            },
+            status: {
+              in: ["Full_Attend", "Absent", "Leave"],
+            },
+          },
+          _count: true,
+        }),
+      ]);
+
+      return {
+        month: date.format("MM"),
+        data: attendanceData,
+        stats: {
+          fullAttend:
+            counts.find((c) => c.status === "Full_Attend")?._count ?? 0,
+          absent: counts.find((c) => c.status === "Absent")?._count ?? 0,
+          leave: counts.find((c) => c.status === "Leave")?._count ?? 0,
+        },
+      };
+    }),
+  );
+
+  return monthsData;
+}

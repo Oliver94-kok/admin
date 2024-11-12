@@ -8,7 +8,7 @@ export const GET = async (req: NextRequest) => {
   const y = searchParams.get("year");
   let month = parseInt(m!);
   let year = parseInt(y!);
-  let data: SalaryUser[] = await db.salary.findMany({
+  let data = await db.salary.findMany({
     where: { month, year },
     include: {
       users: { select: { name: true, username: true, userImg: true } },

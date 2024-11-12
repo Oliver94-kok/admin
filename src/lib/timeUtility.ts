@@ -26,7 +26,8 @@ export class TimeUtils {
    * @param scheduleTime The scheduled time in 24-hour format
    */
   static isNextDay(clockTime: Date, scheduleTime: string): boolean {
-    const { hours: scheduleHours, minutes: scheduleMinutes } = this.parseTimeString(scheduleTime);
+    const { hours: scheduleHours, minutes: scheduleMinutes } =
+      this.parseTimeString(scheduleTime);
     const clockMoment = dayjs(clockTime);
     const scheduleMoment = dayjs(clockTime)
       .hour(scheduleHours)
@@ -46,11 +47,15 @@ export class TimeUtils {
   static createDateFromTimeString(baseDate: Date, timeString: string): Date {
     const { hours, minutes } = this.parseTimeString(timeString);
     const baseMoment = dayjs(baseDate);
-    let result = baseMoment.hour(hours).minute(minutes).second(0).millisecond(0);
+    let result = baseMoment
+      .hour(hours)
+      .minute(minutes)
+      .second(0)
+      .millisecond(0);
 
     // If the calculated time is before the base time, it should be for the next day
     if (result.isBefore(baseMoment)) {
-      result = result.add(1, 'day');
+      result = result.add(1, "day");
     }
 
     return result.toDate();
@@ -67,5 +72,19 @@ export class TimeUtils {
       moment = moment.tz(timezone);
     }
     return moment.toISOString();
+  }
+  /**
+   * Formats a date to ISO string with timezone consideration
+   * @param timestamp The date to format
+   *
+   */
+  static checkMorning(timestamp: string) {
+    // const timestamp = "2024-11-04T22:00:00.000Z";
+    const klTime = dayjs(timestamp).tz("Asia/Kuala_Lumpur");
+    const hour = klTime.hour();
+
+    // Morning from midnight (00:00) until noon (11:59)
+    const isMorning = hour >= 0 && hour < 12;
+    return isMorning;
   }
 }
