@@ -1,12 +1,14 @@
 "use server";
 
 import { deliveryClockAttend, leaveForgetClockAttend } from "@/data/attend";
+import { addLeaveAttend, forEachDate } from "@/data/leave";
 import { db } from "@/lib/db";
 import {
   countDaysBetween,
   extractDateAndDay,
   formatDateTime,
 } from "@/lib/function";
+import dayjs from "dayjs";
 const { DateTime } = require("luxon");
 import { v7 as uuidv7 } from "uuid";
 export const ApproveLeave = async (status: string, id: string) => {
@@ -27,7 +29,22 @@ export const ApproveLeave = async (status: string, id: string) => {
     if (status == "Approve") {
       if (check?.type != "Delivery leave" && check?.type != "Forget clock") {
         const startLeave = await extractDateAndDay(check?.startDate!);
+        console.log("🚀 ~ ApproveLeave ~ startLeave:", startLeave);
         const endLeave = await extractDateAndDay(check?.endDate!);
+        console.log("🚀 ~ ApproveLeave ~ endLeave:", endLeave);
+        if (startLeave == endLeave) {
+          await addLeaveAttend(
+            check?.userId!,
+            `${startLeave.year}-${startLeave.month}-${startLeave.day}`,
+          );
+        } else {
+          forEachDate(startLeave.date, endLeave.date, async (date) => {
+            console.log("🚀 ~ forEachDate ~ date:", date);
+            console.log("Date:", dayjs(date).format("YYYY-MM-DD")); // Will show 2024-11-04 and 2024-11-05
+            let ndate = dayjs(date).format("YYYY-MM-DD");
+            await addLeaveAttend(check?.userId!, ndate);
+          });
+        }
       }
     }
     let a = await db.leave.update({ where: { id }, data: { status } });

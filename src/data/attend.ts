@@ -200,7 +200,7 @@ export const cronAttendCheckShift = async (shiftIn: Date, shiftOut: Date) => {
   return { result: "absent" };
 };
 
-export async function getLastThreeMonthsData() {
+export async function getLastThreeMonthsData(userId: string) {
   const currentDate = dayjs();
   const startDate = currentDate.subtract(2, "month").startOf("month").toDate();
   const endDate = currentDate.endOf("month").toDate();
@@ -214,6 +214,7 @@ export async function getLastThreeMonthsData() {
       const [attendanceData, counts] = await Promise.all([
         db.attends.findMany({
           where: {
+            userId,
             dates: {
               gte: startOfMonth,
               lte: endOfMonth,
@@ -233,6 +234,7 @@ export async function getLastThreeMonthsData() {
         db.attends.groupBy({
           by: ["status"],
           where: {
+            userId,
             dates: {
               gte: startOfMonth,
               lte: endOfMonth,

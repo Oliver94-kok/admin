@@ -37,7 +37,7 @@ export const GET = async (request: NextRequest) => {
           dates: true,
         },
       });
-      var result = await getLastThreeMonthsData();
+      var result = await getLastThreeMonthsData(userId);
 
       return Response.json({ result }, { status: 200 });
     }
