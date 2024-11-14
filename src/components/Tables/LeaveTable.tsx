@@ -117,7 +117,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         );
         console.log(d);
         mutate("/api/leave/dashboard");
-        toast.success("Success add overtime", {
+        toast.success("Success add status", {
           position: "top-center",
         });
         // window.location.reload();
@@ -326,11 +326,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 {/* Approval Button */}
                 <button
                   onClick={() => handleConfirmOpen("Approve", leave.id)}
-                  className={`mr-2 rounded-full px-5 py-1 lg:px-10 xl:px-5 ${
-                    currentAction === "Approve"
+                  className={`mr-2 rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === "Approve"
                       ? "bg-green-600"
                       : "bg-green-500 hover:bg-green-600"
-                  } text-white`}
+                    } text-white`}
                 >
                   Approve
                 </button>
@@ -338,11 +337,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 {/* Reject Button */}
                 <button
                   onClick={() => handleConfirmOpen("Reject", leave.id)}
-                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${
-                    currentAction === "Reject"
+                  className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === "Reject"
                       ? "bg-red-600"
                       : "bg-red-500 hover:bg-red-600"
-                  } text-white`}
+                    } text-white`}
                 >
                   Reject
                 </button>
@@ -405,9 +403,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${
-                currentPage === i + 1 ? "bg-primary text-white" : ""
-              }`}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
+                }`}
             >
               {i + 1}
             </button>

@@ -57,7 +57,7 @@ export const ApproveLeave = async (status: string, id: string) => {
     const formattedDateInAsia = currentDateInAsia.toFormat(
       "yyyy-MM-dd HH:mm:ss",
     );
-    let smdate = currentDateInAsia.toFormat("MM/dd HH:mm");
+    let smdate = currentDateInAsia.toFormat("dd/MM HH:mm");
     let newnoti = {
       id: randomid,
       type: a.type,
