@@ -308,8 +308,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                       src={
                         leave.img ? `http://image.ocean00.com${leave.img}` : ""
                       }
-                      width={100}
-                      height={90}
+                      width={50}
+                      height={50}
                       alt="leave"
                     />
                   </div>
@@ -327,8 +327,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 <button
                   onClick={() => handleConfirmOpen("Approve", leave.id)}
                   className={`mr-2 rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === "Approve"
-                      ? "bg-green-600"
-                      : "bg-green-500 hover:bg-green-600"
+                    ? "bg-green-600"
+                    : "bg-green-500 hover:bg-green-600"
                     } text-white`}
                 >
                   Approve
@@ -338,8 +338,8 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 <button
                   onClick={() => handleConfirmOpen("Reject", leave.id)}
                   className={`rounded-full px-5 py-1 lg:px-10 xl:px-5 ${currentAction === "Reject"
-                      ? "bg-red-600"
-                      : "bg-red-500 hover:bg-red-600"
+                    ? "bg-red-600"
+                    : "bg-red-500 hover:bg-red-600"
                     } text-white`}
                 >
                   Reject
