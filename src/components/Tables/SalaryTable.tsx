@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
 import { useIdStore } from "@/lib/zudstand/salary";
+import { setDataCookies } from "@/action/invoice";
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -131,6 +132,7 @@ const SalaryTable = ({
       alert("No items selected for printing.");
       return;
     }
+    setDataCookies(ids)
     // saveSalaryUsersToStorage();
     router.push("/invoice");
     console.log("Printing selected items:", ids);
@@ -604,7 +606,7 @@ const SalaryTable = ({
           className="col-span-1 flex cursor-pointer items-center justify-center"
           onClick={() => handleSort("late")}
         >
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Late</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">Fine</h5>
           {sortColumn === "late" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
@@ -713,7 +715,7 @@ const SalaryTable = ({
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.overTimeHour}
+              {salary.overTimeHour! / 60}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
@@ -723,7 +725,7 @@ const SalaryTable = ({
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-              {salary?.fine! + salary?.fine2!}
+              {salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut!}
             </p>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">

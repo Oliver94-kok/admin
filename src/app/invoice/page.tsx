@@ -1,11 +1,18 @@
+export const dynamic = 'force-dynamic'
+import { getData } from "@/action/invoice";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
-// import MultiInvoiceTable from "@/components/Tables/MultiInvoiceTable";
+import MultiInvoiceTable from "@/components/Tables/MultiInvoiceTable";
+import { SalaryRecord } from "@/types/salary2";
+import axios from "axios";
 
-const InvoiceAll = () => {
+const InvoiceAll = async () => {
+    const cookieData: SalaryRecord[] = await getData();
+
+
     return (
         <>
             <DefaultLayout>
-                {/* <MultiInvoiceTable /> */}ll
+                <MultiInvoiceTable datas={cookieData} />
             </DefaultLayout>
 
         </>

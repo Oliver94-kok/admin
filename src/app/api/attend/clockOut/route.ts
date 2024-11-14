@@ -18,6 +18,11 @@ export const POST = async (req: Request) => {
     );
   //   let overtime = await calOverTime2(userId, clockOut);
   //   let workingHour = await checkWorkingHour(clock?.clockIn as Date, clockOut);
+  let fine = await getNoClockOut(
+    userId,
+    new Date().getMonth() + 1,
+    new Date().getFullYear(),
+  );
   let data = {
     // workingHour: workingHour,
     // overtime: Number(overtime!),
@@ -25,11 +30,7 @@ export const POST = async (req: Request) => {
     status: AttendStatus.No_ClockOut,
   };
   await db.attends.update({ where: { id: clock.id }, data });
-  let fine = await getNoClockOut(
-    userId,
-    new Date().getMonth() + 1,
-    new Date().getFullYear(),
-  );
+
   await CheckSalarys({
     userId,
     fineLate: null,

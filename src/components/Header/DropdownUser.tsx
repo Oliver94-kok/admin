@@ -5,8 +5,9 @@ import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
 import { useRouter } from "next/navigation";
 import { Logout } from "@/action/signout";
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 const DropdownUser = () => {
+  const session = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
   const userSignOut = () => {
@@ -40,7 +41,7 @@ const DropdownUser = () => {
         </span> */}
 
         <span className="flex items-center gap-2 font-medium text-dark dark:text-dark-6">
-          <span className="hidden lg:block">Jhon Smith</span>
+          <span className="hidden lg:block">{session.data?.user.name}</span>
 
           <svg
             className={`fill-current duration-200 ease-in ${dropdownOpen && "rotate-180"}`}

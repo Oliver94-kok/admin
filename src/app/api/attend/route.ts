@@ -54,8 +54,8 @@ export const POST = async (req: Request) => {
       );
     }
     // let result = await postImage(imgClockIn, user?.username!, "clock");
-    // if (result?.error)
-    //   return Response.json({ error: "Error upload image" }, { status: 400 });
+    // /if (result?.error)
+    // return Response.json({ error: "Error upload image" }, { status: 400 });
     // let attendImg = result?.success;
     // let attendImg = await saveImage(imgClockIn, user?.username!);
     const today = dayjs.utc(clockIn);
