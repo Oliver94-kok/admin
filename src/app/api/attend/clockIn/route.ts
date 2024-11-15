@@ -26,16 +26,7 @@ export const POST = async (req: Request) => {
       OR: [
         { status: "Active" },
         {
-          clockIn: {
-            gte: dayjs().subtract(1, "day").startOf("day").toDate(),
-            lte: dayjs().endOf("day").toDate(),
-          },
-        },
-        {
-          clockOut: {
-            gte: dayjs().subtract(1, "day").startOf("day").toDate(),
-            lte: dayjs().endOf("day").toDate(),
-          },
+          dates: new Date(),
         },
       ],
     },
