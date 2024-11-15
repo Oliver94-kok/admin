@@ -19,6 +19,10 @@ export const POST = async (req: Request) => {
   //     { status: 201 },
   //   );
   // let user = await db.attends.findFirst({where:{userId,status:"Active"}});
+  const today = dayjs().format("YYYY-MM-DD");
+  const t = new Date(today);
+  console.log("sdas", today);
+  console.log("sdas 2", t);
   let user = await db.attends.findFirst({
     where: {
       userId,
@@ -26,7 +30,7 @@ export const POST = async (req: Request) => {
       OR: [
         { status: "Active" },
         {
-          dates: new Date(),
+          dates: t,
         },
       ],
     },

@@ -32,6 +32,9 @@ export const GET = async (req: Request) => {
   // let image;
   // let result = await postImage("image", "user04", "user");
   // let result = await checkShift({ userId: "cm36sgm990004nyn1sq6335vk" });
+  // let result = await db.attends.findMany({
+  //   where: { userId: "cm3fea988001m5v90n595y418" },
+  // });
   let result = await db.attends.findMany();
   return Response.json({ result }, { status: 200 });
 };
