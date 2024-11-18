@@ -220,10 +220,11 @@ export const getAttendLate = async (
       },
     });
     let noClockIn = salary.filter((item) => item.status == "Late").length;
-    if (noClockIn > 1) {
-      return 100;
-    } else {
+    console.log("🚀 ~ noClockIn:", noClockIn)
+    if (noClockIn < 1) {
       return 50;
+    } else {
+      return 100;
     }
   } catch (error) {
     return null;
