@@ -3,12 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Invoice } from "@/types/product";
 import { SalaryUser, userInvoice } from "@/types/salary";
-
+import { createRoot } from 'react-dom/client';
 import jsPDF from 'jspdf';
 import { useIdStore } from "@/lib/zudstand/salary";
 import axios from "axios";
 import useSWR from "swr";
 import { SalaryRecord } from "@/types/salary2";
+import { PayslipContent } from "../printInvoice";
 const fetcher = async (url: string, ids: string[]) => {
     const response = await axios.post(url, { data: ids });
     return response.data.results;
@@ -49,84 +50,166 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             html2pdf().set(opt).from(element).save();
         }
     };
+    // const generatePDF = (isAll = false) => {
+    //     const usersToProcess = datas ? datas : currentData;
+    //     // Loop through the salaryUsers array and generate a PDF for each user
+    //     usersToProcess.forEach((item) => {
+    //         const { salary, result } = item;
+    //         const opt = {
+    //             margin: [10, 0, 10, 0], // Adjust the margins for the PDF output
+    //             filename: `payslip_${salary.users?.name || 'unknown'}.pdf`,
+    //             html2canvas: { scale: 2 }, // Higher scale for better quality
+    //             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    //         };
+
+    //         // Create a new html2pdf instance
+    //         const doc = html2pdf().set(opt);
+
+    //         // Create a new element and populate it with the salary data
+    //         const element = document.createElement('div');
+    //         element.innerHTML = `
+    //     <div class="border border-stroke p-5 mb-5">
+    //       <div class="flex justify-between mb-4">
+    //         <div>
+    //           <h5 class="text-xl font-bold">${salary.users?.name || 'N/A'}</h5>
+    //           <p>Username: ${salary.users?.name || 'N/A'}</p>
+    //           <p>Branch: ${salary.users?.name || 'N/A'}</p>
+    //         </div>
+    //         <div class="text-right">
+    //           <p>Total Hours: ${salary.overTimeHour || 'N/A'} hrs</p>
+    //           <p>Total Working Days: ${salary.workingDay || 'N/A'} days</p>
+    //         </div>
+    //       </div>
+    //       <div class="border-t border-stroke pt-4">
+    //         <h5 class="text-lg font-bold">Salary Breakdown</h5>
+    //         <div class="flex justify-between">
+    //           <p>Basic Day Salary:</p>
+    //           <p class="text-right">${salary.perDay || 'N/A'}</p>
+    //         </div>
+    //         <div class="flex justify-between">
+    //           <p>Overtime:</p>
+    //           <p class="text-right">${salary.overTime || 'N/A'}</p>
+    //         </div>
+    //          <div class="flex justify-between">
+    //           <p>Bonus:</p>
+    //           <p class="text-right">${salary.bonus || 'N/A'}</p>
+    //         </div>
+    //         <div class="flex justify-between">
+    //           <p>Allowance:</p>
+    //           <p class="text-right">${salary.allowance || 'N/A'}</p>
+    //         </div>
+    //         <div class="flex justify-between">
+    //           <p>Cover:</p>
+    //           <p class="text-right">${salary.cover || 'N/A'}</p>
+    //         </div>
+    //         <br />
+    //         <div style="color: red;">
+    //           <p>
+    //             *Absent 2Day -Basic Day Salary
+    //           </p>
+    //            <ul>
+    //                                         ${result.dataAbsent.map((e, index) => (
+    //             <>
+    //                 <li key={index} className="text-right">
+    //                     Fine RM{2 * salary.perDay!}    Date  {e.dates.toLocaleDateString()}
+    //                 </li>
+    //             </>
+    //         ))}
+    //                                     </ul>
+    //           <p>*Lateness:</p>
+    //             <ul>
+    //                                         ${result.dataLate.map((e, index) => (
+    //             <>
+    //                 <li key={index} className="text-right">
+    //                     Fine RM{e.fine}    Date  {e.dates.toLocaleDateString()}
+    //                 </li>
+    //             </>
+    //         ))
+    //             }
+
+    //                                     </ul>
+    //           <p>*Not Clocked in:</p>
+    //           <ul>
+    //                                        ${result.notClockIn.map((e, index) => (
+    //                 <>
+    //                     <li key={index} className="text-right">
+    //                         Fine RM{e.fine}    Date  {e.dates.toLocaleDateString()}
+    //                     </li>
+    //                 </>
+    //             ))}
+    //                                     </ul>
+    //           <p>*Not Clocked out:</p>
+    //             <ul>
+    //                                         ${result.notClockOut.map((e, index) => (
+    //                 <>
+    //                     <li key={index} className="text-right">
+    //                         Fine RM{e.fine}    Date  {e.dates.toLocaleDateString()}
+    //                     </li>
+    //                 </>
+    //             ))}
+    //                                     </ul>
+    //           <br />
+    //         </div>
+    //         <div class="flex justify-between">
+    //           <p >Deduction:</p>
+    //           <p class="text-right" style="color: red;">-${((result.dataAbsent.length * 2) * salary.perDay!) + salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut!}</p>
+    //         </div>
+    //         <div class="border-t border-stroke mt-10 pt-4 flex justify-between font-bold">
+    //           <p>Total Salary:</p>
+    //           <p class="text-right">${(Number(salary.total ?? 0) - (
+    //                 ((result.dataAbsent?.length || 0) * 2) * Number(salary.perDay ?? 0) +
+    //                 Number(salary.fineLate ?? 0) +
+    //                 Number(salary.fineNoClockIn ?? 0) +
+    //                 Number(salary.fineNoClockOut ?? 0)
+    //             )).toFixed(2)}</p>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   `;
+
+    //         // Add the element to the PDF and save it
+    //         doc.from(element).save();
+    //     });
+    // };
     const generatePDF = (isAll = false) => {
-        const usersToProcess = datas ? datas : currentData;
-        // Loop through the salaryUsers array and generate a PDF for each user
+        const usersToProcess = isAll ? datas : currentData;
+
         usersToProcess.forEach((item) => {
-            const { salary, result } = item;
-            const opt = {
-                margin: [10, 0, 10, 0], // Adjust the margins for the PDF output
-                filename: `payslip_${salary.users?.name || 'unknown'}.pdf`,
-                html2canvas: { scale: 2 }, // Higher scale for better quality
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            };
+            // Create a temporary container
+            const container = document.createElement('div');
 
-            // Create a new html2pdf instance
-            const doc = html2pdf().set(opt);
+            // Use createRoot from react-dom/client
+            const root = createRoot(container);
+            root.render(<PayslipContent data={item} />);
 
-            // Create a new element and populate it with the salary data
-            const element = document.createElement('div');
-            element.innerHTML = `
-        <div class="border border-stroke p-5 mb-5">
-          <div class="flex justify-between mb-4">
-            <div>
-              <h5 class="text-xl font-bold">${salary.users?.name || 'N/A'}</h5>
-              <p>Username: ${salary.users?.name || 'N/A'}</p>
-              <p>Branch: ${salary.users?.name || 'N/A'}</p>
-            </div>
-            <div class="text-right">
-              <p>Total Hours: ${salary.overTimeHour || 'N/A'} hrs</p>
-              <p>Total Working Days: ${salary.workingDay || 'N/A'} days</p>
-            </div>
-          </div>
-          <div class="border-t border-stroke pt-4">
-            <h5 class="text-lg font-bold">Salary Breakdown</h5>
-            <div class="flex justify-between">
-              <p>Basic Day Salary:</p>
-              <p class="text-right">${salary.perDay || 'N/A'}</p>
-            </div>
-            <div class="flex justify-between">
-              <p>Overtime:</p>
-              <p class="text-right">${salary.overTime || 'N/A'}</p>
-            </div>
-             <div class="flex justify-between">
-              <p>Bonus:</p>
-              <p class="text-right">${salary.bonus || 'N/A'}</p>
-            </div>
-            <div class="flex justify-between">
-              <p>Allowance:</p>
-              <p class="text-right">${salary.allowance || 'N/A'}</p>
-            </div>
-            <div class="flex justify-between">
-              <p>Cover:</p>
-              <p class="text-right">${salary.cover || 'N/A'}</p>
-            </div>
-            <br />
-            <div style="color: red;">
-              <p>
-                *Absent 2Day -Basic Day Salary
-              </p>
-              <p>*Lateness:</p>
-              <p>*Not Clocked in:</p>
-              <br />
-            </div>
-            <div class="flex justify-between">
-              <p >Deduction:</p>
-              <p class="text-right" style="color: red;">-${salary.fineLate}</p>
-            </div>
-            <div class="border-t border-stroke mt-10 pt-4 flex justify-between font-bold">
-              <p>Total Salary:</p>
-              <p class="text-right">${salary.total}</p>
-            </div>
-          </div>
-        </div>
-      `;
+            // Wait for the content to be rendered
+            setTimeout(() => {
+                const opt = {
+                    margin: [10, 0, 10, 0],
+                    filename: `payslip_${item.salary.users?.name || 'unknown'}.pdf`,
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false
+                    },
+                    jsPDF: {
+                        unit: 'mm',
+                        format: 'a4',
+                        orientation: 'portrait'
+                    }
+                };
 
-            // Add the element to the PDF and save it
-            doc.from(element).save();
+                html2pdf()
+                    .set(opt)
+                    .from(container)
+                    .save()
+                    .then(() => {
+                        root.unmount();
+                        container.remove();
+                    });
+            }, 100);
         });
     };
-
     return (
         <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto
            md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -210,7 +293,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                             {result.dataAbsent.map((e, index) => (
                                                 <>
                                                     <li key={index} className="text-right">
-                                                        Fine RM{e.fine}    Date  {e.dates.toLocaleDateString()}
+                                                        Fine RM{2 * salary.perDay!}    Date  {e.dates.toLocaleDateString()}
                                                     </li>
                                                 </>
                                             ))}
@@ -256,7 +339,12 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                     </div>
                                     <div className="border-t border-stroke mt-10 pt-4 flex justify-between font-bold"> {/* Divider added here */}
                                         <p>Total Salary:</p>
-                                        <p className="text-right">${salary.total}</p> {/* Aligned right */}
+                                        <p className="text-right">${(Number(salary.total ?? 0) - (
+                                            ((result.dataAbsent?.length || 0) * 2) * Number(salary.perDay ?? 0) +
+                                            Number(salary.fineLate ?? 0) +
+                                            Number(salary.fineNoClockIn ?? 0) +
+                                            Number(salary.fineNoClockOut ?? 0)
+                                        )).toFixed(2)}</p> {/* Aligned right */}
                                     </div>
                                 </div>
                             </div>

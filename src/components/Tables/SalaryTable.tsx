@@ -75,6 +75,7 @@ const SalaryTable = ({
     if (data) {
       setDataSalary(data);
     }
+    clearIds()
   }, [data]);
   useEffect(() => {
     const checkDate = () => {
@@ -132,6 +133,7 @@ const SalaryTable = ({
       alert("No items selected for printing.");
       return;
     }
+
     setDataCookies(ids)
     // saveSalaryUsersToStorage();
     router.push("/invoice");

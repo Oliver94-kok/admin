@@ -7,6 +7,7 @@ import axios from "axios";
 import { cookies } from "next/headers";
 
 export async function setDataCookies(data: any) {
+  cookies().delete("pageData");
   console.log("🚀 ~ setDataCookies ~ data:", data);
   cookies().set("pageData", JSON.stringify(data));
 }
