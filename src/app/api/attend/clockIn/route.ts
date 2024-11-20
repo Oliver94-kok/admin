@@ -4,21 +4,6 @@ import { AttendsInterface } from "@/types/attendents";
 import dayjs from "dayjs";
 export const POST = async (req: Request) => {
   const { userId } = await req.json();
-  // let user: AttendsInterface[] =
-  //   await db.$queryRaw`SELECT * FROM Attends WHERE userId=${userId} AND (date(clockIn) = CURDATE() OR date(clockOut) = CURDATE() )`;
-  // let nuser = user[0];
-  // if (nuser)
-  //   return Response.json(
-  //     {
-  //       id: nuser.id,
-  //       clockin: nuser.clockIn,
-  //       clockout: nuser.clockOut,
-  //       locationIn: nuser.locationIn,
-  //       locationOut: nuser.locationOut,
-  //     },
-  //     { status: 201 },
-  //   );
-  // let user = await db.attends.findFirst({where:{userId,status:"Active"}});
   const today = dayjs().format("YYYY-MM-DD");
   const t = new Date(today);
   console.log("sdas", today);
@@ -47,11 +32,60 @@ export const POST = async (req: Request) => {
       },
       { status: 201 },
     );
-  const now = new Date();
   let shift = await db.attendBranch.findFirst({ where: { userId } });
-  let shiftIn = TimeUtils.createDateFromTimeString(now, shift?.clockIn!);
-  let shiftOut = TimeUtils.createDateFromTimeString(now, shift?.clockOut!);
+  let yesterday = dayjs(t).subtract(1, "day");
+  let yesterdayUser = await db.attends.findFirst({
+    where: { userId, dates: yesterday.toDate() },
+  });
+  if (yesterdayUser == null) {
+    let shiftIn = TimeUtils.createDateFromTimeString(
+      yesterday.toDate(),
+      shift?.clockIn!,
+      "in",
+    );
+    let shiftOut = TimeUtils.createDateFromTimeString(
+      yesterday.toDate(),
+      shift?.clockOut!,
+      "out",
+    );
+    const now = dayjs().utc();
+
+    // Convert shift times to dayjs objects
+    const shiftInTime = dayjs(shiftIn);
+    const shiftOutTime = dayjs(shiftOut);
+    const isWithinShift =
+      now.isAfter(shiftInTime) && now.isBefore(shiftOutTime);
+    if (isWithinShift) {
+      return Response.json({ shiftIn, shiftOut }, { status: 401 });
+    } else {
+      const now = new Date();
+      let shiftIn = TimeUtils.createDateFromTimeString(
+        now,
+        shift?.clockIn!,
+        "in",
+      );
+      let shiftOut = TimeUtils.createDateFromTimeString(
+        now,
+        shift?.clockOut!,
+        "out",
+      );
+      // let checkOutShift = TimeUtils.isNextDay(now,shift?.clockOut!)
+
+      return Response.json({ shiftIn, shiftOut }, { status: 400 });
+    }
+  }
+  const now = new Date();
+
+  let shiftIn = TimeUtils.createDateFromTimeString(now, shift?.clockIn!, "in");
+  let shiftOut = TimeUtils.createDateFromTimeString(
+    now,
+    shift?.clockOut!,
+    "out",
+  );
   // let checkOutShift = TimeUtils.isNextDay(now,shift?.clockOut!)
 
-  return Response.json({ shiftIn, shiftOut }, { status: 400 });
+  return Response.json(
+    { shiftIn, shiftOut, yesterday: yesterdayUser },
+    { status: 400 },
+  );
 };

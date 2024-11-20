@@ -4,7 +4,7 @@ import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
+type ShiftType = "in" | "out";
 export class TimeUtils {
   /**
    * Convert time string to hours and minutes
@@ -44,7 +44,11 @@ export class TimeUtils {
    * @param baseDate The reference date
    * @param timeString Time in 24-hour format (e.g., "18:00")
    */
-  static createDateFromTimeString(baseDate: Date, timeString: string): Date {
+  static createDateFromTimeString(
+    baseDate: Date,
+    timeString: string,
+    shiftType: ShiftType,
+  ): Date {
     const { hours, minutes } = this.parseTimeString(timeString);
     const baseMoment = dayjs(baseDate);
     let result = baseMoment
@@ -53,9 +57,15 @@ export class TimeUtils {
       .second(0)
       .millisecond(0);
 
-    // If the calculated time is before the base time, it should be for the next day
-    if (result.isBefore(baseMoment)) {
-      result = result.add(1, "day");
+    if (shiftType === "in") {
+      // For shift IN: always use today's date
+      // No adjustment needed since baseMoment is already today
+    } else {
+      // shiftType === 'out'
+      // For shift OUT: if time is between 00:00 and 11:59, get next day's date
+      if (hours < 12) {
+        result = result.add(1, "day");
+      }
     }
 
     return result.toDate();
