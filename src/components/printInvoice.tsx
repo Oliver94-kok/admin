@@ -34,6 +34,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                 {/* Basic Information */}
                 {[
                     { label: 'Basic Day Salary', value: salary.perDay },
+                    { label: 'Basic Salary', value: salary.total },
                     { label: 'Overtime', value: salary.overTime },
                     { label: 'Bonus', value: salary.bonus },
                     { label: 'Allowance', value: salary.allowance },
@@ -46,7 +47,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                 ))}
 
                 {/* Deductions Section */}
-                <div className="mt-4 text-red-500">
+                <div className="border-t border-stroke pt-3" style={{ color: 'red' }}>
                     <p>*Absent 2Day -Basic Day Salary</p>
                     <ul>
                         {result.dataAbsent.map((e, index) => (
@@ -57,7 +58,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                     </ul>
 
                     {/* Late Records */}
-                    <p>*Lateness:</p>
+                    <p className="border-t border-stroke pt-3">*Lateness:</p>
                     <ul>
                         {result.dataLate.map((e, index) => (
                             <li key={index} className="text-right">
@@ -67,7 +68,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                     </ul>
 
                     {/* Clock In/Out Records */}
-                    <p>*Not Clocked in:</p>
+                    <p className="border-t border-stroke pt-3">*Not Clocked in:</p>
                     <ul>
                         {result.notClockIn.map((e, index) => (
                             <li key={index} className="text-right">
@@ -76,7 +77,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                         ))}
                     </ul>
 
-                    <p>*Not Clocked out:</p>
+                    <p className="border-t border-stroke pt-3">*Not Clocked out:</p>
                     <ul>
                         {result.notClockOut.map((e, index) => (
                             <li key={index} className="text-right">
@@ -87,7 +88,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                 </div>
 
                 {/* Total Deductions */}
-                <div className="flex justify-between mt-4">
+                <div className="border-t border-stroke pt-3 flex justify-between mt-4">
                     <p>Deduction:</p>
                     <p className="text-right text-red-500">-${calculateDeduction()}</p>
                 </div>

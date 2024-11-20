@@ -264,8 +264,8 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                         <p className="text-right">${salary?.perDay}</p>
                                     </div>
                                     <div className="flex justify-between">
-                                        <p>Allowance:</p>
-                                        <p className="text-right">${salary.total}</p>  Aligned right
+                                        <p>Basic Salary:</p>
+                                        <p className="text-right">${salary.total}</p>  {/* Aligned right */}
                                     </div>
 
                                     <div className="flex justify-between">
@@ -285,7 +285,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                         <p className="text-right">${salary.cover}</p> {/* Aligned right */}
                                     </div>
                                     <br />
-                                    <div className="border-t border-stroke" style={{ color: 'red' }}>
+                                    <div className="border-t border-stroke pt-3" style={{ color: 'red' }}>
                                         <p>
                                             *Absent 2Day -Basic Day Salary
                                         </p>
@@ -298,7 +298,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                                 </>
                                             ))}
                                         </ul>
-                                        <p className="border-t border-stroke">*Lateness:</p>
+                                        <p className="border-t border-stroke pt-3">*Lateness:</p>
                                         <ul>
                                             {
                                                 result.dataLate.map((e, index) => (
@@ -311,7 +311,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                             }
 
                                         </ul>
-                                        <p className="border-t border-stroke">*Not Clocked in:</p>
+                                        <p className="border-t border-stroke pt-3">*Not Clocked in:</p>
                                         <ul>
                                             {result.notClockIn.map((e, index) => (
                                                 <>
@@ -321,7 +321,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                                 </>
                                             ))}
                                         </ul>
-                                        <p className="border-t border-stroke">*Not Clocked out:</p>
+                                        <p className="border-t border-stroke pt-3">*Not Clocked out:</p>
                                         <ul>
                                             {result.notClockOut.map((e, index) => (
                                                 <>
@@ -333,7 +333,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                         </ul>
                                         <br />
                                     </div>
-                                    <div className="border-t border-stroke flex justify-between">
+                                    <div className="border-t border-stroke pt-3 flex justify-between">
                                         <p >Deduction:</p>
                                         <p className="text-right" style={{ color: 'red' }}>-${((result.dataAbsent.length * 2) * salary.perDay!) + salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut!}</p> {/* Aligned right */}
                                     </div>
