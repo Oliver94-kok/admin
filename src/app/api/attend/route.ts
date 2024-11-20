@@ -56,17 +56,17 @@ export const POST = async (req: Request) => {
         new Date().getFullYear(),
       );
     }
-    // let result = await postImage(imgClockIn, user?.username!, "clock");
-    // if (result?.error)
-    // return Response.json({ error: "Error upload image" }, { status: 400 });
-    // let attendImg = result?.success;
-    // let attendImg = await saveImage(imgClockIn, user?.username!);
+    let result = await postImage(imgClockIn, user?.username!, "clock");
+    if (result?.error)
+      return Response.json({ error: "Error upload image" }, { status: 400 });
+    let attendImg = result?.success;
+
     const today = dayjs.utc(clockIn);
     let data = {
       userId,
       dates: today.toDate(),
       clockIn,
-      // img: attendImg,
+      img: attendImg,
       fine: userlate!,
       locationIn: location,
     };
