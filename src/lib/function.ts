@@ -292,7 +292,15 @@ export const checkShift = async ({ date, userId }: checkShiftProp) => {
     select: { clockIn: true, clockOut: true },
   });
   const now = new Date();
-  let clockInShift = TimeUtils.createDateFromTimeString(now, shift?.clockIn!);
-  let clockOutShift = TimeUtils.createDateFromTimeString(now, shift?.clockOut!);
+  let clockInShift = TimeUtils.createDateFromTimeString(
+    now,
+    shift?.clockIn!,
+    "in",
+  );
+  let clockOutShift = TimeUtils.createDateFromTimeString(
+    now,
+    shift?.clockOut!,
+    "out",
+  );
   return { clockInShift, clockOutShift };
 };

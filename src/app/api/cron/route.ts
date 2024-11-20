@@ -49,10 +49,12 @@ export const POST = async (req: Request) => {
           const shiftIn = TimeUtils.createDateFromTimeString(
             now,
             shift.clockIn,
+            "in",
           );
           const shiftOut = TimeUtils.createDateFromTimeString(
             now,
             shift.clockOut,
+            "out",
           );
 
           const shiftResult = await attendanceService.cronAttendCheckShift(
