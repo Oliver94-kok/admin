@@ -47,7 +47,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                 ))}
 
                 {/* Deductions Section */}
-                <div className="border-t border-stroke pt-3" style={{ color: 'red' }}>
+                <div className="border-t border-stroke mt-4" style={{ color: 'red' }}>
                     <p>*Absent 2Day -Basic Day Salary</p>
                     <ul>
                         {result.dataAbsent.map((e, index) => (
@@ -58,7 +58,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                     </ul>
 
                     {/* Late Records */}
-                    <p className="border-t border-stroke pt-3">*Lateness:</p>
+                    <p className="border-t border-stroke mt-4">*Lateness:</p>
                     <ul>
                         {result.dataLate.map((e, index) => (
                             <li key={index} className="text-right">
@@ -68,7 +68,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                     </ul>
 
                     {/* Clock In/Out Records */}
-                    <p className="border-t border-stroke pt-3">*Not Clocked in:</p>
+                    <p className="border-t border-stroke mt-4">*Not Clocked in:</p>
                     <ul>
                         {result.notClockIn.map((e, index) => (
                             <li key={index} className="text-right">
@@ -77,7 +77,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                         ))}
                     </ul>
 
-                    <p className="border-t border-stroke pt-3">*Not Clocked out:</p>
+                    <p className="border-t border-stroke mt-4">*Not Clocked out:</p>
                     <ul>
                         {result.notClockOut.map((e, index) => (
                             <li key={index} className="text-right">
@@ -88,7 +88,7 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                 </div>
 
                 {/* Total Deductions */}
-                <div className="border-t border-stroke pt-3 flex justify-between mt-4">
+                <div className="border-t border-stroke mt-4 flex justify-between mt-4">
                     <p>Deduction:</p>
                     <p className="text-right text-red-500">-${calculateDeduction()}</p>
                 </div>
