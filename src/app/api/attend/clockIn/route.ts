@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
 import { AttendsInterface } from "@/types/attendents";
+import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
 export const POST = async (req: Request) => {
   const { userId } = await req.json();
@@ -43,18 +44,22 @@ export const POST = async (req: Request) => {
       shift?.clockIn!,
       "in",
     );
+    console.log("🚀 ~ POST ~ shiftIn:", shiftIn);
     let shiftOut = TimeUtils.createDateFromTimeString(
       yesterday.toDate(),
       shift?.clockOut!,
       "out",
     );
+    console.log("🚀 ~ POST ~ shiftOut:", shiftOut);
     const now = dayjs().utc();
 
     // Convert shift times to dayjs objects
     const shiftInTime = dayjs(shiftIn);
-    const shiftOutTime = dayjs(shiftOut);
+    const shiftOutTime = dayjs(shiftOut).add(4, "hour");
+    console.log("🚀 ~ POST ~ shiftOutTime:", shiftOutTime);
     const isWithinShift =
       now.isAfter(shiftInTime) && now.isBefore(shiftOutTime);
+    console.log("🚀 ~ POST ~ isWithinShift:", isWithinShift);
     if (isWithinShift) {
       return Response.json({ shiftIn, shiftOut }, { status: 401 });
     } else {
@@ -69,7 +74,12 @@ export const POST = async (req: Request) => {
         shift?.clockOut!,
         "out",
       );
-      // let checkOutShift = TimeUtils.isNextDay(now,shift?.clockOut!)
+      let data = {
+        userId,
+        dates: yesterday.toDate(),
+        status: AttendStatus.Absent,
+      };
+      await db.attends.create({ data });
 
       return Response.json({ shiftIn, shiftOut }, { status: 400 });
     }

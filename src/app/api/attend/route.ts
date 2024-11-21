@@ -35,7 +35,9 @@ export const GET = async (req: Request) => {
   // let result = await db.attends.findMany({
   //   where: { userId: "cm3fea988001m5v90n595y418" },
   // });
-  let result = await db.attends.findMany();
+  const today = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+  const t = new Date(today);
+  let result = await db.attends.findMany({ where: { dates: t } });
   return Response.json({ result }, { status: 200 });
 };
 

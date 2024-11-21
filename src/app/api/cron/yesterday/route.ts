@@ -15,14 +15,17 @@ dayjs.extend(utc);
 
 export const POST = async (req: Request) => {
   try {
-    let attendTody = await cronAttend("sas");
+    const today = dayjs().subtract(1, "day");
+    // const t = new Date(today);
+    let attendTody = await cronAttend(today.format("YYYY-MM-DD"));
+    console.log("🚀 ~ POST ~ attendTody:", attendTody);
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),
     );
     let user = await getAllUser();
     const absentUsers = user.filter((users) => !attendedUserIds.has(users.id));
 
-    const today = dayjs.utc().startOf("day");
+    // const today = dayjs.utc().startOf("day");
     console.log("🚀 ~ POST ~ today:", today);
     const attendanceService = new AttendanceService({
       gracePeriodMinutes: 15,
@@ -45,7 +48,7 @@ export const POST = async (req: Request) => {
             throw new Error(`No shift found for user ${absentUser.id}`);
           }
 
-          const now = new Date();
+          const now = new Date(today.format("YYYY-MM-DD"));
           const shiftIn = TimeUtils.createDateFromTimeString(
             now,
             shift.clockIn,
@@ -56,7 +59,8 @@ export const POST = async (req: Request) => {
             shift.clockOut,
             "out",
           );
-
+          console.log("🚀 ~ absentUsers.map ~ shiftIn:", shiftIn);
+          console.log("🚀 ~ absentUsers.map ~ shiftOut:", shiftOut);
           const shiftResult = await attendanceService.cronAttendCheckShift(
             shiftIn,
             shiftOut,

@@ -717,7 +717,7 @@ const SalaryTable = ({
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.overTimeHour! / 60}
+              {Number(salary.overTimeHour! / 60).toFixed(2)}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">

@@ -180,10 +180,10 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
   return result;
 };
 
-export const cronAttend = async () => {
-  let date = DateTime.now().toISO();
+export const cronAttend = async (date: string) => {
+  let dates = new Date(date);
   let resutl = await db.attends.findMany({
-    where: { dates: { equals: date } },
+    where: { dates: { equals: dates } },
   });
   return resutl;
 };

@@ -20,6 +20,7 @@ export const apiAuthPrefix = [
   "/api/branch",
   "/api/branch/dashboard",
   "/api/cron",
+  "/api/cron/yesterday",
   "/api/salary",
   "/api/salary/all",
   "/api/salary/dashboard",
