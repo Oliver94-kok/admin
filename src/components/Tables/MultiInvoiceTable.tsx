@@ -313,7 +313,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                         </ul>
                                         <p className="border-t border-stroke mt-4">*Not Clocked in:</p>
                                         <ul>
-                                            {result.notClockIn.map((e, index) => (
+                                            {result.No_ClockIn_ClockOut.map((e, index) => (
                                                 <>
                                                     <li key={index} className="text-right">
                                                         Fine RM{e.fine}    Date  {e.dates.toLocaleDateString()}
@@ -321,7 +321,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                                 </>
                                             ))}
                                         </ul>
-                                        <p className="border-t border-stroke mt-4">*Not Clocked out:</p>
+                                        {/* <p className="border-t border-stroke mt-4">*Not Clocked out:</p>
                                         <ul>
                                             {result.notClockOut.map((e, index) => (
                                                 <>
@@ -330,7 +330,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                                     </li>
                                                 </>
                                             ))}
-                                        </ul>
+                                        </ul> */}
                                         <br />
                                     </div>
                                     <div className="border-t border-stroke mt-4 flex justify-between">
