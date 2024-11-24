@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-async-client-component */
 "use client";
 import { useEffect, useState } from "react";
 import { BRAND } from "@/types/brand";
@@ -8,13 +9,14 @@ import dayjs from "dayjs";
 import { getDataByDate } from "@/data/attend";
 import { DateTime } from "luxon";
 
-interface dashTableInterface {
+interface DashTableProps {
   data: AttendsInterface[];
   onDateChange: (date: string) => void;
   currentDate: string;
+  dict: Record<string, any>; // Pass dictionary as props
 }
 
-const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
+const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) => {
   const [tableDate, setTableData] = useState(data);
   console.log("🚀 ~ DashTable ~ tableDate:", tableDate);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -89,6 +91,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
     const dateTime = DateTime.fromISO(clock);
     return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
   };
+
   return (
     <div
       className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
@@ -108,13 +111,13 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
               </option>
             ))}
           </select>{" "}
-          Clock in User
+          {dict.dashboard.clockuser}
         </h4>
 
         <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-            placeholder="Search here..."
+            placeholder={dict.dashboard.search}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -148,12 +151,12 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
         <div className="grid grid-cols-6 sm:grid-cols-6">
           <div className="px-2 pb-3.5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Username
+              {dict.dashboard.username}
             </h5>
           </div>
           <div className="px-2 pb-3.5 text-center">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Branch
+              {dict.dashboard.branch}
             </h5>
           </div>
           <div
@@ -161,7 +164,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             onClick={() => handleSort("clockin")}
           >
             <p className="text-sm font-medium uppercase xsm:text-base">
-              Clock-In
+              {dict.dashboard.clockin}
             </p>
             {sortColumn === "clockin" && (
               <span
@@ -176,7 +179,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             onClick={() => handleSort("clockout")}
           >
             <p className="text-sm font-medium uppercase xsm:text-base">
-              Clock-Out
+              {dict.dashboard.clockout}
             </p>
             {sortColumn === "clockout" && (
               <span
@@ -188,12 +191,12 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
           </div>
           <div className="px-2 pb-3.5 text-center">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Photo
+              {dict.dashboard.photo}
             </h5>
           </div>
           <div className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5">
             <p className="text-sm font-medium uppercase xsm:text-base">
-              Location
+              {dict.dashboard.location}
             </p>
             {/* {sortColumn === 'location' && (
               <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
@@ -252,14 +255,14 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-dark dark:text-white">
                 {/* {brand.clockIn?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                {brand.clockIn ? displayTime(brand.clockIn) : "No clock in"}
+                {brand.clockIn ? displayTime(brand.clockIn) : dict.dashboard.noclockin}
               </p>
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="font-medium text-green-light-1">
                 {/* {brand.clockin?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                {brand.clockOut ? displayTime(brand.clockOut) : "No clock out "}
+                {brand.clockOut ? displayTime(brand.clockOut) : dict.dashboard.noclockout}
               </p>
             </div>
 
@@ -280,18 +283,18 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
                   </div>
                 </>
               ) : (
-                <>No image</>
+                <>{dict.dashboard.noimage}</>
               )}
             </div>
 
             <div className="flex items-center justify-center px-2 py-4">
               <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
                 <i>
-                  <span className="text-green-500">Clock in:</span>{" "}
+                  <span className="text-green-500">{dict.dashboard.clockin}:</span>{" "}
                   {brand.locationIn}
                 </i>
                 <i>
-                  <span className="text-orange-500">Clock out:</span>
+                  <span className="text-orange-500">{dict.dashboard.clockout}:</span>
                   {brand.locationOut}
                 </i>
               </p>
@@ -317,7 +320,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             disabled={currentPage === 1}
             className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            Prev
+            {dict.dashboard.prev}
           </button>
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
@@ -334,7 +337,7 @@ const DashTable = ({ data, onDateChange, currentDate }: dashTableInterface) => {
             disabled={currentPage === totalPages}
             className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            Next
+            {dict.dashboard.next}
           </button>
         </div>
         <p className="font-medium">

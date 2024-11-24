@@ -13,12 +13,17 @@ import { toast, ToastContainer } from "react-toastify";
 interface LeaveTableInterface {
   data: LeavesInterface[];
 }
+const dictionaries = {
+  en: () => import('../../locales/en/lang.json').then((module) => module.default),
+  zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
+};
 
 const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [dict, setDict] = useState<any>(null); // State to hold the dictionary
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
@@ -38,6 +43,22 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     setSortColumn(column);
     setSortOrder(newSortOrder);
   };
+
+  const getLocale = (): 'en' | 'zh' => {
+    // Get the locale from localStorage, default to 'en' if null
+    const locale = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
+    return (locale === 'en' || locale === 'zh') ? locale : 'en'; // Ensure it's either 'en' or 'zh'
+  };
+
+  // Dynamically load the dictionary based on the current locale
+  useEffect(() => {
+    const locale = getLocale(); // Get the valid locale
+    dictionaries[locale]().then((languageDict) => {
+      setDict(languageDict); // Set the dictionary in the state
+    });
+  }, []);
+
+  if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
 
   // Sort the filtered data
   const sortedData = [...dataLeave].sort((a, b) => {
@@ -135,12 +156,12 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       {/* Search Input */}
       <div className="mb-5 flex justify-between">
         <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
-          User Leave
+          {dict.leave.userleave}
         </h4>
         <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-            placeholder="Search here..."
+            placeholder={dict.dashboard.search}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -174,7 +195,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Username
+            {dict.leave.username}
           </h5>
         </div>
         <div
@@ -182,7 +203,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           onClick={() => handleSort("leavetype")}
         >
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Leave Type
+            {dict.leave.leavetype}
           </h5>
           {sortColumn === "leavetype" && (
             <span
@@ -197,7 +218,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           onClick={() => handleSort("branch")}
         >
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Branch
+            {dict.leave.branch}
           </h5>
           {sortColumn === "branch" && (
             <span
@@ -209,22 +230,22 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Leave Date
+            {dict.leave.leavedate}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Leave Reason
+            {dict.leave.leavereason}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
           <h5 className="pl-5 text-sm font-medium uppercase xsm:text-base">
-            Image
+            {dict.leave.image}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
           <h5 className="pl-20 text-sm font-medium uppercase xsm:text-base">
-            Actions
+            {dict.leave.actions}
           </h5>
         </div>
       </div>
@@ -331,7 +352,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                     : "bg-green-500 hover:bg-green-600"
                     } text-white`}
                 >
-                  Approve
+                  {dict.leave.approve}
                 </button>
 
                 {/* Reject Button */}
@@ -342,7 +363,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                     : "bg-red-500 hover:bg-red-600"
                     } text-white`}
                 >
-                  Reject
+                  {dict.leave.reject}
                 </button>
               </>
             ) : (
@@ -369,7 +390,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                     onClick={handleConfirmClose}
                     className="font-medium text-red-500 underline hover:text-red-600"
                   >
-                    Cancel
+                    {dict.leave.cancel}
                   </button>
                   <button
                     onClick={() => {
@@ -378,7 +399,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                     }}
                     className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
                   >
-                    Confirm
+                    {dict.leave.confirm}
                   </button>
                 </div>
               </div>
@@ -397,7 +418,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             disabled={currentPage === 1}
             className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            Prev
+            {dict.dashboard.prev}
           </button>
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
@@ -414,7 +435,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             disabled={currentPage === totalPages}
             className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            Next
+            {dict.dashboard.next}
           </button>
         </div>
         <p className="font-medium">

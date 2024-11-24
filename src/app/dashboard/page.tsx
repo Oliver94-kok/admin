@@ -1,26 +1,19 @@
 'use client';
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashTable from "@/components/Tables/DashTable";
-import { AttendsInterface } from "@/types/attendents";
-import useSWR from 'swr'
-
-import Loader from "@/components/common/Loader";
-
-// export const metadata: Metadata = {
-//     title: "Admin Page",
-// };
-
-import axios, { AxiosResponse } from "axios";
-import { useQuery } from "@tanstack/react-query";
 import { DateTime } from "luxon";
+import Loader from "@/components/common/Loader";
+import { getDictionary } from "@/locales/dictionary";
+import axios from "axios";
+import useSWR from 'swr';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const Dashboard = () => {
     const [selectedDate, setSelectedDate] = useState(DateTime.now().toFormat('yyyy-MM-dd'));
-    const { data, error, isLoading, mutate } = useSWR(
+    const { data, error, isLoading } = useSWR(
         `/api/attend/dashboard?date=${selectedDate}`,
         fetcher,
         {
@@ -28,6 +21,17 @@ const Dashboard = () => {
             revalidateOnMount: true,
         }
     );
+
+    const [dictionary, setDictionary] = useState<any | null>(null); // Renamed `dict` to `dictionary`
+
+    useEffect(() => {
+        const fetchDictionary = async () => {
+            const dict = await getDictionary();
+            setDictionary(dict);
+        };
+        fetchDictionary();
+    }, []);
+
     const handleDateChange = (newDate: string) => {
         // Convert DD/MM format to YYYY-MM-DD
         const [day, month] = newDate.split('/');
@@ -35,17 +39,21 @@ const Dashboard = () => {
         const formattedDate = `${year}-${month}-${day}`;
         setSelectedDate(formattedDate);
     };
-    return (
 
-        <>
-            <DefaultLayout>
-                {/* {data?.data.data ? <DashTable data={data.data.data} /> : <>error</>} */}
-                {isLoading ? <Loader /> : <DashTable data={data?.data || []}
+    return (
+        <DefaultLayout>
+            {isLoading || !dictionary ? ( // Use `dictionary` instead of `dict`
+                <Loader />
+            ) : (
+                <DashTable
+                    data={data?.data || []}
                     onDateChange={handleDateChange}
-                    currentDate={selectedDate} />}
-            </DefaultLayout>
-        </>
+                    currentDate={selectedDate}
+                    dict={dictionary} // Pass `dictionary` to `DashTable`
+                />
+            )}
+        </DefaultLayout>
     );
-}
+};
 
 export default Dashboard;

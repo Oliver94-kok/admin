@@ -19,6 +19,7 @@ interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
   refresh: () => void;
+  dict: Record<string, any>; // Pass dictionary as props
 }
 
 export enum typeData {
@@ -33,6 +34,7 @@ export const BranchATable = ({
   data,
   team,
   refresh,
+  dict,
 }: BranchTableAInterfface) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -173,7 +175,7 @@ export const BranchATable = ({
         <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-            placeholder="Search here..."
+            placeholder={dict.dashboard.search}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -207,32 +209,32 @@ export const BranchATable = ({
       <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Username
+            {dict.branches.username}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Branches
+            {dict.branches.branches}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            Clock-In<br></br> Time
+            {dict.branches.clockintime}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            Clock-Out Time
+            {dict.branches.clockouttime}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Start On
+            {dict.branches.starton}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Off Day
+            {dict.branches.offday}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
@@ -240,18 +242,17 @@ export const BranchATable = ({
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Actions
+            {dict.branches.actions}
           </h5>
         </div>
       </div>
 
       {currentData.map((teamA, key) => (
         <div
-          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${
-            key === currentData.length - 1
-              ? ""
-              : "border-b border-stroke dark:border-dark-3"
-          }`}
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+            ? ""
+            : "border-b border-stroke dark:border-dark-3"
+            }`}
           key={key}
         >
           <div className="flex items-center gap-3.5 px-2 py-4">
@@ -349,7 +350,7 @@ export const BranchATable = ({
                   console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
                   onSendData(typeData.STARTON, tarikh);
                 }}
-                // value={clockIn}
+              // value={clockIn}
               />
             </p>
           </div>
@@ -390,7 +391,7 @@ export const BranchATable = ({
                   console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
                   onSendData(typeData.OFFDAY, tarikh);
                 }}
-                // value={clockIn}
+              // value={clockIn}
               />
             </p>
           </div>
@@ -405,7 +406,7 @@ export const BranchATable = ({
               }}
               className="rounded-full border border-primary px-5  py-1 text-primary lg:px-10 xl:px-5"
             >
-              Confirm
+              {dict.leave.confirm}
             </button>
           </div>
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
@@ -550,13 +551,13 @@ export const BranchATable = ({
               }}
               className="font-medium text-red-500 underline hover:text-red-600"
             >
-              Cancel
+              {dict.leave.cancel}
             </button>
             <button
               onClick={submit}
               className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
             >
-              Confirm
+              {dict.leave.confirm}
             </button>
           </div>
         </div>
@@ -622,7 +623,7 @@ export const BranchATable = ({
                     )
                   }
                 >
-                  Copy
+                  {dict.branches.copy}
                 </button>
               </>
             )}
@@ -632,7 +633,7 @@ export const BranchATable = ({
                   onClick={() => resetPassword()}
                   className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-green-600"
                 >
-                  Confirm
+                  {dict.leave.confirm}
                 </button>
               </>
             )}
@@ -653,13 +654,13 @@ export const BranchATable = ({
               onClick={() => setIsDeleteOpen(false)}
               className="font-medium text-black underline hover:text-black"
             >
-              Cancel
+              {dict.leave.cancel}
             </button>
             <button
               onClick={() => handleDelete()}
               className="btn btn-primary rounded-[5px] bg-red-600 px-6 py-2 font-medium text-white hover:bg-opacity-90"
             >
-              Delete
+              {dict.leave.delete}
             </button>
           </div>
         </div>

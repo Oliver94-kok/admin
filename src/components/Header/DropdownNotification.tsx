@@ -31,9 +31,31 @@ const notificationList = [
   },
 ];
 
+const dictionaries = {
+  en: () => import('../../locales/en/lang.json').then((module) => module.default),
+  zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
+};
+
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
+  const [dict, setDict] = useState<any>(null); // State to hold the dictionary
+
+  const getLocale = (): 'en' | 'zh' => {
+    // Get the locale from localStorage, default to 'en' if null
+    const locale = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
+    return (locale === 'en' || locale === 'zh') ? locale : 'en'; // Ensure it's either 'en' or 'zh'
+  };
+
+  // Dynamically load the dictionary based on the current locale
+  useEffect(() => {
+    const locale = getLocale(); // Get the valid locale
+    dictionaries[locale]().then((languageDict) => {
+      setDict(languageDict); // Set the dictionary in the state
+    });
+  }, []);
+
+  if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative hidden sm:block">
@@ -64,9 +86,8 @@ const DropdownNotification = () => {
             </svg>
 
             <span
-              className={`absolute -top-0.5 right-0 z-1 h-2.5 w-2.5 rounded-full border-2 border-gray-2 bg-red-light dark:border-dark-3 ${
-                !notifying ? "hidden" : "inline"
-              }`}
+              className={`absolute -top-0.5 right-0 z-1 h-2.5 w-2.5 rounded-full border-2 border-gray-2 bg-red-light dark:border-dark-3 ${!notifying ? "hidden" : "inline"
+                }`}
             >
               <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-red-light opacity-75"></span>
             </span>
@@ -79,10 +100,10 @@ const DropdownNotification = () => {
           >
             <div className="mb-5 flex items-center justify-between">
               <h5 className="text-lg font-medium text-dark dark:text-white">
-                Notifications
+                {dict.noti.notification}
               </h5>
               <span className="rounded-md bg-primary px-2 py-0.5 text-body-xs font-medium text-white">
-                5 new
+                5 {dict.noti.new}
               </span>
             </div>
 
@@ -123,7 +144,7 @@ const DropdownNotification = () => {
               className="flex items-center justify-center rounded-[7px] border border-primary p-2.5 font-medium text-primary hover:bg-blue-light-5 dark:border-dark-4 dark:text-dark-6 dark:hover:border-primary dark:hover:bg-blue-light-3 dark:hover:text-primary"
               href="#"
             >
-              See all notifications
+              {dict.noti.seeall}
             </Link>
           </div>
         )}

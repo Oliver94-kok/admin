@@ -1,0 +1,99 @@
+{
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "enterusername": "Enter your Username",
+    "enterpassword": "Enter your password",
+    "signin": "Sign In",
+    "required": "Required",
+    "usernotfound": "User not found"
+  },
+  "dashboard": {
+    "clockuser": "Clock in User",
+    "search": "Search here...",
+    "username": "Username",
+    "branch": "Branch",
+    "clockin": "Clock-In",
+    "clockout": "Clock-Out",
+    "photo": "Photo",
+    "location": "Location",
+    "noclockin": "No clock in",
+    "noclockout": "No clock out",
+    "noimage": "No image",
+    "prev": "Prev",
+    "next": "Next",
+    "showingpage": "Showing {currentPage} of {totalPages} pages"
+  },
+  "signup": {
+    "signform": "Sign Up Form",
+    "name": "Name",
+    "entername": "Enter full name",
+    "adduser": "Add User"
+  },
+  "branches": {
+    "username": "Username",
+    "branches": "Branches",
+    "clockintime": "Clock-In time",
+    "clockouttime": "Clock-Out time",
+    "starton": "Start On",
+    "offday": "Off Day",
+    "actions": "Actions",
+    "copy": "Copy"
+  },
+  "salary": {
+    "username": "Username",
+    "basic": "Basic Salary (Day)",
+    "ot": "OT (Hours)",
+    "totalworkingday": "Total Working days",
+    "fine": "Fine",
+    "enterot": "OT",
+    "enterbonus": "Bonus",
+    "enterallow": "Allowance",
+    "entercover": "Cover",
+    "totalsalary": "Total Salary",
+    "print": "Print",
+    "selectall": "Select all",
+    "actions": "Actions",
+    "check": "Check",
+    "add": "Add",
+    "changesalary": "Are you sure you want to change this Basic Salary (Day)?",
+    "entersalary": "Enter new Basic Salary (Day)",
+    "removestatus": "Are you sure you want to remove this salary component?",
+    "addot": "Add OT",
+    "addbonus": "Add Bonus",
+    "addallow": "Add Allowance",
+    "addcover": "Add Cover"
+  },
+  "leave": {
+    "userleave": "User Leave",
+    "username": "Username",
+    "leavetype": "Leave Type",
+    "branch": "Branch",
+    "leavedate": "Leave Date",
+    "leavereason": "Leave Reason",
+    "image": "Image",
+    "actions": "Actions",
+    "approve": "Approve",
+    "reject": "Reject",
+    "reqapproved": "This request has been approved.",
+    "reqreject": "This request has been rejected.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "title": {
+    "titledashboard": "Dashboard",
+    "admindash": "Admin Dashboard",
+    "usersetting": "User Setting",
+    "adduser": "Add User",
+    "branch": "Branch",
+    "usersalary": "User Salary",
+    "userleave": "User Leave",
+    "mainmenu": "MAIN MENU"
+  },
+    "noti": {
+    "notification": "Notifications",
+    "new": "new",
+    "seeall": "See all notifications"
+  }
+}

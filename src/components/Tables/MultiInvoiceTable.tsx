@@ -311,7 +311,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                                             }
 
                                         </ul>
-                                        <p className="border-t border-stroke mt-4">*Not Clocked in:</p>
+                                        <p className="border-t border-stroke mt-4">*Not Clocked in Or Not Clocked out:</p>
                                         <ul>
                                             {result.notClockIn.map((e, index) => (
                                                 <>

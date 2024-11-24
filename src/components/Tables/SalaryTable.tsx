@@ -37,6 +37,11 @@ interface SalaryTableInterface {
   currentYear: string;
 }
 
+const dictionaries = {
+  en: () => import('../../locales/en/lang.json').then((module) => module.default),
+  zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
+};
+
 export enum typeComponentSalary {
   OverTime,
   Bonus,
@@ -52,6 +57,7 @@ const SalaryTable = ({
   onYearChange,
 }: SalaryTableInterface) => {
   const router = useRouter();
+  const [dict, setDict] = useState<any>(null); // State to hold the dictionary
   const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -90,6 +96,22 @@ const SalaryTable = ({
 
     return () => clearInterval(interval);
   }, [])
+
+  const getLocale = (): 'en' | 'zh' => {
+    // Get the locale from localStorage, default to 'en' if null
+    const locale = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
+    return (locale === 'en' || locale === 'zh') ? locale : 'en'; // Ensure it's either 'en' or 'zh'
+  };
+
+  // Dynamically load the dictionary based on the current locale
+  useEffect(() => {
+    const locale = getLocale(); // Get the valid locale
+    dictionaries[locale]().then((languageDict) => {
+      setDict(languageDict); // Set the dictionary in the state
+    });
+  }, []);
+
+  if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
   // Handle Select All Logic
   const handleSelectAllChange = () => {
     setSelectAll(!selectAll);
@@ -352,7 +374,7 @@ const SalaryTable = ({
     type: typeComponentSalary,
   ) => {
     const isConfirmed = window.confirm(
-      "Are you sure you want to remove this salary component?",
+      dict.salary.removestatus,
     );
 
     // If the user cancels the action, exit the function
@@ -515,14 +537,14 @@ const SalaryTable = ({
 
           {/* Check button beside the month dropdown */}
           <button className="ml-5 rounded bg-blue-500 px-4 py-2 pl-5 pr-5 font-bold text-white hover:bg-blue-600">
-            Check
+            {dict.salary.check}
           </button>
         </div>
 
         <div className="relative mb-5 w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-            placeholder="Search here..."
+            placeholder={dict.dashboard.search}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -556,7 +578,7 @@ const SalaryTable = ({
       <div className="grid grid-cols-12 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Username
+            {dict.salary.username}
           </h5>
         </div>
         <div
@@ -564,7 +586,7 @@ const SalaryTable = ({
           onClick={() => handleSort("bday")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            Basic Salary<br></br>(Day)
+            {dict.salary.basic}
           </h5>
           {sortColumn === "bday" && (
             <span
@@ -579,7 +601,7 @@ const SalaryTable = ({
           onClick={() => handleSort("ot")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            OT<br></br>(Hours)
+            {dict.salary.ot}
           </h5>
           {sortColumn === "ot" && (
             <span
@@ -594,7 +616,7 @@ const SalaryTable = ({
           onClick={() => handleSort("totalday")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            Total Working Days
+            {dict.salary.totalworkingday}
           </h5>
           {sortColumn === "totalday" && (
             <span
@@ -608,7 +630,7 @@ const SalaryTable = ({
           className="col-span-1 flex cursor-pointer items-center justify-center"
           onClick={() => handleSort("late")}
         >
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Fine</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.fine}</h5>
           {sortColumn === "late" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
@@ -618,25 +640,25 @@ const SalaryTable = ({
           )}
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">OT</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterot}</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Bonus</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterbonus}</h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Allowance
+            {dict.salary.enterallow}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">Cover</h5>
+          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.entercover}</h5>
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
           onClick={() => handleSort("totalsal")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            Total salary
+            {dict.salary.totalsalary}
           </h5>
           {sortColumn === "totalsal" && (
             <span
@@ -651,7 +673,7 @@ const SalaryTable = ({
             onClick={handlePrint}
             className="text-sm font-medium uppercase hover:text-blue-600 xsm:text-base"
           >
-            Print
+            {dict.salary.print}
           </button>
           <label className="mt-2 flex items-center">
             <input
@@ -660,12 +682,12 @@ const SalaryTable = ({
               onChange={handleSelectAllChange} // Handle change
               className="mr-2"
             />
-            <span className="text-sm">Select all</span>
+            <span className="text-sm">{dict.salary.selectall}</span>
           </label>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            Actions
+            {dict.salary.actions}
           </h5>
         </div>
       </div>
@@ -737,7 +759,7 @@ const SalaryTable = ({
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("OT", id, salary.id)}
             >
-              Add{" "}
+              {dict.salary.add}{" "}
             </button>
 
             {/* MultiSelect component */}
@@ -767,7 +789,7 @@ const SalaryTable = ({
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Bonus", id, salary.id)}
             >
-              Add{" "}
+              {dict.salary.add}{" "}
             </button>
 
             {/* MultiSelect component */}
@@ -791,7 +813,7 @@ const SalaryTable = ({
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Allow", id, salary.id)}
             >
-              Add{" "}
+              {dict.salary.add}{" "}
             </button>
             {/* MultiSelect component */}
             <div className="items-center justify-center px-5">
@@ -815,7 +837,7 @@ const SalaryTable = ({
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Cover", id, salary.id)}
             >
-              Add{" "}
+              {dict.salary.add}{" "}
             </button>
 
             {/* MultiSelect component */}
@@ -916,7 +938,7 @@ const SalaryTable = ({
             disabled={currentPage === 1}
             className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            Prev
+            {dict.dashboard.prev}
           </button>
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
@@ -933,7 +955,7 @@ const SalaryTable = ({
             disabled={currentPage === totalPages}
             className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            Next
+            {dict.dashboard.next}
           </button>
         </div>
         <p className="font-medium">
@@ -1008,7 +1030,7 @@ const SalaryTable = ({
       >
         <div className="p-5">
           <p className="mb-4 justify-center text-center">
-            Are you sure you want to change this Basic Salary (Day)?
+            {dict.salary.changesalary}
           </p>
 
           {/* Text field for entering the salary */}
@@ -1017,7 +1039,7 @@ const SalaryTable = ({
               type="text"
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
-              placeholder="Enter new Basic Salary (Day)"
+              placeholder={dict.salary.entersalary}
               className="mb-4 w-full max-w-xs rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none"
             />
           </div>
@@ -1035,7 +1057,7 @@ const SalaryTable = ({
               }}
               className="font-medium text-red-500 underline hover:text-red-600"
             >
-              Cancel
+              {dict.leave.cancel}
             </button>
             <button
               onClick={() => {
@@ -1045,7 +1067,7 @@ const SalaryTable = ({
               }}
               className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
             >
-              Confirm
+              {dict.leave.confirm}
             </button>
           </div>
         </div>

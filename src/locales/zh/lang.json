@@ -1,0 +1,99 @@
+{
+  "login": {
+    "username": "用户名",
+    "password": "密码",
+    "enterusername": "请输入用户名",
+    "enterpassword": "请输入密码",
+    "signin": "登录",
+    "required": "必填",
+    "usernotfound": "用户未找到"
+  },
+  "dashboard": {
+    "clockuser": "打卡用户",
+    "search": "搜索...",
+    "username": "用户名",
+    "branch": "分行",
+    "clockin": "上班打卡",
+    "clockout": "下班打卡",
+    "photo": "照片",
+    "location": "位置",
+    "noclockin": "未打上班卡",
+    "noclockout": "未打下班卡",
+    "noimage": "无照片",
+    "prev": "上一页",
+    "next": "下一页",
+    "showingpage": "显示第 {currentPage} 页，共 {totalPages} 页"
+  },
+  "signup": {
+    "signform": "注册表单",
+    "name": "姓名",
+    "entername": "请输入全名",
+    "adduser": "添加用户"
+  },
+  "branches": {
+    "username": "用户名",
+    "branches": "分行",
+    "clockintime": "上班打卡时间",
+    "clockouttime": "下班打卡时间",
+    "starton": "开始时间",
+    "offday": "休息日",
+    "actions": "操作",
+    "copy": "拷贝"
+  },
+  "salary": {
+    "username": "用户名",
+    "basic": "基本工资（每日）",
+    "ot": "加班（小时）",
+    "totalworkingday": "总工作天数",
+    "fine": "罚款",
+    "enterot": "加班",
+    "enterbonus": "奖金",
+    "enterallow": "津贴",
+    "entercover": "补贴",
+    "totalsalary": "总工资",
+    "print": "打印",
+    "selectall": "全选",
+    "actions": "操作",
+    "check": "检查",
+    "add": "添加",
+    "changesalary": "您确定要更改此基本工资（日）吗?",
+    "entersalary": "请输入新的基本工资（日）",
+    "removestatus": "您确定要删除这个薪资组件吗？",
+    "addot": "添加加班费",
+    "addbonus": "添加奖金",
+    "addallow": "添加津贴",
+    "addcover": "添加补贴"
+  },
+  "leave": {
+    "userleave": "用户请假",
+    "username": "用户名",
+    "leavetype": "假期类型",
+    "branch": "分行",
+    "leavedate": "请假日期",
+    "leavereason": "请假原因",
+    "image": "图片",
+    "actions": "操作",
+    "approve": "批准",
+    "reject": "拒绝",
+    "reqapproved": "该请求已被批准。",
+    "reqreject": "该请求已被拒绝。",
+    "confirm": "确定",
+    "cancel": "取消",
+    "delete": "删除"
+  },
+  "title": {
+    "titledashboard": "主页",
+    "admindash": "管理员主页",
+    "usersetting": "用户设置",
+    "adduser": "添加用户",
+    "branch": "分行",
+    "usersalary": "用户工资",
+    "userleave": "用户请假",
+    "mainmenu": "主菜单"
+  },
+  "noti": {
+  "notification": "通知",
+  "new": "新",
+  "seeall": "查看所有通知"
+  }
+}
