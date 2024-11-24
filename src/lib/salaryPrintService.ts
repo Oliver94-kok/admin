@@ -3,7 +3,7 @@ import { db } from "./db";
 
 type AttendanceResult = {
   dataAbsent: AttendRecord[];
-  notClockIn: AttendRecord[];
+  No_ClockIn_ClockOut: AttendRecord[];
   notClockOut: AttendRecord[];
   dataLate: AttendRecord[];
   totalFine: number;
@@ -21,8 +21,7 @@ type AttendRecord = {
 // Define attendance status enum for type safety
 enum AttendanceStatus {
   LATE = "Late",
-  NO_CLOCK_IN = "No_ClockIn",
-  NO_CLOCK_OUT = "No_ClockOut",
+  No_ClockIn_ClockOut = "No_ClockIn_ClockOut",
   ABSENT = "Absent",
 }
 
@@ -66,12 +65,10 @@ export const getAllresultAttend = async (
           case AttendanceStatus.LATE:
             acc.dataLate.push(record);
             break;
-          case AttendanceStatus.NO_CLOCK_IN:
-            acc.notClockIn.push(record);
+          case AttendanceStatus.No_ClockIn_ClockOut:
+            acc.No_ClockIn_ClockOut.push(record);
             break;
-          case AttendanceStatus.NO_CLOCK_OUT:
-            acc.notClockOut.push(record);
-            break;
+
           case AttendanceStatus.ABSENT:
             acc.dataAbsent.push(record);
             break;
@@ -80,7 +77,7 @@ export const getAllresultAttend = async (
       },
       {
         dataLate: [] as AttendRecord[],
-        notClockIn: [] as AttendRecord[],
+        No_ClockIn_ClockOut: [] as AttendRecord[],
         notClockOut: [] as AttendRecord[],
         dataAbsent: [] as AttendRecord[],
       },

@@ -12,9 +12,9 @@ interface AttendRecord {
   fine: number | null;
 }
 
-interface AttendanceResult {
+export interface AttendanceResult {
   dataLate: AttendRecord[];
-  notClockIn: AttendRecord[];
+  No_ClockIn_ClockOut: AttendRecord[];
   notClockOut: AttendRecord[];
   dataAbsent: AttendRecord[];
   totalFine: number;

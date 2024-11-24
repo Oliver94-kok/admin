@@ -16,14 +16,16 @@ datasource db {
 enum UserRole {
   ADMIN
   USER
-  MANAGER
+  MANAGER_A
+  MANAGER_B
+  MANAGER_C
+  MANAGER_D
 }
 
 enum AttendStatus {
   Active
   Full_Attend
-  No_ClockOut
-  No_ClockIn
+  No_ClockIn_ClockOut
   Absent
   Leave
   Late

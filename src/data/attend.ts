@@ -177,6 +177,14 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
     fine: null,
   };
   let result = await db.attends.update({ where: { id: user.id }, data });
+  let salary = await db.salary.findFirst({
+    where: { userId, month: date.getMonth() + 1, year: date.getFullYear() },
+  });
+  let late = salary?.fineLate! - user.fine!;
+  await db.salary.update({
+    where: { id: salary?.id },
+    data: { fineLate: late },
+  });
   return result;
 };
 

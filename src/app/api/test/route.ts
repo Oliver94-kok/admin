@@ -89,7 +89,7 @@ export const POST = async (req: Request) => {
         locationIn: d.location,
         // overtime:Number(overtime),
         // workingHour,
-        status: AttendStatus.No_ClockOut,
+        status: AttendStatus.No_ClockIn_ClockOut,
       };
       await db.attends.create({ data });
       await CheckSalarys({
@@ -122,7 +122,7 @@ export const POST = async (req: Request) => {
         fine: fine2!,
         locationOut: d.location,
         overtime: Number(overtime!),
-        status: AttendStatus.No_ClockIn,
+        status: AttendStatus.No_ClockIn_ClockOut,
       };
       console.log("🚀 ~ POST ~ data:", data);
       let t = await db.attends.create({ data });
