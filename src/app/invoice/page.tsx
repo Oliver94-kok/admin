@@ -13,8 +13,8 @@ const InvoiceAll = async () => {
     return (
         <>
             <DefaultLayout>
-                {/* <MultiInvoiceTable datas={cookieData} /> */}
-                <Payslip2 data={cookieData} />
+                <MultiInvoiceTable datas={cookieData} />
+                {/* <Payslip2 data={cookieData} /> */}
             </DefaultLayout>
 
         </>

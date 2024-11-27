@@ -36,14 +36,13 @@ const Salary = () => {
     setYear(year);
   };
 
-  if (session.data?.user.role == "MANAGER") {
+  if (session.data?.user.role != "ADMIN") {
     return (<><DefaultLayout><p className="flex justify-center items-center h-screen text-red-700">You don&apos;t have permission in this page </p> </DefaultLayout></>)
   }
 
   return (
     <>
       <DefaultLayout>
-        {` role user ${session.data?.user.role}`}
         {isLoading ? <Loader /> : <SalaryTable data={data.salary} onMonthChange={handleMonthChange} currentMonth={month} onYearChange={handleYearChange} currentYear={year} />}
       </DefaultLayout>
     </>

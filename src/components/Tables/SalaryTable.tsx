@@ -123,7 +123,7 @@ const SalaryTable = ({
         }
       });
       let newdata: string[] = [];
-      const allSelectedItems = currentData.map((salary) => ({
+      const allSelectedItems = currentData.filter(salary => salary.perDay !== null).map((salary) => ({
         id: salary.id, // Ensure to provide the correct id
         item: salary.users?.name || "", // Adjust based on your data structure
         idSalary: salary.id, // Adjust based on your data structure
@@ -136,7 +136,10 @@ const SalaryTable = ({
         // return;
       }
       currentData.forEach((c) => {
-        newdata.push(c.id)
+        if (c.perDay !== null) {
+          newdata.push(c.id)
+        }
+
       })
 
       addIds(newdata);
@@ -166,6 +169,8 @@ const SalaryTable = ({
   const handleSort = (column: string) => {
     const newSortOrder =
       sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
+    console.log("🚀 ~ handleSort ~ sortColumn:", sortColumn)
+    console.log("🚀 ~ handleSort ~ newSortOrder:", newSortOrder)
     setSortColumn(column);
     setSortOrder(newSortOrder);
   };
@@ -188,7 +193,7 @@ const SalaryTable = ({
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
       salary.users?.name.toString().includes(searchQuery) ||
-      salary.total!.toString().includes(searchQuery),
+      salary.users!.username.toString().includes(searchQuery),
   );
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
@@ -583,12 +588,12 @@ const SalaryTable = ({
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("bday")}
+          onClick={() => handleSort("perDay")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
             {dict.salary.basic}
           </h5>
-          {sortColumn === "bday" && (
+          {sortColumn === "perDay" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
             >
@@ -613,12 +618,12 @@ const SalaryTable = ({
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("totalday")}
+          onClick={() => handleSort("workingDay")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
             {dict.salary.totalworkingday}
           </h5>
-          {sortColumn === "totalday" && (
+          {sortColumn === "workingDay" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
             >
@@ -628,7 +633,7 @@ const SalaryTable = ({
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("late")}
+        // onClick={() => handleSort("late")}
         >
           <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.fine}</h5>
           {sortColumn === "late" && (
@@ -655,12 +660,12 @@ const SalaryTable = ({
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("totalsal")}
+          onClick={() => handleSort("total")}
         >
           <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
             {dict.salary.totalsalary}
           </h5>
-          {sortColumn === "totalsal" && (
+          {sortColumn === "total" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
             >
@@ -866,6 +871,10 @@ const SalaryTable = ({
                 type="checkbox"
                 checked={selectedItems.some((item) => item.id === salary.id)} // Check if item is selected
                 onChange={() => {
+                  if (!salary.perDay) {
+                    alert("No basic salary")
+                    return
+                  }
                   const itemExists = selectedItems.some(
                     (item) => item.id === salary.id,
                   );

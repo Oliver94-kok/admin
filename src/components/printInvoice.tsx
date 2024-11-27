@@ -70,21 +70,21 @@ export const PayslipContent: React.FC<{ data: SalaryRecord }> = ({ data }) => {
                     {/* Clock In/Out Records */}
                     <p className="border-t border-stroke mt-4">*Not Clocked in Or Not Clocked out:</p>
                     <ul>
-                        {result.notClockIn.map((e, index) => (
+                        {result.No_ClockIn_ClockOut.map((e, index) => (
                             <li key={index} className="text-right">
                                 Fine RM{e.fine} Date {new Date(e.dates).toLocaleDateString()}
                             </li>
                         ))}
                     </ul>
 
-                    <p className="border-t border-stroke mt-4">*Not Clocked out:</p>
+                    {/* <p className="border-t border-stroke mt-4">*Not Clocked out:</p>
                     <ul>
                         {result.notClockOut.map((e, index) => (
                             <li key={index} className="text-right">
                                 Fine RM{e.fine} Date {new Date(e.dates).toLocaleDateString()}
                             </li>
                         ))}
-                    </ul>
+                    </ul> */}
                 </div>
 
                 {/* Total Deductions */}

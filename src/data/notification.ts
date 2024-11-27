@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { auth } from "../../auth";
 
 export const notificationClock = async (userId: string, data: any) => {
   let noti = await db.notificationUser.findFirst({ where: { userId } });
@@ -10,4 +11,12 @@ export const notificationClock = async (userId: string, data: any) => {
   });
 };
 
-
+export const getAdminNotify = async () => {
+  const session = await auth();
+  console.log("🚀 ~ getAminNotify ~ session:", session?.user.id);
+  let notify = await db.notificationUser.findFirst({
+    where: { userId: session?.user.id },
+  });
+  const currentArray = Array.isArray(notify?.leave) ? notify?.leave : [];
+  return notify?.leave;
+};

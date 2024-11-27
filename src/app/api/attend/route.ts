@@ -97,7 +97,7 @@ export const POST = async (req: Request) => {
     fine: fine2!,
     locationOut: location,
     overtime: Number(overtime!),
-    status: AttendStatus.No_ClockIn,
+    status: AttendStatus.No_ClockIn_ClockOut,
   };
   console.log("🚀 ~ POST ~ data:", data);
   let t = await db.attends.create({ data });

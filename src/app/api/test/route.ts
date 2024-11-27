@@ -15,7 +15,30 @@ import dayjs from "dayjs";
 import { DateTime } from "luxon";
 
 export const GET = async (request: Request) => {
-  let data;
+  let n = 10;
+  for (let x = 0; x < 10; x++) {
+    let notify = {
+      id: crypto.randomUUID(),
+      title: "string",
+      body: "`Has new request leave by user${x}`",
+      icon: "string",
+      timestamp: "number",
+      isRead: false,
+    };
+    let notityAdmin = await db.notificationUser.findFirst({
+      where: { userId: "cm3y71hit003c32vbfdbjxvf8" },
+    });
+    const currentArray = Array.isArray(notityAdmin?.leave)
+      ? notityAdmin?.leave
+      : [];
+
+    const updatedArray = [...currentArray, notify];
+    await db.notificationUser.update({
+      where: { id: notityAdmin?.id },
+      data: { leave: updatedArray },
+    });
+  }
+  return Response.json({ suss: "sds" }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {

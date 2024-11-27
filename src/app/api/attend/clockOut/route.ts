@@ -27,7 +27,7 @@ export const POST = async (req: Request) => {
     // workingHour: workingHour,
     // overtime: Number(overtime!),
     // locationOut: "",
-    status: AttendStatus.No_ClockOut,
+    status: AttendStatus.No_ClockIn_ClockOut,
   };
   await db.attends.update({ where: { id: clock.id }, data });
 

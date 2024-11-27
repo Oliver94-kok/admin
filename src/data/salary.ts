@@ -220,7 +220,7 @@ export const getAttendLate = async (
       },
     });
     let noClockIn = salary.filter((item) => item.status == "Late").length;
-    console.log("🚀 ~ noClockIn:", noClockIn)
+    console.log("🚀 ~ noClockIn:", noClockIn);
     if (noClockIn < 1) {
       return 50;
     } else {
@@ -266,7 +266,9 @@ export const getNoClockIn = async (
         ],
       },
     });
-    let noClockIn = salary.filter((item) => item.status == "No_ClockIn").length;
+    let noClockIn = salary.filter(
+      (item) => item.status == "No_ClockIn_ClockOut",
+    ).length;
     console.log("🚀 ~ noClockIn:", noClockIn);
     if (noClockIn < 1) {
       return 50;
@@ -313,7 +315,7 @@ export const getNoClockOut = async (
       },
     });
     let noClockIn = salary.filter(
-      (item) => item.status == "No_ClockOut",
+      (item) => item.status == "No_ClockIn_ClockOut",
     ).length;
     console.log("🚀 ~ noClockIn:", noClockIn);
     if (noClockIn < 1) {
@@ -343,8 +345,8 @@ export const getAllresultAttend = async (
     select: { status: true, dates: true, fine: true },
   });
   let dataLate = result.filter((e) => e.status == "Late");
-  let notClockIn = result.filter((e) => e.status == "No_ClockIn");
-  let notClockOut = result.filter((e) => e.status == "No_ClockOut");
+  let notClockIn = result.filter((e) => e.status == "No_ClockIn_ClockOut");
+  let notClockOut = result.filter((e) => e.status == "No_ClockIn_ClockOut");
   let dataAbsent = result.filter((e) => e.status == "Absent");
   return { dataAbsent, notClockIn, notClockOut, dataLate };
 };

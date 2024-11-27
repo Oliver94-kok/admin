@@ -56,6 +56,10 @@ export const POST = async (req: Request) => {
     where: { id: noti?.id },
     data: { leave: updatedArray },
   });
-  await sendtoAdmin("Leave", `Has new request leave`);
+  await sendtoAdmin(
+    "Leave",
+    `Has new request leave by ${users?.name}`,
+    users?.AttendBranch?.team!,
+  );
   return Response.json({ id: user.id }, { status: 201 });
 };

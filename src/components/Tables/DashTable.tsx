@@ -161,12 +161,12 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
           </div>
           <div
             className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
-            onClick={() => handleSort("clockin")}
+            onClick={() => handleSort("clockIn")}
           >
             <p className="text-sm font-medium uppercase xsm:text-base">
               {dict.dashboard.clockin}
             </p>
-            {sortColumn === "clockin" && (
+            {sortColumn === "clockIn" && (
               <span
                 className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
               >
@@ -176,12 +176,12 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
           </div>
           <div
             className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
-            onClick={() => handleSort("clockout")}
+            onClick={() => handleSort("clockOut")}
           >
             <p className="text-sm font-medium uppercase xsm:text-base">
               {dict.dashboard.clockout}
             </p>
-            {sortColumn === "clockout" && (
+            {sortColumn === "clockOut" && (
               <span
                 className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
               >

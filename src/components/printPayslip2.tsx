@@ -2,7 +2,7 @@
 
 import { AttendanceResult, SalaryRecord } from "@/types/salary2"
 import { useRef } from "react";
-import { utils, writeFileXLSX } from "xlsx";
+import { Range, utils, writeFileXLSX } from "xlsx";
 
 interface MultiInvoiceProp {
     data: SalaryRecord[]
@@ -38,7 +38,7 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         if (!data.length) return;
 
         // Create worksheet data array
-        const wsData = [];
+        const wsData: unknown[][] = [];
 
         // Add data for each employee with full headers
         data.forEach((item, index) => {
@@ -46,7 +46,7 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
             const startRow = wsData.length;
 
             // Add employee name as a header
-            wsData.push([`Employee: ${salary.users?.name}`]);
+            wsData.push([`${salary.year} - ${salary.month}`]);
             wsData.push([]); // Blank row after employee name
 
             // Add main headers
@@ -101,7 +101,7 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         ws['!cols'] = colWidths;
 
         // Add merged cells for each employee section
-        const merges = [];
+        const merges: Range[] | undefined = [];
         let currentRow = 0;
 
         data.forEach((_, index) => {
@@ -205,23 +205,11 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                 <div ref={containerRef}>
                     {data.map((item, index) => {
                         const { salary, result } = item;
-                        const total = [
-                            salary.perDay,
-                            salary.perDay,
-                            salary.perDay,
-                            salary.bonus,
-                            salary.allowance,
-                            salary.fineLate,
-                            salary.perDay,
-                            salary.perDay,
-                            salary.perDay,
-                            salary.perDay,
-                            salary.perDay
-                        ].reduce((sum, val) => sum + (val || 0), 0);
+                        const total = salary.total! - salary.fineLate! - salary.fineNoClockIn!
 
                         return (
                             <div key={index} className="mb-8">
-                                <h2 className="text-lg font-bold mb-2">Employee: {salary.users?.name}</h2>
+                                <h2 className="text-lg font-bold mb-2">{salary.year} - {salary.month} </h2>
                                 <table className="w-full mb-2">
                                     <thead>
                                         <tr className="border border-black">
@@ -256,16 +244,16 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                                         </tr>
                                         <tr className="border border-black">
                                             <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.workingDay || '-'}</td>
                                             <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
                                             <td className="border-r-2 border-l-2 border-black p-2">{salary.bonus || '-'}</td>
                                             <td className="border-r-2 border-l-2 border-black p-2">{salary.allowance || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.fineLate || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
-                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.perDay || '-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.fineLate! + salary.fineNoClockIn! || '-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{'-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{'-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{salary.overTime || '-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{'-'}</td>
+                                            <td className="border-r-2 border-l-2 border-black p-2">{'-'}</td>
                                             <td className="border-r-2 border-l-2 border-black p-2">{total || '-'}</td>
                                         </tr>
                                         <tr>

@@ -15,7 +15,6 @@ interface AttendRecord {
 export interface AttendanceResult {
   dataLate: AttendRecord[];
   No_ClockIn_ClockOut: AttendRecord[];
-  notClockOut: AttendRecord[];
   dataAbsent: AttendRecord[];
   totalFine: number;
   totalDays: number;

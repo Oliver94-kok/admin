@@ -200,12 +200,12 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
-          onClick={() => handleSort("leavetype")}
+          onClick={() => handleSort("type")}
         >
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.leave.leavetype}
           </h5>
-          {sortColumn === "leavetype" && (
+          {sortColumn === "type" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
             >
@@ -215,12 +215,12 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         </div>
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5"
-          onClick={() => handleSort("branch")}
+          onClick={() => handleSort("team")}
         >
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.leave.branch}
           </h5>
-          {sortColumn === "branch" && (
+          {sortColumn === "team" && (
             <span
               className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
             >

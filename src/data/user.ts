@@ -36,7 +36,10 @@ export const checkUsername = async () => {
 
 export const getUserById = async (id: string) => {
   try {
-    const user = await db.user.findFirst({ where: { id } });
+    const user = await db.user.findFirst({
+      where: { id },
+      include: { AttendBranch: true },
+    });
     return user;
   } catch (error) {
     return null;

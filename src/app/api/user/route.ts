@@ -25,5 +25,8 @@ export const POST = async (req: Request) => {
     console.log(user);
     return Response.json({}, { status: 404 });
   }
+  if (user.role != "ADMIN") {
+    await db.notificationUser.create({ data: { userId: user.id } });
+  }
   return Response.json({ user }, { status: 201 });
 };

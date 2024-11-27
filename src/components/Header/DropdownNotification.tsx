@@ -2,57 +2,46 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ClickOutside from "@/components/ClickOutside";
 import Image from "next/image";
+import { getAdminNotify } from "@/data/notification";
+import { useNotificationStore } from "@/lib/zudstand/notify";
+export const dynamic = 'force-dynamic'
 
-const notificationList = [
-  {
-    image: "/images/user/user-15.png",
-    title: "Piter Joined the Team!",
-    subTitle: "Congratulate him",
-  },
-  {
-    image: "/images/user/user-02.png",
-    title: "New message received",
-    subTitle: "Devid sent you new message",
-  },
-  {
-    image: "/images/user/user-26.png",
-    title: "New Payment received",
-    subTitle: "Check your earnings",
-  },
-  {
-    image: "/images/user/user-28.png",
-    title: "Jolly completed tasks",
-    subTitle: "Assign her newtasks",
-  },
-  {
-    image: "/images/user/user-27.png",
-    title: "Roman Joined the Team!",
-    subTitle: "Congratulate him",
-  },
-];
 
 const dictionaries = {
   en: () => import('../../locales/en/lang.json').then((module) => module.default),
   zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
 };
-
+interface DataItem {
+  id: string;
+  msg: string;
+}
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
   const [dict, setDict] = useState<any>(null); // State to hold the dictionary
+  const [dataNotify, setDataNotify] = useState<DataItem[]>([])
+  const { notifications, markAsRead, removeNotification } = useNotificationStore()
 
   const getLocale = (): 'en' | 'zh' => {
     // Get the locale from localStorage, default to 'en' if null
     const locale = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
     return (locale === 'en' || locale === 'zh') ? locale : 'en'; // Ensure it's either 'en' or 'zh'
   };
-
+  const getNotify = async () => {
+    let notify = await getAdminNotify();
+    console.log("🚀 ~ getNotify ~ notify:", notify)
+    const currentArray: DataItem[] = Array.isArray(notify) ? notify as unknown as DataItem[] : [];
+    const reversedArray = [...currentArray].reverse();
+    console.log("🚀 ~ getNotify ~ reversedArray:", reversedArray)
+    setDataNotify(reversedArray)
+  }
   // Dynamically load the dictionary based on the current locale
   useEffect(() => {
     const locale = getLocale(); // Get the valid locale
     dictionaries[locale]().then((languageDict) => {
       setDict(languageDict); // Set the dictionary in the state
     });
+    getNotify()
   }, []);
 
   if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
@@ -102,19 +91,19 @@ const DropdownNotification = () => {
               <h5 className="text-lg font-medium text-dark dark:text-white">
                 {dict.noti.notification}
               </h5>
-              <span className="rounded-md bg-primary px-2 py-0.5 text-body-xs font-medium text-white">
+              {/* <span className="rounded-md bg-primary px-2 py-0.5 text-body-xs font-medium text-white">
                 5 {dict.noti.new}
-              </span>
+              </span> */}
             </div>
 
             <ul className="no-scrollbar mb-5 flex h-auto flex-col gap-1 overflow-y-auto">
-              {notificationList.map((item, index) => (
+              {notifications.map((item, index) => (
                 <li key={index}>
                   <Link
                     className="flex items-center gap-4 rounded-[10px] p-2.5 hover:bg-gray-2 dark:hover:bg-dark-3"
                     href="#"
                   >
-                    <span className="block h-14 w-14 rounded-full">
+                    {/* <span className="block h-14 w-14 rounded-full">
                       <Image
                         width={112}
                         height={112}
@@ -125,27 +114,27 @@ const DropdownNotification = () => {
                         }}
                         alt="User"
                       />
-                    </span>
+                    </span> */}
 
                     <span className="block">
                       <span className="block font-medium text-dark dark:text-white">
-                        {item.title}
+                        {item.body}
                       </span>
-                      <span className="block text-body-sm font-medium text-dark-5 dark:text-dark-6">
+                      {/* <span className="block text-body-sm font-medium text-dark-5 dark:text-dark-6">
                         {item.subTitle}
-                      </span>
+                      </span> */}
                     </span>
                   </Link>
                 </li>
               ))}
             </ul>
 
-            <Link
+            {/* <Link
               className="flex items-center justify-center rounded-[7px] border border-primary p-2.5 font-medium text-primary hover:bg-blue-light-5 dark:border-dark-4 dark:text-dark-6 dark:hover:border-primary dark:hover:bg-blue-light-3 dark:hover:text-primary"
               href="#"
             >
               {dict.noti.seeall}
-            </Link>
+            </Link> */}
           </div>
         )}
       </li>
