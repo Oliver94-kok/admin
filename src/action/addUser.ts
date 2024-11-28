@@ -2,12 +2,13 @@
 
 import { checkUsername } from "@/data/user";
 import { db } from "@/lib/db";
-import { hashPassword, randomPassword } from "@/lib/function";
+import { hashPassword, randomPassword, roleAdmin } from "@/lib/function";
 
-export const AddUser = async (name: string) => {
+export const AddUser = async (name: string, role: string) => {
   let checkuser = await checkUsername();
   let password = await randomPassword();
   let hash = await hashPassword(password);
+  let team = await roleAdmin(role);
   if (checkuser) {
     let username = "";
     let lastest = parseInt(checkuser.username.substring(4));
@@ -37,7 +38,7 @@ export const AddUser = async (name: string) => {
       },
     });
     await db.notificationUser.create({ data: { userId: user.id } });
-    await db.attendBranch.create({ data: { team: "A", userId: user.id } });
+    await db.attendBranch.create({ data: { team: team!, userId: user.id } });
     return { username, password };
   } else {
     let data = {
@@ -54,7 +55,7 @@ export const AddUser = async (name: string) => {
         year: new Date().getFullYear(),
       },
     });
-    await db.attendBranch.create({ data: { team: "A", userId: user.id } });
+    await db.attendBranch.create({ data: { team: team!, userId: user.id } });
     await db.notificationUser.create({ data: { userId: user.id } });
     return { username: "user01", password };
   }

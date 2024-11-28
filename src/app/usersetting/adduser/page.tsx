@@ -5,6 +5,7 @@ import Modal from "@/components/modal";
 import InputGroup from "@/components/Form/FormElements/InputGroup";
 import { AddUser } from "@/action/addUser";
 export const dynamic = "force-dynamic";
+import { useSession, SessionProvider } from 'next-auth/react';
 export const dynamicParams = true;
 // Correctly set revalidate value
 // export const revalidate = 1;
@@ -13,15 +14,17 @@ const dictionaries = {
   zh: () => import('../../../locales/zh/lang.json').then((module) => module.default),
 };
 const FormLayout = () => {
+  const session = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const name = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const handleOpenModal = async () => {
     let n = name.current?.value;
+    let role = session.data?.user.role;
     if (!n) return;
 
-    AddUser(n).then((data) => {
+    AddUser(n, role).then((data) => {
       if (data) {
         setUsername(data.username);
         setPassword(data.password);
