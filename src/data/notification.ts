@@ -11,11 +11,10 @@ export const notificationClock = async (userId: string, data: any) => {
   });
 };
 
-export const getAdminNotify = async () => {
-  const session = await auth();
-  console.log("🚀 ~ getAminNotify ~ session:", session?.user.id);
+export const getAdminNotify = async (userId: string) => {
+  // const session = await auth();
   let notify = await db.notificationUser.findFirst({
-    where: { userId: session?.user.id },
+    where: { userId },
   });
   const currentArray = Array.isArray(notify?.leave) ? notify?.leave : [];
   return notify?.leave;

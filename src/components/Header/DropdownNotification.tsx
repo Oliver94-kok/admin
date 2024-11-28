@@ -28,12 +28,12 @@ const DropdownNotification = () => {
     return (locale === 'en' || locale === 'zh') ? locale : 'en'; // Ensure it's either 'en' or 'zh'
   };
   const getNotify = async () => {
-    let notify = await getAdminNotify();
-    console.log("🚀 ~ getNotify ~ notify:", notify)
-    const currentArray: DataItem[] = Array.isArray(notify) ? notify as unknown as DataItem[] : [];
-    const reversedArray = [...currentArray].reverse();
-    console.log("🚀 ~ getNotify ~ reversedArray:", reversedArray)
-    setDataNotify(reversedArray)
+    // let notify = await getAdminNotify();
+    // console.log("🚀 ~ getNotify ~ notify:", notify)
+    // const currentArray: DataItem[] = Array.isArray(notify) ? notify as unknown as DataItem[] : [];
+    // const reversedArray = [...currentArray].reverse();
+    // console.log("🚀 ~ getNotify ~ reversedArray:", reversedArray)
+    // setDataNotify(reversedArray)
   }
   // Dynamically load the dictionary based on the current locale
   useEffect(() => {
@@ -41,7 +41,7 @@ const DropdownNotification = () => {
     dictionaries[locale]().then((languageDict) => {
       setDict(languageDict); // Set the dictionary in the state
     });
-    getNotify()
+    // /getNotify()
   }, []);
 
   if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded

@@ -46,6 +46,26 @@ async function saveNotificationsToDatabase(
     console.error("Error saving notifications:", error);
   }
 }
+async function dbget(userId: string) {
+  try {
+    const response = await fetch("/api/notify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save notifications");
+    }
+    return response.body;
+  } catch (error) {
+    console.error("Error saving notifications:", error);
+  }
+}
 
 // Create Zustand store with persistence
 export const useNotificationStore = create<NotificationStore>((set, get) => ({
@@ -54,7 +74,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   // Initialize notifications from database
   initializeFromDatabase: async (userId) => {
     try {
-      let notify = await getAdminNotify();
+      let notify = await dbget(userId);
       const currentArray: Notification[] = Array.isArray(notify)
         ? (notify as unknown as Notification[])
         : [];

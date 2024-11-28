@@ -26,7 +26,7 @@ export const GET = async (request: Request) => {
       isRead: false,
     };
     let notityAdmin = await db.notificationUser.findFirst({
-      where: { userId: "cm3y71hit003c32vbfdbjxvf8" },
+      where: { id: "cm40mogyj0005hllju4o37ni2" },
     });
     const currentArray = Array.isArray(notityAdmin?.leave)
       ? notityAdmin?.leave

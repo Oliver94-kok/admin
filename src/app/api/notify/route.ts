@@ -25,3 +25,12 @@ export const GET = async (request: NextRequest) => {
 
   return Response.json({ error: "no id" }, { status: 400 });
 };
+export const POST = async (req: Request) => {
+  const { userId } = await req.json();
+  let notify = await db.notificationUser.findFirst({
+    where: { userId },
+  });
+  const currentArray = Array.isArray(notify?.leave) ? notify?.leave : [];
+  // return notify?.leave;
+  return Response.json({ data: notify?.leave }, { status: 201 });
+};
