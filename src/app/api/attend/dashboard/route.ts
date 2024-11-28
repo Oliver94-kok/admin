@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { NextRequest } from "next/server";
 export const dynamic = "force-dynamic";
 import dayjs from "dayjs";
+import { roleAdmin } from "@/lib/function";
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
 dayjs.extend(utc);
@@ -15,6 +16,8 @@ export const GET = async (request: NextRequest) => {
   //   WHERE (date(a.clockIn) = CURDATE() OR date(a.clockOut) = CURDATE())`;
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
+  const role = searchParams.get("role");
+  let team = await roleAdmin(role!);
   // let day = tarikh.split("/");
   // let year = new Date().getFullYear();
   // let d = `${year}-${day[1]}-${day[0]}`;
@@ -32,6 +35,11 @@ export const GET = async (request: NextRequest) => {
       dates: {
         gte: startOfDay, // Greater than or equal to start of day
         lte: endOfDay, // Less than or equal to end of day
+      },
+      users: {
+        AttendBranch: {
+          team: team,
+        },
       },
     },
     select: {

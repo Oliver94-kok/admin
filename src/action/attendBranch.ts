@@ -24,7 +24,6 @@ export const UpdateUserBranch = async (
     await db.attendBranch.update({ data, where: { id } });
     if (offDay) {
       const today = dayjs(offDay).format("YYYY-MM-DD");
-
       let attendData = {
         userId: id,
         dates: new Date(today),
