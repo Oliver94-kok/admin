@@ -190,7 +190,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 0,
                 0,
                 salary.total || 0
-            ], { alignment: { horizontal: 'right' } });
+            ], { alignment: { horizontal: 'center' } });
 
             // Absences and fines details
             addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
@@ -224,18 +224,18 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             { width: 6 },  // Short
             { width: 17 }, // Cover
             { width: 8 },  // Total
-            { width: 6 },  // 底薪
-            { width: 5 },  // 日
-            { width: 7 },  // 实薪
-            { width: 7 },  // 奖金
-            { width: 7 },  // 津贴
-            { width: 7 },  // 迟到扣款
-            { width: 7 },  // 借粮
-            { width: 6 },  // 少/多
-            { width: 6 },  // 加班晚班
-            { width: 6 },  // 交通补贴
-            { width: 5 },  // M
-            { width: 8 },  // total
+            // { width: 6 },  // 底薪
+            // { width: 5 },  // 日
+            // { width: 7 },  // 实薪
+            // { width: 7 },  // 奖金
+            // { width: 7 },  // 津贴
+            // { width: 7 },  // 迟到扣款
+            // { width: 7 },  // 借粮
+            // { width: 6 },  // 少/多
+            // { width: 6 },  // 加班晚班
+            // { width: 6 },  // 交通补贴
+            // { width: 5 },  // M
+            // { width: 8 },  // total
         ];
 
         // Save workbook
