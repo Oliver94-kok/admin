@@ -214,29 +214,29 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
         });
 
         // Column width adjustments
-        worksheet.columns = [
-            { width: 10 }, // Name
-            { width: 11 }, // Day
-            { width: 7 },  // Basic
-            { width: 7 },  // Bonus
-            { width: 14 }, // Allow
-            { width: 7 },  // Advance
-            { width: 6 },  // Short
-            { width: 17 }, // Cover
-            { width: 8 },  // Total
-            // { width: 6 },  // 底薪
-            // { width: 5 },  // 日
-            // { width: 7 },  // 实薪
-            // { width: 7 },  // 奖金
-            // { width: 7 },  // 津贴
-            // { width: 7 },  // 迟到扣款
-            // { width: 7 },  // 借粮
-            // { width: 6 },  // 少/多
-            // { width: 6 },  // 加班晚班
-            // { width: 6 },  // 交通补贴
-            // { width: 5 },  // M
-            // { width: 8 },  // total
-        ];
+        // worksheet.columns = [
+        //     { width: 10 }, // Name
+        //     { width: 11 }, // Day
+        //     { width: 7 },  // Basic
+        //     { width: 7 },  // Bonus
+        //     { width: 14 }, // Allow
+        //     { width: 7 },  // Advance
+        //     { width: 6 },  // Short
+        //     { width: 17 }, // Cover
+        //     { width: 8 },  // Total
+        //     // { width: 6 },  // 底薪
+        //     // { width: 5 },  // 日
+        //     // { width: 7 },  // 实薪
+        //     // { width: 7 },  // 奖金
+        //     // { width: 7 },  // 津贴
+        //     // { width: 7 },  // 迟到扣款
+        //     // { width: 7 },  // 借粮
+        //     // { width: 6 },  // 少/多
+        //     // { width: 6 },  // 加班晚班
+        //     // { width: 6 },  // 交通补贴
+        //     // { width: 5 },  // M
+        //     // { width: 8 },  // total
+        // ];
 
         // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();
