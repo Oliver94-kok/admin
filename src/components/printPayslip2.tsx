@@ -56,8 +56,8 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
 
             // Add sub-headers
             wsData.push([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n\n扣款",
-                "借粮", "少/多", "加班\n\n晚班", "交通\n\n补贴", "M", "total"
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
+                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
             ]);
 
             // Add employee data
