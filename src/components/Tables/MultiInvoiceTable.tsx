@@ -291,7 +291,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
         } = {}) => {
             const row = worksheet.addRow(rowData);
 
-            row.eachCell((cell, colNumber) => {
+            row.eachCell((cell) => {
                 cell.border = {
                     top: { style: 'thin' },
                     left: { style: 'thin' },
@@ -320,20 +320,20 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             const startRowIndex = worksheet.rowCount + 1;
 
             // Employee name/period header
-            addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
+            addFormattedRows([`${salary.year} - ${salary.month}`], { bold: false });
             addFormattedRows([]); // Blank row
 
             // Main headers
             addFormattedRows([
                 "Name", "Day", "", "Basic", "Bonus", "Allow", "",
                 "Advance", "Short", "Cover", "", "", "Total"
-            ], { bold: true });
+            ], { bold: false });
 
             // Sub-headers
             addFormattedRows([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到 扣款",
-                "借粮", "少/多", "加班 晚班", "交通 补贴", "M", "total"
-            ], { bold: true });
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n\n扣款",
+                "借粮", "少/多", "加班\n\n晚班", "交通\n\n补贴", "M", "total"
+            ], { bold: false });
 
             // Numeric data row (right-aligned)
             addFormattedRows([
@@ -353,24 +353,24 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             ], {
                 alignment: {
                     vertical: 'middle',
-                    horizontal: 'left'
+                    horizontal: 'right'
                 }
             });
 
-            //absent information
+            // Add absent, late, and no clock-in/out information
             addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
-            // Late information
             addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
-
-            // No clock in/out information
             addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
 
-            // Merge cells for the current row
-            worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`)
-            worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // "Day" columns
-            worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // "Allow" columns
-            worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // "Cover" columns
-            worksheet.getCell(`M${startRowIndex + 4}`).value = { formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`, result: 7 };
+            // Merge cells for grouped headers
+            worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
+            worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // Merge "Day" columns
+            worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow" columns
+            worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover" columns
+            worksheet.getCell(`M${startRowIndex + 4}`).value = {
+                formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
+            };
+
             // Add two blank rows between employees (except after the last one)
             if (index < datas.length - 1) {
                 addFormattedRows([]);
@@ -379,9 +379,17 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
         });
 
         // Adjust column widths
-        worksheet.columns.forEach((column, index) => {
-            column.width = 15;
-        });
+        worksheet.columns = [
+            { width: 15 }, // Name
+            { width: 10 }, // Day
+            { width: 10 }, // Basic
+            { width: 10 }, // Bonus
+            { width: 10 }, // Allow
+            { width: 10 }, // Advance
+            { width: 10 }, // Short
+            { width: 10 }, // Cover
+            { width: 10 }, // Total
+        ];
 
         // Save the file
         const buffer = await workbook.xlsx.writeBuffer();
@@ -391,6 +399,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
         link.download = 'PayslipReport.xlsx';
         link.click();
     };
+
 
     // Merge cells for a given row range
     // const mergeCells = (start: string, end: string) => {
@@ -405,24 +414,24 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                     Payslip
                 </h4>
                 <div className="flex gap-4">
-                    <button
+                    {/* <button
                         onClick={() => generatePDF(false)}
                         className="inline-flex items-center gap-2.5 rounded bg-primary px-4 py-[7px] font-medium text-white hover:bg-opacity-90"
                     >
                         Save as PDF
-                    </button>
+                    </button> */}
 
-                    <button
+                    {/* <button
                         onClick={() => generatePDF(true)}
                         className="inline-flex items-center gap-2.5 rounded bg-green-600 px-4 py-[7px] font-medium text-white hover:bg-opacity-90"
                     >
                         Save All
-                    </button>
+                    </button> */}
                     <button
                         className="inline-flex items-center gap-2.5 rounded bg-green-600 px-4 py-[7px] font-medium text-white hover:bg-opacity-90"
                         onClick={() => saveAsExcel()}
                     >
-                        save excel All
+                        Save All
                     </button>
                 </div>
 
