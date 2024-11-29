@@ -57,8 +57,8 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
 
             // Add sub-headers and data rows with merged name cell
             wsData.push([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到 扣款",
-                "借粮", "少/多", "加班 晚班", "交通 补贴", "M", "total"
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n\n扣款",
+                "借粮", "少/多", "加班\n\n晚班", "交通\n\n补贴", "M", "total"
             ]);
 
             wsData.push([
@@ -97,8 +97,24 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         const ws = utils.aoa_to_sheet(wsData);
 
         // Set column widths
-        const colWidths = Array(13).fill({ wch: 15 });
+        const colWidths = [
+            { wch: 10 }, // Name
+            { wch: 8 },  // Basic
+            { wch: 8 },  // Bonus
+            { wch: 8 },  // Allow
+            { wch: 8 },  // Advance
+            { wch: 8 },  // Short
+            { wch: 8 },  // Total
+            { wch: 12 }, // Remarks or additional data
+        ];
         ws['!cols'] = colWidths;
+        ws['!rows'] = Array(wsData.length).fill({ hpt: 20 });
+        ws['!pageSetup'] = {
+            orientation: "landscape", // 横向打印
+            paperSize: 9,             // A4纸张
+            fitToWidth: 1,            // 宽度适配
+            fitToHeight: 0            // 高度自适应
+        };
 
         // Add merged cells for each employee section
         const merges: Range[] | undefined = [];
@@ -159,29 +175,23 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                 const cell_address = utils.encode_cell({ r: R, c: C });
                 if (!ws[cell_address]) continue;
 
-                if (!ws[cell_address].s) ws[cell_address].s = {};
-
-                // Add borders to all non-empty cells
                 ws[cell_address].s = {
-                    ...ws[cell_address].s,
                     border: {
-                        top: { style: 'thin', color: { rgb: "000000" } },
-                        bottom: { style: 'thin', color: { rgb: "000000" } },
-                        left: { style: 'thin', color: { rgb: "000000" } },
-                        right: { style: 'thin', color: { rgb: "000000" } }
+                        top: { style: "thin", color: { rgb: "000000" } },
+                        bottom: { style: "thin", color: { rgb: "000000" } },
+                        left: { style: "thin", color: { rgb: "000000" } },
+                        right: { style: "thin", color: { rgb: "000000" } }
                     },
                     alignment: {
-                        horizontal: 'center',
-                        vertical: 'center'
+                        horizontal: "center",
+                        vertical: "center",
+                        wrapText: true // 启用自动换行
+                    },
+                    font: {
+                        name: "Arial", // 字体
+                        sz: 11 // 字号
                     }
                 };
-
-                // Add bold style to headers and employee name
-                if (R % 9 === 0 || R % 9 === 2 || R % 9 === 3) {
-                    ws[cell_address].s.font = {
-                        bold: true
-                    };
-                }
             }
         }
 
@@ -234,11 +244,11 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                                             <td className="border-r-2 border-l-2 border-black">实薪</td>
                                             <td className="border-r-2 border-l-2 border-black">奖金</td>
                                             <td className="border-r-2 border-l-2 border-black">津贴</td>
-                                            <td className="border-r-2 border-l-2 border-black">迟到 扣款</td>
+                                            <td className="border-r-2 border-l-2 border-black">迟到<br />扣款</td>
                                             <td className="border-r-2 border-l-2 border-black">借粮</td>
                                             <td className="border-r-2 border-l-2 border-black">少/多</td>
-                                            <td className="border-r-2 border-l-2 border-black">加班 晚班</td>
-                                            <td className="border-r-2 border-l-2 border-black">交通 补贴</td>
+                                            <td className="border-r-2 border-l-2 border-black">加班<br />晚班</td>
+                                            <td className="border-r-2 border-l-2 border-black">交通<br />补贴</td>
                                             <td className="border-r-2 border-l-2 border-black">M</td>
                                             <td className="border-r-2 border-l-2 border-black">total</td>
                                         </tr>

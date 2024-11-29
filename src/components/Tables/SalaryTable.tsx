@@ -21,6 +21,7 @@ import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
 import { useIdStore } from "@/lib/zudstand/salary";
 import { setDataCookies } from "@/action/invoice";
+import BranchSelectGroup from "../Form/FormElements/MultiSelect/branchselect";
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -580,7 +581,16 @@ const SalaryTable = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-13 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-13 md:px-6 2xl:px-7.5">
+        <div className="col-span-1 flex items-center justify-center">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            {dict.branches.branches}
+            {/* <BranchSelectGroup
+              onSendData={onSendData}
+              initialValue={teamA.team}
+            /> */}
+          </h5>
+        </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.salary.username}
@@ -699,7 +709,7 @@ const SalaryTable = ({
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-12 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+          className={`grid grid-cols-13 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-13 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
             ? ""
             : "border-b border-stroke dark:border-dark-3"
             }`}
@@ -736,6 +746,11 @@ const SalaryTable = ({
                 {salary.users?.username}
               </p>
             </div>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+              A
+            </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
