@@ -403,6 +403,9 @@ span.flatpickr-weekday,
 .data-table-common .datatable-wrapper.no-footer .datatable-container {
     @apply border-none;
 }
+.grid-cols-13 {
+    grid-template-columns: repeat(13, 80px);
+}
 
 .data-table-common .datatable-info {
     @apply !m-0 font-medium;

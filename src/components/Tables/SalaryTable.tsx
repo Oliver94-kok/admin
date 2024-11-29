@@ -581,10 +581,19 @@ const SalaryTable = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-13 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-13 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-13 sm:grid-cols-13 md:grid-cols-13 lg:grid-cols-13 gap-4 w-full">
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.salary.username}
+          </h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
+            {dict.branches.branches}
+            {/* <BranchSelectGroup
+              onSendData={onSendData}
+              initialValue={teamA.team}
+            /> */}
           </h5>
         </div>
         <div
@@ -602,15 +611,7 @@ const SalaryTable = ({
             </span>
           )}
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">
-            {dict.branches.branches}
-            {/* <BranchSelectGroup
-              onSendData={onSendData}
-              initialValue={teamA.team}
-            /> */}
-          </h5>
-        </div>
+
         <div
           className="col-span-1 flex cursor-pointer items-center justify-center"
           onClick={() => handleSort("ot")}
@@ -709,7 +710,7 @@ const SalaryTable = ({
 
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-13 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-13 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+          className={`grid grid-cols-13 sm:grid-cols-13 md:grid-cols-13 lg:grid-cols-13 gap-4 w-full ${key === currentData.length - 1
             ? ""
             : "border-b border-stroke dark:border-dark-3"
             }`}
