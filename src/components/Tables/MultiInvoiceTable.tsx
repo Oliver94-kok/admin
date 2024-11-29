@@ -331,8 +331,8 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
 
             // Sub-headers
             addFormattedRows([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
-                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到扣款",
+                "借粮", "少/多", "加班晚班", "交通补贴", "M", "total"
             ], { bold: false });
 
             // Numeric data row (right-aligned)
@@ -380,15 +380,15 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
 
         // Adjust column widths
         worksheet.columns = [
-            { width: 15 }, // Name
+            { width: 10 }, // Name
             { width: 10 }, // Day
-            { width: 10 }, // Basic
-            { width: 10 }, // Bonus
+            { width: 7 }, // Basic
+            { width: 7 }, // Bonus
             { width: 10 }, // Allow
-            { width: 10 }, // Advance
-            { width: 10 }, // Short
-            { width: 10 }, // Cover
-            { width: 10 }, // Total
+            { width: 7 }, // Advance
+            { width: 5 }, // Short
+            { width: 15 }, // Cover
+            { width: 8 }, // Total
         ];
 
         // Save the file

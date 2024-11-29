@@ -56,8 +56,8 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
 
             // Add sub-headers
             wsData.push([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
-                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到扣款",
+                "借粮", "少/多", "加班晚班", "交通补贴", "M", "total"
             ]);
 
             // Add employee data
@@ -89,15 +89,15 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
 
         // Set column widths
         ws['!cols'] = [
-            { wch: 15 }, // Name
+            { wch: 10 }, // Name
             { wch: 10 }, // Day
-            { wch: 10 }, // Basic
-            { wch: 10 }, // Bonus
+            { wch: 7 }, // Basic
+            { wch: 7 }, // Bonus
             { wch: 10 }, // Allow
-            { wch: 10 }, // Advance
-            { wch: 10 }, // Short
-            { wch: 10 }, // Cover
-            { wch: 10 }, // Total
+            { wch: 7 }, // Advance
+            { wch: 5 }, // Short
+            { wch: 15 }, // Cover
+            { wch: 8 }, // Total
         ];
 
         // Define merges
@@ -175,11 +175,11 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                                             <td className="border-r-2 border-l-2 border-black">实薪</td>
                                             <td className="border-r-2 border-l-2 border-black">奖金</td>
                                             <td className="border-r-2 border-l-2 border-black">津贴</td>
-                                            <td className="border-r-2 border-l-2 border-black">迟到<br />扣款</td>
+                                            <td className="border-r-2 border-l-2 border-black">迟到扣款</td>
                                             <td className="border-r-2 border-l-2 border-black">借粮</td>
                                             <td className="border-r-2 border-l-2 border-black">少/多</td>
-                                            <td className="border-r-2 border-l-2 border-black">加班<br />晚班</td>
-                                            <td className="border-r-2 border-l-2 border-black">交通<br />补贴</td>
+                                            <td className="border-r-2 border-l-2 border-black">加班晚班</td>
+                                            <td className="border-r-2 border-l-2 border-black">交通补贴</td>
                                             <td className="border-r-2 border-l-2 border-black">M</td>
                                             <td className="border-r-2 border-l-2 border-black">total</td>
                                         </tr>
