@@ -56,8 +56,8 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
 
             // Add sub-headers
             wsData.push([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到扣款",
-                "借粮", "少/多", "加班晚班", "交通补贴", "M", "total"
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
+                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
             ]);
 
             // Add employee data
@@ -90,14 +90,18 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         // Set column widths
         ws['!cols'] = [
             { wch: 10 }, // Name
-            { wch: 10 }, // Day
-            { wch: 7 }, // Basic
-            { wch: 7 }, // Bonus
-            { wch: 10 }, // Allow
-            { wch: 7 }, // Advance
-            { wch: 5 }, // Short
-            { wch: 15 }, // Cover
-            { wch: 8 }, // Total
+            { wch: 11 }, // Day
+            { wch: 5 },  // 日
+            { wch: 7 },  // Basic
+            { wch: 7 },  // Bonus
+            { wch: 14 }, // Allow
+            { wch: 7 },  // Advance
+            { wch: 6 },  // Short
+            { wch: 17 }, // Cover
+            { wch: 6 },  // 加班晚班
+            { wch: 6 },  // 交通补贴
+            { wch: 5 },  // M
+            { wch: 8 },  // Total
         ];
 
         // Define merges
@@ -132,6 +136,7 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         utils.book_append_sheet(wb, ws, "Payslip");
         writeFileXLSX(wb, "PayslipReport.xlsx");
     };
+
 
     return (
         <>

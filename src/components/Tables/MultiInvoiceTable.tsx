@@ -316,26 +316,25 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             const { salary, result } = item;
             const AbsentLength = result.dataAbsent.length;
 
-            // Track the starting row for each employee's data
             const startRowIndex = worksheet.rowCount + 1;
 
-            // Employee name/period header
-            addFormattedRows([`${salary.year} - ${salary.month}`], { bold: false });
-            addFormattedRows([]); // Blank row
+            // Add employee section
+            addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
+            addFormattedRows([]);
 
             // Main headers
             addFormattedRows([
                 "Name", "Day", "", "Basic", "Bonus", "Allow", "",
                 "Advance", "Short", "Cover", "", "", "Total"
-            ], { bold: false });
+            ], { bold: true });
 
             // Sub-headers
             addFormattedRows([
-                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到扣款",
-                "借粮", "少/多", "加班晚班", "交通补贴", "M", "total"
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
+                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
             ], { bold: false });
 
-            // Numeric data row (right-aligned)
+            // Numeric data row
             addFormattedRows([
                 "", // Empty cell for merged name
                 salary.perDay || 0,
@@ -349,49 +348,56 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 salary.overTime || 0,
                 0,
                 0,
-                0
-            ], {
-                alignment: {
-                    vertical: 'middle',
-                    horizontal: 'right'
-                }
-            });
+                salary.total || 0
+            ], { alignment: { horizontal: 'right' } });
 
-            // Add absent, late, and no clock-in/out information
+            // Absences and fines details
             addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
             addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
             addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
 
-            // Merge cells for grouped headers
+            // Merge header cells for grouped columns
             worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
-            worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // Merge "Day" columns
-            worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow" columns
-            worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover" columns
+            worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // Merge "Day"
+            worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow"
+            worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover"
+
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
 
-            // Add two blank rows between employees (except after the last one)
             if (index < datas.length - 1) {
                 addFormattedRows([]);
                 addFormattedRows([]);
             }
         });
 
-        // Adjust column widths
+        // Column width adjustments
         worksheet.columns = [
             { width: 10 }, // Name
-            { width: 10 }, // Day
-            { width: 7 }, // Basic
-            { width: 7 }, // Bonus
-            { width: 10 }, // Allow
-            { width: 7 }, // Advance
-            { width: 5 }, // Short
-            { width: 15 }, // Cover
-            { width: 8 }, // Total
+            { width: 11 }, // Day
+            { width: 7 },  // Basic
+            { width: 7 },  // Bonus
+            { width: 14 }, // Allow
+            { width: 7 },  // Advance
+            { width: 6 },  // Short
+            { width: 17 }, // Cover
+            { width: 8 },  // Total
+            { width: 6 },  // 底薪
+            { width: 5 },  // 日
+            { width: 7 },  // 实薪
+            { width: 7 },  // 奖金
+            { width: 7 },  // 津贴
+            { width: 7 },  // 迟到扣款
+            { width: 7 },  // 借粮
+            { width: 6 },  // 少/多
+            { width: 6 },  // 加班晚班
+            { width: 6 },  // 交通补贴
+            { width: 5 },  // M
+            { width: 8 },  // total
         ];
 
-        // Save the file
+        // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const link = document.createElement('a');
