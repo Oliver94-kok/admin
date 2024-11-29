@@ -91,17 +91,17 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         ws['!cols'] = [
             { wch: 10 }, // Name
             { wch: 11 }, // Day
-            { wch: 5 },  // 日
-            { wch: 7 },  // Basic
-            { wch: 7 },  // Bonus
-            { wch: 14 }, // Allow
-            { wch: 7 },  // Advance
-            { wch: 6 },  // Short
-            { wch: 17 }, // Cover
-            { wch: 6 },  // 加班晚班
-            { wch: 6 },  // 交通补贴
-            { wch: 5 },  // M
-            { wch: 8 },  // Total
+            { wch: 4 },  // 日
+            { wch: 6 },  // Basic
+            { wch: 6 },  // Bonus
+            { wch: 12 }, // Allow
+            { wch: 6 },  // Advance
+            { wch: 5 },  // Short
+            { wch: 15 }, // Cover
+            { wch: 5 },  // 加班晚班
+            { wch: 5 },  // 交通补贴
+            { wch: 4 },  // M
+            { wch: 6 },  // Total
         ];
 
         // Define merges
@@ -136,6 +136,7 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
         ws['!rows'] = ws['!rows'] || [];
 
         // Set row height for row 2 (header) and row 3 (sub-header), adjust according to your needs
+        ws['!rows'][1] = { hpt: 20 };
         ws['!rows'][2] = { hpt: 30 };  // Row with "底薪", "日", "实薪", etc.
 
 
