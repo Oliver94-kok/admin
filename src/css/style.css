@@ -404,7 +404,7 @@ span.flatpickr-weekday,
     @apply border-none;
 }
 .grid-cols-13 {
-    grid-template-columns: repeat(13, 80px);
+    grid-template-columns: repeat(13, minmax(0, 1fr));
 }
 
 .data-table-common .datatable-info {
