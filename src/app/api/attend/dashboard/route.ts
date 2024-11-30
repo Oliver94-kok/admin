@@ -8,61 +8,87 @@ const timezone = require("dayjs/plugin/timezone");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 export const GET = async (request: NextRequest) => {
-  // let data =
-  //   await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour, ab.team
-  //   FROM Attends AS a
-  //   JOIN User AS u ON a.userId = u.id
-  //   JOIN AttendBranch as ab on u.id = ab.userId
-  //   WHERE (date(a.clockIn) = CURDATE() OR date(a.clockOut) = CURDATE())`;
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
   const role = searchParams.get("role");
-  let team = await roleAdmin(role!);
-  // let day = tarikh.split("/");
-  // let year = new Date().getFullYear();
-  // let d = `${year}-${day[1]}-${day[0]}`;
-  // let data =
-  //   await db.$queryRaw`SELECT a.userId, u.username,u.name,u.userImg, a.clockIn, a.clockOut,a.img,a.workingHour, ab.team,a.locationIn,a.locationOut
-  //   FROM Attends AS a
-  //   JOIN User AS u ON a.userId = u.id
-  //   JOIN AttendBranch as ab on u.id = ab.userId
-  // WHERE (date(a.clockIn) = date(${date}) OR date(a.clockOut) = date(${date}))`;
+
+  // Validate inputs
+  if (!date) {
+    return Response.json({ error: "Date is required" }, { status: 400 });
+  }
+
+  // Validate role and fetch team if not admin
+  let team: string | undefined;
+  if (role?.toLowerCase() !== "admin") {
+    try {
+      // Assuming roleAdmin is a function that returns the team for a given role
+      team = await roleAdmin(role!);
+      
+      // If no team is found, return an error
+      if (!team) {
+        return Response.json({ error: "Invalid role or team not found" }, { status: 403 });
+      }
+    } catch (error) {
+      console.error("Error fetching team:", error);
+      return Response.json({ error: "Error determining team" }, { status: 500 });
+    }
+  }
+
+  // Parse the target date
   const targetDate = dayjs(date).tz("Asia/Kuala_Lumpur");
   const startOfDay = targetDate.startOf("day").toISOString();
   const endOfDay = targetDate.endOf("day").toISOString();
-  let data = await db.attends.findMany({
-    where: {
-      dates: {
-        gte: startOfDay, // Greater than or equal to start of day
-        lte: endOfDay, // Less than or equal to end of day
-      },
-      users: {
-        AttendBranch: {
-          team: team,
+
+  // Construct the query based on role
+  const whereCondition = role?.toLowerCase()  === "admin" 
+    ? {
+        dates: {
+          gte: startOfDay,
+          lte: endOfDay,
+        }
+      }
+    : {
+        dates: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        users: {
+          AttendBranch: {
+            team: team,
+          },
+        },
+      };
+console.log(whereCondition)
+  try {
+    // Fetch attendance data
+    const data = await db.attends.findMany({
+      where: whereCondition,
+      select: {
+        id: true,
+        dates: true,
+        clockIn: true,
+        clockOut: true,
+        img: true,
+        locationIn: true,
+        locationOut: true,
+        userId: true,
+        users: {
+          select: {
+            username: true,
+            name: true,
+            userImg: true,
+            AttendBranch: { select: { team: true } },
+          },
         },
       },
-    },
-    select: {
-      id: true,
-      dates: true,
-      clockIn: true,
-      clockOut: true,
-      img: true,
-      locationIn: true,
-      locationOut: true,
-      userId: true,
-      users: {
-        select: {
-          username: true,
-          name: true,
-          userImg: true,
-          AttendBranch: { select: { team: true } },
-        },
+      orderBy: {
+        createdAt: "desc",
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return Response.json({ date, data }, { status: 200 });
+    });
+
+    return Response.json({ date, data }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching attendance data:", error);
+    return Response.json({ error: "Failed to retrieve attendance data" }, { status: 500 });
+  }
 };

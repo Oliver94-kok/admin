@@ -165,7 +165,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
 
             // Main headers
             addFormattedRows([
-                "Name", "Day", "", "Basic", "Bonus", "Allow", "",
+                `Team ${salary.users?.AttendBranch?.team}`, "Day", "", "Basic", "Bonus", "Allow", "",
                 "Advance", "Short", "Cover", "", "", "Total"
             ], { bold: true });
 
@@ -193,14 +193,13 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             ], { alignment: { horizontal: 'center' ,vertical: 'middle',} });
 
             // Absences and fines details
-            // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
-            // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
-            // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
-            addFormattedRows([
-                
-                    `${getDate(result, "Absent", salary.perDay!)} ${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
-                
-            ], { alignment: { horizontal: 'left',  } });
+            addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
+            addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
+            addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
+            // addFormattedRows([
+            //     `${getDate(result, "Absent", salary.perDay!)} ${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
+            // ], { alignment: { horizontal: 'left', wrapText: true } });
+            
             // Merge header cells for grouped columns
             worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
             worksheet.mergeCells(`M${startRowIndex + 3}`, `M${startRowIndex + 4}`);
@@ -217,24 +216,32 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`A${startRowIndex+1}`).border={
                 bottom: {style:'thin'},
             }
-            worksheet.getCell(`G${startRowIndex+4}`).font = {
-                
-                color: { argb: 'FFFF0000'},
-    
-              };
-            if (index < datas.length - 1) {
-                // addFormattedRows([]);
-                // addFormattedRows([]);
+            worksheet.getCell(`A${startRowIndex+5}`).border={
+               
             }
+            worksheet.getCell(`A${startRowIndex+6}`).border={
+               
+            }
+            worksheet.getCell(`A${startRowIndex+7}`).border={
+               
+            }
+            worksheet.getCell(`G${startRowIndex+4}`).font = {
+                color: { argb: 'FFFF0000'},
+              };
+            worksheet.getRow(startRowIndex+1).height =25
+            worksheet.getRow(startRowIndex+7).height =25
+            worksheet.getRow(startRowIndex+6).height =25
+            worksheet.getRow(startRowIndex+5).height =25
         });
         worksheet.properties.defaultRowHeight = 35;
+        
         worksheet.getColumn("B").width = 6.57
         worksheet.getColumn("C").width =5.14
         worksheet.getColumn("D").width = 7
         worksheet.getColumn("E").width = 7.14
         worksheet.getColumn("F").width = 7
         worksheet.getColumn("G").width = 7.57
-        worksheet.getColumn("H").width = 8
+        worksheet.getColumn("H").width = 9.14
         worksheet.getColumn("I").width = 5.43
         worksheet.getColumn("J").width = 6.43
         worksheet.getColumn("K").width = 6
