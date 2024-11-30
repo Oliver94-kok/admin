@@ -71,7 +71,7 @@ const SalaryTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Add sort order state
   const [sortColumn, setSortColumn] = useState<string | null>(null); // Add sort column state
-  const itemsPerPage = 10;
+  const itemsPerPage = 150;
   const [id, setid] = useState("");
   const [salary, setSalary] = useState("");
   const [error, setError] = useState("");
@@ -97,11 +97,11 @@ const SalaryTable = ({
     getTeambyRole()
     // Check every minute (in case user keeps the page open across days)
     const interval = setInterval(checkDate, 60000);
-  
+
     return () => clearInterval(interval);
-    
+
   }, [])
-  const getTeambyRole =async()=>{
+  const getTeambyRole = async () => {
     let team = await roleAdmin(session.data?.user.role)
     setSelectedTeam(team)
     setCurrentPage(1);
@@ -173,7 +173,7 @@ const SalaryTable = ({
     router.push("/invoice");
     console.log("Printing selected items:", ids);
   };
-  const onChangeTeam=(team:string)=>{
+  const onChangeTeam = (team: string) => {
     setSelectedTeam(team)
     setCurrentPage(1);
   }
@@ -200,16 +200,16 @@ const SalaryTable = ({
 
   // Paginate the data
   const filteredData = sortedData
-  .filter(salary => !selectedTeam || salary.users?.AttendBranch?.team === selectedTeam)
-  
-  .filter(
-    (salary) =>
-      salary.users?.username
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      salary.users?.name.toString().includes(searchQuery) ||
-      salary.users!.username.toString().includes(searchQuery),
-  );
+    .filter(salary => !selectedTeam || salary.users?.AttendBranch?.team === selectedTeam)
+
+    .filter(
+      (salary) =>
+        salary.users?.username
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        salary.users?.name.toString().includes(searchQuery) ||
+        salary.users!.username.toString().includes(searchQuery),
+    );
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -560,24 +560,24 @@ const SalaryTable = ({
           <button className="ml-5 rounded bg-blue-500 px-4 py-2 pl-5 pr-5 font-bold text-white hover:bg-blue-600">
             {dict.salary.check}
           </button>
-          {session.data?.user.role == 'ADMIN'? (
+          {session.data?.user.role == 'ADMIN' ? (
             <>
-             <select
-            id="month"
-            className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
-            // defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
-            value={selectedTeam}
-            onChange={(e) => onChangeTeam(e.target.value)}
-          >
-            {/* Add month options */}
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-          </select>
+              <select
+                id="month"
+                className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
+                // defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
+                value={selectedTeam}
+                onChange={(e) => onChangeTeam(e.target.value)}
+              >
+                {/* Add month options */}
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </select>
             </>
-          ):(<></>)}
-         
+          ) : (<></>)}
+
         </div>
 
         <div className="relative mb-5 w-full max-w-[414px]">

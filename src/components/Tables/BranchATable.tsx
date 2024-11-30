@@ -53,7 +53,7 @@ export const BranchATable = ({
   const [userTeam, setUserTeam] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const itemsPerPage = 50;
+  const itemsPerPage = 150;
 
   // Paginate the data
   const filteredData = data.filter((teamA) =>
