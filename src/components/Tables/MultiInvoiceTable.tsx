@@ -194,11 +194,11 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
 
             // Absences and fines details
             addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
-            addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
-            addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
-            // addFormattedRows([
-            //     `${getDate(result, "Absent", salary.perDay!)} ${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
-            // ], { alignment: { horizontal: 'left', wrapText: true } });
+            // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
+            // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
+            addFormattedRows([
+                `${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
+            ], { alignment: { horizontal: 'left', wrapText: true } });
             
             // Merge header cells for grouped columns
             worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
@@ -207,6 +207,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow"
             worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover"
             worksheet.mergeCells(`A${startRowIndex + 5}`, `M${startRowIndex + 5}`);
+            worksheet.mergeCells(`A${startRowIndex + 6}`, `M${startRowIndex + 6}`);
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };

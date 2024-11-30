@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { createSession, encrypt } from "@/lib/session";
+import { User } from "@prisma/client";
 
 export const getUserByUsername = async (username: string) => {
   try {
@@ -24,10 +25,13 @@ export const getUserByUsernameWithAttend = async (username: string) => {
 
 export const checkUsername = async () => {
   try {
-    const user = await db.user.findMany({
-      orderBy: { username: "desc" },
-      where: { role: "USER" },
-    });
+    // const user = await db.user.findMany({
+    //   orderBy:[ { username: {sort:"desc"} },],
+    //   where: { role: "USER" },
+    // });
+    const user:User[] = await db.$queryRaw`
+    SELECT * FROM User ORDER BY CONVERT(SUBSTRING(username, 5), UNSIGNED INTEGER) DESC;
+  `;
     return user[0];
   } catch (error) {
     return null;
