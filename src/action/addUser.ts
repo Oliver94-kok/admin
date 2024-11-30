@@ -11,7 +11,7 @@ export const AddUser = async (name: string, role: string) => {
   let team = await roleAdmin(role);
   if (checkuser) {
     let username = "";
-    let lastest = parseInt(checkuser.username.substring(5));
+    let lastest = parseInt(checkuser.username.substring(4));
     if (lastest < 9) {
       username = `user0${lastest + 1}`;
     } else {
