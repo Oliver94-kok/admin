@@ -22,6 +22,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useIdStore } from "@/lib/zudstand/salary";
 import { setDataCookies } from "@/action/invoice";
 import BranchSelectGroup from "../Form/FormElements/MultiSelect/branchselect";
+import { useSession } from "next-auth/react";
+import { roleAdmin } from "@/lib/function";
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -58,6 +60,7 @@ const SalaryTable = ({
   onYearChange,
 }: SalaryTableInterface) => {
   const router = useRouter();
+  const session = useSession();
   const [dict, setDict] = useState<any>(null); // State to hold the dictionary
   const [dataSalary, setDataSalary] = useState<SalaryUser[]>(data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -77,7 +80,7 @@ const SalaryTable = ({
   const [activePopup, setActivePopup] = useState<string | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const { ids, addId, addIds, removeId, clearIds } = useIdStore()
-
+  const [selectedTeam, setSelectedTeam] = useState<string>('');
   useEffect(() => {
     if (data) {
       setDataSalary(data);
@@ -91,13 +94,18 @@ const SalaryTable = ({
       setIsDisabled(dayOfMonth > 5);
     };
     checkDate();
-
+    getTeambyRole()
     // Check every minute (in case user keeps the page open across days)
     const interval = setInterval(checkDate, 60000);
-
+  
     return () => clearInterval(interval);
+    
   }, [])
-
+  const getTeambyRole =async()=>{
+    let team = await roleAdmin(session.data?.user.role)
+    setSelectedTeam(team)
+    setCurrentPage(1);
+  }
   const getLocale = (): 'en' | 'zh' => {
     // Get the locale from localStorage, default to 'en' if null
     const locale = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
@@ -165,7 +173,10 @@ const SalaryTable = ({
     router.push("/invoice");
     console.log("Printing selected items:", ids);
   };
-
+  const onChangeTeam=(team:string)=>{
+    setSelectedTeam(team)
+    setCurrentPage(1);
+  }
   // Function to handle sorting
   const handleSort = (column: string) => {
     const newSortOrder =
@@ -188,7 +199,10 @@ const SalaryTable = ({
   });
 
   // Paginate the data
-  const filteredData = sortedData.filter(
+  const filteredData = sortedData
+  .filter(salary => !selectedTeam || salary.users?.AttendBranch?.team === selectedTeam)
+  
+  .filter(
     (salary) =>
       salary.users?.username
         .toLowerCase()
@@ -495,6 +509,7 @@ const SalaryTable = ({
     }
   };
 
+
   return (
     <div
       className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
@@ -545,6 +560,24 @@ const SalaryTable = ({
           <button className="ml-5 rounded bg-blue-500 px-4 py-2 pl-5 pr-5 font-bold text-white hover:bg-blue-600">
             {dict.salary.check}
           </button>
+          {session.data?.user.role == 'ADMIN'? (
+            <>
+             <select
+            id="month"
+            className="ml-5 mr-5 rounded bg-white p-2 text-[24px] font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
+            // defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
+            value={selectedTeam}
+            onChange={(e) => onChangeTeam(e.target.value)}
+          >
+            {/* Add month options */}
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+            </>
+          ):(<></>)}
+         
         </div>
 
         <div className="relative mb-5 w-full max-w-[414px]">
@@ -750,7 +783,7 @@ const SalaryTable = ({
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              A
+              {salary.users?.AttendBranch?.team}
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">

@@ -36,9 +36,9 @@ const Salary = () => {
     setYear(year);
   };
 
-  if (session.data?.user.role != "ADMIN") {
-    return (<><DefaultLayout><p className="flex justify-center items-center h-screen text-red-700">You don&apos;t have permission in this page </p> </DefaultLayout></>)
-  }
+  // if (session.data?.user.role != "ADMIN") {
+  //   return (<><DefaultLayout><p className="flex justify-center items-center h-screen text-red-700">You don&apos;t have permission in this page </p> </DefaultLayout></>)
+  // }
 
   return (
     <>

@@ -157,11 +157,11 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             const { salary, result } = item;
             const AbsentLength = result.dataAbsent.length;
 
-            const startRowIndex = worksheet.rowCount + 1;
+            const startRowIndex = worksheet.rowCount ;
 
             // Add employee section
             addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
-            addFormattedRows([]);
+           
 
             // Main headers
             addFormattedRows([
@@ -190,53 +190,41 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 0,
                 0,
                 salary.total || 0
-            ], { alignment: { horizontal: 'center' } });
+            ], { alignment: { horizontal: 'center' ,vertical: 'middle',} });
 
             // Absences and fines details
-            addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
-            addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
-            addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
-
+            // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
+            // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
+            // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
+            addFormattedRows([
+                
+                    `${getDate(result, "Absent", salary.perDay!)} ${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
+                
+            ], { alignment: { horizontal: 'left',  } });
             // Merge header cells for grouped columns
             worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
+            worksheet.mergeCells(`M${startRowIndex + 3}`, `M${startRowIndex + 4}`);
             worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // Merge "Day"
             worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow"
             worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover"
-
+            worksheet.mergeCells(`A${startRowIndex + 5}`, `M${startRowIndex + 5}`);
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
+            worksheet.getCell(`A${startRowIndex + 5}`).border={
+                top: {style:'thin'},
+            }
+            worksheet.getCell(`A${startRowIndex+1}`).border={
+                bottom: {style:'thin'},
+            }
 
             if (index < datas.length - 1) {
-                addFormattedRows([]);
-                addFormattedRows([]);
+                // addFormattedRows([]);
+                // addFormattedRows([]);
             }
         });
-
-        // Column width adjustments
-        // worksheet.columns = [
-        //     { width: 10 }, // Name
-        //     { width: 11 }, // Day
-        //     { width: 7 },  // Basic
-        //     { width: 7 },  // Bonus
-        //     { width: 14 }, // Allow
-        //     { width: 7 },  // Advance
-        //     { width: 6 },  // Short
-        //     { width: 17 }, // Cover
-        //     { width: 8 },  // Total
-        //     // { width: 6 },  // 底薪
-        //     // { width: 5 },  // 日
-        //     // { width: 7 },  // 实薪
-        //     // { width: 7 },  // 奖金
-        //     // { width: 7 },  // 津贴
-        //     // { width: 7 },  // 迟到扣款
-        //     // { width: 7 },  // 借粮
-        //     // { width: 6 },  // 少/多
-        //     // { width: 6 },  // 加班晚班
-        //     // { width: 6 },  // 交通补贴
-        //     // { width: 5 },  // M
-        //     // { width: 8 },  // total
-        // ];
+        worksheet.properties.defaultRowHeight = 52.25;
+        
 
         // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();

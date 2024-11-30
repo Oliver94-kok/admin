@@ -14,7 +14,9 @@ export interface SalaryUser {
   cover: number | null;
   total: number | null;
   perDay: number | null;
-  users: { name: string; username: string; userImg: string | null } | null;
+  users: { name: string; username: string; userImg: string | null,AttendBranch: {
+    team: string;
+} | null; } | null;
 }
 
 export interface userInvoice {
