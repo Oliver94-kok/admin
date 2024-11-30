@@ -217,13 +217,29 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`A${startRowIndex+1}`).border={
                 bottom: {style:'thin'},
             }
-
+            worksheet.getCell(`G${startRowIndex+4}`).font = {
+                
+                color: { argb: 'FFFF0000'},
+    
+              };
             if (index < datas.length - 1) {
                 // addFormattedRows([]);
                 // addFormattedRows([]);
             }
         });
-        worksheet.properties.defaultRowHeight = 52.25;
+        worksheet.properties.defaultRowHeight = 35;
+        worksheet.getColumn("B").width = 6.57
+        worksheet.getColumn("C").width =5.14
+        worksheet.getColumn("D").width = 7
+        worksheet.getColumn("E").width = 7.14
+        worksheet.getColumn("F").width = 7
+        worksheet.getColumn("G").width = 7.57
+        worksheet.getColumn("H").width = 8
+        worksheet.getColumn("I").width = 5.43
+        worksheet.getColumn("J").width = 6.43
+        worksheet.getColumn("K").width = 6
+        worksheet.getColumn("L").width = 5.71
+        worksheet.getColumn("M").width = 8.71
         
 
         // Save workbook
