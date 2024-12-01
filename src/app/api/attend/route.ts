@@ -29,16 +29,10 @@ import { notificationClock } from "@/data/notification";
 import { TimeUtils } from "@/lib/timeUtility";
 
 export const GET = async (req: Request) => {
-  // let image;
-  // let result = await postImage("image", "user04", "user");
-  // let result = await checkShift({ userId: "cm36sgm990004nyn1sq6335vk" });
-  // let result = await db.attends.findMany({
-  //   where: { userId: "cm3fea988001m5v90n595y418" },
-  // });
-  const today = dayjs().subtract(1, "day").format("YYYY-MM-DD");
-  const t = new Date(today);
-  let result = await db.attends.findMany({ where: { dates: t } });
-  return Response.json({ result }, { status: 200 });
+ 
+  // let result = await db.attends.findMany({ where: { dates: t } });
+  let user  = await db.user.findFirst({where:{id:"cm446nk8k005uajoqghixtz06"},include:{AttendBranch:true}})
+  return Response.json({ user }, { status: 200 });
 };
 
 export const POST = async (req: Request) => {

@@ -15,14 +15,15 @@ dayjs.extend(utc);
 
 export const POST = async (req: Request) => {
   try {
-    let attendTody = await cronAttend("sas");
+    const today = dayjs.utc().startOf("day");
+    let attendTody = await cronAttend(today.toString());
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),
     );
     let user = await getAllUser();
     const absentUsers = user.filter((users) => !attendedUserIds.has(users.id));
 
-    const today = dayjs.utc().startOf("day");
+    // const today = dayjs.utc().startOf("day");
     console.log("🚀 ~ POST ~ today:", today);
     const attendanceService = new AttendanceService({
       gracePeriodMinutes: 15,

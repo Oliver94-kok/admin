@@ -54,6 +54,7 @@ export const BranchATable = ({
   const [userTeam, setUserTeam] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [days,setDays] = useState<string[]>([])
   const itemsPerPage = 150;
 
   // Paginate the data
@@ -109,13 +110,16 @@ export const BranchATable = ({
       setErrorMsg("Please enter start on");
       return;
     }
+console.log("days",days)
+const combinedString: string = days.join(',');
+console.log("days",combinedString)
 
     UpdateUserBranch(
       idBranch,
       selectBranch,
       clockIn,
       clockOut,
-      offDay,
+      combinedString,
       startOn,
     ).then((data) => {
       if (data.error) {
@@ -358,42 +362,7 @@ export const BranchATable = ({
 
           <div className="col-span-1 flex items-center justify-center px-2">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              <Flatpickr
-                placeholder="dd/mm/yyyy"
-                render={({ defaultValue, value, ...props }, ref) => {
-                  return (
-                    <DatePickerOne
-                      defaultValue={teamA.offDay ? teamA.offDay : defaultValue}
-                      inputRef={ref}
-                      value={undefined}
-                    />
-                  );
-                }}
-                options={{
-                  mode: "single",
-                  static: true,
-                  monthSelectorType: "static",
-                  dateFormat: "d/m/Y",
-                  parseDate: (datestr, format) => {
-                    return new Date(datestr.split("/").reverse().join("-"));
-                  },
-                  minDate: "today",
-                  prevArrow:
-                    '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
-                  nextArrow:
-                    '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
-                }}
-                onChange={([date]) => {
-                  console.log(
-                    "🚀 ~ BranchATable ~ date:",
-                    date.toLocaleDateString(),
-                  );
-                  let tarikh = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-                  console.log("🚀 ~ BranchATable ~ tarikh:start", tarikh);
-                  onSendData(typeData.OFFDAY, tarikh);
-                }}
-              // value={clockIn}
-              />
+             <DayPicker days={days} setDays={setDays} />
             </p>
           </div>
 

@@ -25,11 +25,13 @@ export const apiAuthPrefix = [
   "/api/salary/all",
   "/api/salary/dashboard",
   "/api/test",
+  "/api/test/2",
   "/api/token",
   "/api/leave",
   "/api/leave/all",
   "/api/leave/dashboard",
   "/api/notify",
+  "/api/userattendant"
 ];
 
 export const Default_login_Redirect = "/dashboard";

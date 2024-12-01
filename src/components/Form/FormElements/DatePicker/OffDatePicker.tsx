@@ -1,7 +1,13 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
-const DayPicker = () => {
+interface ChildProps {
+  days:string[]
+  setDays: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+
+const DayPicker = ({days,setDays}:ChildProps) => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
   const pickerRef = useRef<HTMLDivElement | null>(null); // Reference to the picker container
@@ -12,8 +18,10 @@ const DayPicker = () => {
   const toggleDaySelection = (day: string) => {
     if (selectedDays.includes(day)) {
       setSelectedDays(selectedDays.filter((selectedDay) => selectedDay !== day));
+      setDays(selectedDays.filter((selectedDay) => selectedDay !== day))
     } else {
       setSelectedDays([...selectedDays, day]);
+      setDays([...selectedDays,day])
     }
   };
 
