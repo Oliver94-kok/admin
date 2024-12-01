@@ -15,6 +15,7 @@ import { resetPasswordUser } from "@/action/resetpassword";
 import { deleteUsers } from "@/action/deleteUser";
 import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
+import DayPicker from "../Form/FormElements/DatePicker/OffDatePicker";
 interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
@@ -361,7 +362,7 @@ export const BranchATable = ({
                 placeholder="dd/mm/yyyy"
                 render={({ defaultValue, value, ...props }, ref) => {
                   return (
-                    <DatePickerOne
+                    <DayPicker
                       defaultValue={teamA.offDay ? teamA.offDay : defaultValue}
                       inputRef={ref}
                       value={undefined}
