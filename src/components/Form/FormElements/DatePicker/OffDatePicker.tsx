@@ -25,20 +25,24 @@ const DayPicker: React.FC<DayPicker> = ({
   };
 
   return (
-    <div>
-      <div className="relative">
-        {/* Input Field */}
-        <input
-          className="form-datepicker w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-3 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-          placeholder="dd/mm/yyyy"
-          {...props}
-          defaultValue={defaultValue}
-          ref={inputRef}
-          value={value}
-        />
+    <div className="relative">
+      {/* Input Field */}
+      <input
+        className="form-datepicker w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-3 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+        placeholder={
+          selectedDays.length > 0
+            ? selectedDays.join(", ") // Display selected days
+            : "Select days"
+        }
+        {...props}
+        defaultValue={defaultValue}
+        ref={inputRef}
+        readOnly // Make input read-only
+      />
 
-        {/* Day Picker */}
-        <div className="flex justify-center gap-2 mt-4">
+      {/* Day Picker inside Input Wrapper */}
+      <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+        <div className="flex justify-center gap-2">
           {daysOfWeek.map((day) => (
             <button
               key={day}
@@ -52,14 +56,14 @@ const DayPicker: React.FC<DayPicker> = ({
             </button>
           ))}
         </div>
-
-        {/* Hidden Input for Selected Days */}
-        <input
-          type="hidden"
-          value={selectedDays.join(", ")} // Join selected days into a single string
-          readOnly
-        />
       </div>
+
+      {/* Hidden Input for Selected Days */}
+      <input
+        type="hidden"
+        value={selectedDays.join(", ")} // Join selected days into a single string
+        readOnly
+      />
     </div>
   );
 };
