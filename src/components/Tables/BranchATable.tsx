@@ -362,7 +362,7 @@ export const BranchATable = ({
                 placeholder="dd/mm/yyyy"
                 render={({ defaultValue, value, ...props }, ref) => {
                   return (
-                    <DayPicker
+                    <DatePickerOne
                       defaultValue={teamA.offDay ? teamA.offDay : defaultValue}
                       inputRef={ref}
                       value={undefined}
