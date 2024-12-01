@@ -213,29 +213,29 @@
     "team": "B",
     "code": "B09",
     "address": "16 JALAN DATARAN LARKIN 2 TAMAN DATARAN 80350 LARKIN",
-    "latitude": 1.4980034432050153,
-    "longtitude": 103.74254702548055
+    "latitude": 1.497694,
+    "longtitude": 103.742266
   },
   {
     "team": "B",
     "code": "B80",
     "address": "40-D JALAN AH SIANG 80300 JOHOR BAHRU",
-    "latitude": 1.4637780276994767,
-    "longtitude": 103.77139466112062
+    "latitude": 1.463630,
+    "longtitude": 103.771164
   },
   {
     "team": "B",
     "code": "B81",
     "address": "50 JALAN LUMBA KUDA BUKIT CHAGAR 80300 JOHOR BAHRU JOHOR",
-    "latitude": 1.4623433148782474,
-    "longtitude": 103.76803066154855
+    "latitude": 1.462847,
+    "longtitude": 103.768250
   },
   {
     "team": "B",
     "code": "B372",
     "address": "28 GROUND FLOOR JALAN SURIA 19 TAMAN SURIA 81100 JOHOR BAHRU JOHOR",
-    "latitude": 1.5043383141980902,
-    "longtitude": 103.76045015507262
+    "latitude": 1.505199,
+    "longtitude": 103.761620
   },
   {
     "team": "B",
@@ -248,8 +248,8 @@
     "team": "B",
     "code": "B377",
     "address": "31 JALAN RIANG UTAMA TAMAN GEMBIRA 81200 JOHOR BAHRU JOHOR DARUL TA'ZIM",
-    "latitude": 1.5229290693839388,
-    "longtitude": 103.74813146008837
+    "latitude": 1.523057,
+    "longtitude": 103.748148
   },
   {
     "team": "B",
@@ -269,43 +269,43 @@
     "team": "B",
     "code": "N185",
     "address": "31 JALAN PULAI EMAS 1/4 TAMAN PULAI EMAS 81400 KANGKAR PULAI JOHOR",
-    "latitude": 1.5692228628416816,
-    "longtitude": 103.59819108115434
+    "latitude": 1.569429,
+    "longtitude": 103.597807
   },
   {
     "team": "B",
     "code": "N201",
     "address": "14 E GROUND FLOOR JLN BESAR 81550 GELANG PATAH",
-    "latitude": 1.4480339792422612,
-    "longtitude": 103.59011546520705
+    "latitude": 1.447564,
+    "longtitude": 103.588081
   },
   {
     "team": "B",
     "code": "N202",
     "address": "44 MEDAN NUSA PERINTIS 8 TAMAN NUSA PERINTIS 2 79200 ISKANDAR PUTERI JOHOR MALAYSIA",
-    "latitude": 1.4500085355864065,
-    "longtitude": 103.59460384733697
+    "latitude": 1.4504942332386552,
+    "longtitude": 103.59609785283943
   },
   {
     "team": "B",
     "code": "N203",
     "address": "35A MEDAN NUSA PERINTIS 2 TAMAN NUSA PERINTIS 2 81550 GELANG PATAH JOHOR",
-    "latitude": 1.4512871007829093,
-    "longtitude": 103.59520342246967
+    "latitude": 1.451332907732989,
+    "longtitude": 103.59520386904994
   },
   {
     "team": "B",
     "code": "N701",
     "address": "9 JLN 2 TMN PERUMAHAN RAYKAT LIMA KEDAI 81560 GELANG PATAH",
-    "latitude": 1.5049413885351262,
-    "longtitude": 103.62166961761564
+    "latitude": 1.504533,
+    "longtitude": 103.621880
   },
   {
     "team": "B",
     "code": "S135",
     "address": "66 JLN PADI 2 BANDAR BARU UDA 81200 JOHOR BAHRU JOHOR",
-    "latitude": 1.4896459988586985,
-    "longtitude": 103.71321311763415
+    "latitude": 1.489769,
+    "longtitude": 103.713081
   },
   {
     "team": "B",
@@ -346,15 +346,15 @@
     "team": "B",
     "code": "P03",
     "address": "DH923 TAMAN BUNGA 81500 PEKAN NENAS JOHOR",
-    "latitude": 1.5190571619449833,
-    "longtitude": 103.51409457371983
+    "latitude": 1.519172,
+    "longtitude": 103.514186
   },
   {
     "team": "B",
     "code": "P05",
     "address": "RESTORAN SHARAFATH PEKAN NANAS 81500 PEKAN NANAS JOHOR",
-    "latitude": 1.5094005061479905,
-    "longtitude": 103.51145036693089
+    "latitude": 1.509493,
+    "longtitude": 103.511650
   },
   {
     "team": "C",
