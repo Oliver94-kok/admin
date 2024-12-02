@@ -58,15 +58,13 @@ export const GET = async () => {
         if (!attend) {
           console.log("masuk sini");
           let data = {
-            userId: u,
-            dates: now,
-            clockIn: shiftIn,
-            status:AttendStatus.Active
+            clockOut: shiftIn,
+            status:AttendStatus.Full_Attend
 
           };
           
           // Uncomment to actually create the record
-          await db.attends.create({data})
+          await db.attends.update({where:{id:u},data})
           
           return {
             userId: u,
@@ -113,24 +111,55 @@ export const GET = async () => {
 
 
 export const POST = async (req: Request) => {
-  let salary11 = await db.salary.findMany({where:{month:11,year:2024}});
+  const today = dayjs();
+  const now = new Date(today.format("YYYY-MM-DD"));
+
+  let attend = await db.attends.findMany({where:{dates:now,status:"Active"}});
   const processResults = await Promise.allSettled(
-    salary11.map(async(s)=>{
+    attend.map(async(a)=>{
       try {
         // Find shift for the user
-        let salary12 = await db.salary.findFirst({where:{userId:s.userId,month:12,year:2024}});
-        let data= await db.salary.update({where:{id:salary12?.id},data:{perDay:s.perDay}})
-        
+       let shift = await db.attendBranch.findFirst({where:{userId:a.userId}});
+       if (!shift?.clockIn || !shift?.clockOut) {
+        throw new Error(`No shift found for user ${a.userId}`);
+      }
+       const shiftIn = TimeUtils.createDateFromTimeString(
+        now,
+        shift.clockIn,
+        "in",
+      );
+      const shiftOut = TimeUtils.createDateFromTimeString(
+        now,
+        shift.clockOut,
+        "out",
+      );
+      const shiftTime = dayjs(shiftIn);
+      const elevenAM = dayjs(now).hour(12).minute(0).second(0);
+      
+      // Only proceed if shift is before 11 AM
+      if (shiftTime.isAfter(elevenAM)) {
+        console.log(`Skipping user ${a.userId}: Shift after 11 AM`);
+        return {
+          userId: a,
+          status: 'skipped',
+          reason: 'Shift after 11 AM'
+        };
+      }
+      let data ={
+        clockOut:shiftOut,
+        status:AttendStatus.Full_Attend
+      }
+      await db.attends.update({where:{id:a.id},data})
           return {
-            userId: s.id,
+            userId: a,
             status: 'created',
             data: data
           };
         
       } catch (error) {
-        console.error(`Error processing user ${s.id}:`, error);
+        console.error(`Error processing user ${a.id}:`, error);
         return {
-          userId: s.userId,
+          userId: a.userId,
           status: 'error',
           error: error instanceof Error ? error.message : String(error)
         };
@@ -141,6 +170,10 @@ export const POST = async (req: Request) => {
     successful: processResults.filter(
       (result) => result.status === "fulfilled" && 
                  result.value.status === 'created'
+    ),
+    skipped: processResults.filter(
+      (result) => result.status === "fulfilled" && 
+                 result.value.status === 'skipped'
     ),
     failed: processResults.filter(
       (result) => result.status === "rejected" || 
