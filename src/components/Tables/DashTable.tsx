@@ -194,15 +194,10 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
               {dict.dashboard.photo}
             </h5>
           </div>
-          <div className="col-span-1 flex cursor-pointer items-center justify-center px-2 pb-3.5">
+          <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
             <p className="text-sm font-medium uppercase xsm:text-base">
               {dict.dashboard.location}
             </p>
-            {/* {sortColumn === 'location' && (
-              <span className={`ml-2 ${sortOrder === 'asc' ? 'text-primary' : 'text-secondary'}`}>
-                {sortOrder === 'asc' ? '▲' : '▼'}
-              </span>
-            )} */}
           </div>
         </div>
 
