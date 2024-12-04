@@ -108,6 +108,7 @@ model AttendBranch {
   clockOut  String?
   userId    String   @unique
   team      String
+  branch    String?
   startOn   String?
   offDay    String?
   createdAt DateTime @default(now())

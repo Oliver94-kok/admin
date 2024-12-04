@@ -3,6 +3,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { BranchsUser } from "@/types/branchs";
 import { BranchATable } from "./BranchATable";
 import { useSession } from "next-auth/react";
+import { roleAdmin } from "@/lib/function";
+import { getDataBranch } from "@/data/branch";
 
 const dictionaries = {
   en: () => import('../../locales/en/lang.json').then((module) => module.default),
@@ -26,7 +28,8 @@ interface TeamData {
 const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
   const { data: session } = useSession();
   const [dict, setDict] = useState<any>(null);
-
+  const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
+  const [selectBranchs, setSelectBranchs] = useState<{ id: string; code: string, team: string }[] | null>(null);
   // Memoized accessible teams to avoid recalculating on every render
   const accessibleTeams = useMemo(() => {
     const userRole = session?.user?.role?.toLowerCase();
@@ -57,7 +60,38 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
   const [currentPage, setCurrentPage] = useState(() =>
     accessibleTeams.length > 0 ? accessibleTeams[0].page : 1
   );
+  const getteam = (d: string) => {
+    switch (d) {
+      case "Team A":
+        return "A";
+      case "Team B":
+        return "B";
+      case "Team C":
+        return "C";
+      case "Team D":
+        return "D";
+      default:
+        return "A"
+    }
+  }
+  const getbranch = async () => {
+    let team = await roleAdmin(session?.user.role);
+    console.log("🚀 ~ getBranch ~ team:", team)
+    if (session?.user.role == "ADMIN") {
+      let data = await getDataBranch("All")
+      let teams = getteam(team)
+      let t = data?.filter((d) => d.team == teams)
+      setBranch(data)
+      setSelectBranchs(t || [])
+      console.log("🚀 ~ getBranch ~ data:", data)
+    } else {
 
+      let data = await getDataBranch(team);
+      setBranch(data)
+      setSelectBranchs(data)
+      console.log("🚀 ~ getBranch ~ data:", data)
+    }
+  }
   // Dictionary loading effect
   useEffect(() => {
     const getLocale = (): 'en' | 'zh' => {
@@ -77,6 +111,7 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
           setDict(languageDict);
         });
       });
+    getbranch()
   }, []);
 
   // Effect to update current page when accessible teams change
@@ -119,6 +154,7 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
           team={currentTeamData.team}
           refresh={refreshData}
           dict={dict}
+          databranch={selectBranchs}
         />
       )}
 

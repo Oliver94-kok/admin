@@ -1,7 +1,7 @@
 "use client";
 
 import { BranchsUser } from "@/types/branchs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import BranchSelectGroup from "../Form/FormElements/MultiSelect/branchselect";
 import ClockinSelectGroup from "../Form/FormElements/MultiSelect/clockinselect";
@@ -16,11 +16,16 @@ import { deleteUsers } from "@/action/deleteUser";
 import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
 import DayPicker from "../Form/FormElements/DatePicker/OffDatePicker";
+import { roleAdmin } from "@/lib/function";
+import { getDataBranch } from "@/data/branch";
+import { useSession } from "next-auth/react";
+import BranchsSelectGroup from "../Form/FormElements/MultiSelect/branchsSelect";
 interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
   refresh: () => void;
   dict: Record<string, any>; // Pass dictionary as props
+  databranch: { id: string; code: string, team: string }[] | null
 }
 
 export enum typeData {
@@ -29,6 +34,7 @@ export enum typeData {
   CLOCKOUT,
   STARTON,
   OFFDAY,
+  TEAM
 }
 
 export const BranchATable = ({
@@ -36,7 +42,9 @@ export const BranchATable = ({
   team,
   refresh,
   dict,
+  databranch
 }: BranchTableAInterfface) => {
+  const session = useSession();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
@@ -54,9 +62,11 @@ export const BranchATable = ({
   const [userTeam, setUserTeam] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [days,setDays] = useState<string[]>([])
+  const [days, setDays] = useState<string[]>([])
   const itemsPerPage = 150;
-
+  const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
+  const [selectBranchs, setSelectBranchs] = useState<{ id: string; code: string, team: string }[] | null>(null);
+  const [teamSelect, setTeamSelect] = useState("")
   // Paginate the data
   const filteredData = data.filter((teamA) =>
     teamA.users?.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -76,7 +86,9 @@ export const BranchATable = ({
       console.error("Error fetching data:", error);
     }
   };
-
+  useEffect(() => {
+    getbranch()
+  }, [])
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
@@ -85,6 +97,9 @@ export const BranchATable = ({
     switch (type) {
       case typeData.BRANCH:
         setSelectBranch(data);
+        break;
+      case typeData.TEAM:
+        setTeamSelect(data)
         break;
       case typeData.CLOCKIN:
         setClockIn(data);
@@ -110,13 +125,14 @@ export const BranchATable = ({
       setErrorMsg("Please enter start on");
       return;
     }
-console.log("days",days)
-const combinedString: string = days.join(',');
-console.log("days",combinedString)
+    console.log("days", days)
+    const combinedString: string = days.join(',');
+    console.log("days", combinedString)
 
     UpdateUserBranch(
       idBranch,
       selectBranch,
+      teamSelect,
       clockIn,
       clockOut,
       combinedString,
@@ -171,6 +187,39 @@ console.log("days",combinedString)
       }
     });
   };
+  const getteam = () => {
+    switch (team) {
+      case "Team A":
+        return "A";
+      case "Team B":
+        return "B";
+      case "Team C":
+        return "C";
+      case "Team D":
+        return "D";
+      default:
+        return "A"
+    }
+  }
+  const getbranch = async () => {
+    let team = await roleAdmin(session.data?.user.role);
+    console.log("🚀 ~ getBranch ~ team:", team)
+    if (session.data?.user.role == "ADMIN") {
+      let data = await getDataBranch("All")
+      let teams = getteam()
+      let t = data?.filter((d) => d.team == teams)
+      setBranch(data)
+      setSelectBranchs(t || [])
+      console.log("🚀 ~ getBranch ~ data:", data)
+    } else {
+
+      let data = await getDataBranch(team);
+      setBranch(data)
+      setSelectBranchs(data)
+      console.log("🚀 ~ getBranch ~ data:", data)
+    }
+  }
+  console.log("🚀 ~ getBranch ~  team:", team)
   return (
     <>
       <div className="mb-5 flex justify-between">
@@ -219,6 +268,12 @@ console.log("days",combinedString)
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
+            {/* {dict.branches.branches} */}
+            Team
+          </h5>
+        </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.branches.branches}
           </h5>
         </div>
@@ -242,9 +297,9 @@ console.log("days",combinedString)
             {dict.branches.offday}
           </h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center">
+        {/* <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base"></h5>
-        </div>
+        </div> */}
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.branches.actions}
@@ -297,6 +352,16 @@ console.log("days",combinedString)
               <BranchSelectGroup
                 onSendData={onSendData}
                 initialValue={teamA.team}
+              />
+            </p>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+              {teamA.branch}
+              <BranchsSelectGroup
+                onSendData={onSendData}
+                initialValue={"P05"}
+                data={databranch}
               />
             </p>
           </div>
@@ -362,7 +427,7 @@ console.log("days",combinedString)
 
           <div className="col-span-1 flex items-center justify-center px-2">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-             <DayPicker days={days} setDays={setDays} />
+              <DayPicker days={days} setDays={setDays} />
             </p>
           </div>
 

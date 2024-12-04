@@ -30,7 +30,7 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
           // value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
-            onSendData(typeData.BRANCH, e.target.value);
+            onSendData(typeData.TEAM, e.target.value);
             changeTextColor();
           }}
           className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${isOptionSelected ? "text-dark dark:text-white" : ""

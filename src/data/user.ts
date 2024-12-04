@@ -29,8 +29,8 @@ export const checkUsername = async () => {
     //   orderBy:[ { username: {sort:"desc"} },],
     //   where: { role: "USER" },
     // });
-    const user:User[] = await db.$queryRaw`
-    SELECT * FROM User ORDER BY CONVERT(SUBSTRING(username, 5), UNSIGNED INTEGER) DESC;
+    const user: User[] = await db.$queryRaw`
+    SELECT * FROM User where role="USER" ORDER BY CONVERT(SUBSTRING(username, 5), UNSIGNED INTEGER) DESC;
   `;
     return user[0];
   } catch (error) {

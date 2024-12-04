@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 import { AttendStatus } from "@prisma/client";
 export const UpdateUserBranch = async (
   id: string,
+  branch?: string | null,
   teams?: string | null,
   timeIn?: string,
   timeOut?: string,
@@ -16,6 +17,7 @@ export const UpdateUserBranch = async (
     clockIn: timeIn,
     clockOut: timeOut,
     team: teams!,
+    branch: branch!,
     startOn: startOn!,
     offDay: offDay!,
   };

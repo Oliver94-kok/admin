@@ -29,9 +29,11 @@ import { notificationClock } from "@/data/notification";
 import { TimeUtils } from "@/lib/timeUtility";
 
 export const GET = async (req: Request) => {
- 
   // let result = await db.attends.findMany({ where: { dates: t } });
-  let user  = await db.user.findFirst({where:{id:"cm446nk8k005uajoqghixtz06"},include:{AttendBranch:true}})
+  let user = await db.user.findFirst({
+    where: { id: "cm446nk8k005uajoqghixtz06" },
+    include: { AttendBranch: true },
+  });
   return Response.json({ user }, { status: 200 });
 };
 
@@ -58,9 +60,12 @@ export const POST = async (req: Request) => {
     let attendImg = result?.success;
 
     const today = dayjs.utc(clockIn);
+    const isBeforeEightAM = dayjs(today).isBefore(
+      dayjs().tz().hour(8).minute(0).second(0).millisecond(0),
+    );
     let data = {
       userId,
-      dates: today.toDate(),
+      dates: isBeforeEightAM ? today.add(1, "day").toDate() : today.toDate(),
       clockIn,
       img: attendImg,
       fine: userlate!,
