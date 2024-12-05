@@ -427,7 +427,7 @@ export const BranchATable = ({
 
           <div className="col-span-1 flex items-center justify-center px-2">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              <DayPicker days={teamA.offDay} setDays={setDays} />
+              <DayPicker days={teamA.offDay ? teamA.offDay : ""} setDays={setDays} />
             </p>
           </div>
 
