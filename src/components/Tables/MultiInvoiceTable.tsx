@@ -157,15 +157,15 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             const { salary, result } = item;
             const AbsentLength = result.dataAbsent.length;
 
-            const startRowIndex = worksheet.rowCount ;
+            const startRowIndex = worksheet.rowCount;
 
             // Add employee section
             addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
-           
+
 
             // Main headers
             addFormattedRows([
-                `Team ${salary.users?.AttendBranch?.team}`, "Day", "", "Basic", "Bonus", "Allow", "",
+                ` ${salary.users?.AttendBranch?.branch}`, "Day", "", "Basic", "Bonus", "Allow", "",
                 "Advance", "Short", "Cover", "", "", "Total"
             ], { bold: true });
 
@@ -190,7 +190,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 0,
                 0,
                 salary.total || 0
-            ], { alignment: { horizontal: 'center' ,vertical: 'middle',} });
+            ], { alignment: { horizontal: 'center', vertical: 'middle', } });
 
             // Absences and fines details
             addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
@@ -199,7 +199,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             addFormattedRows([
                 `${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
             ], { alignment: { horizontal: 'left', wrapText: true } });
-            
+
             // Merge header cells for grouped columns
             worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
             worksheet.mergeCells(`M${startRowIndex + 3}`, `M${startRowIndex + 4}`);
@@ -211,33 +211,33 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
-            worksheet.getCell(`A${startRowIndex + 5}`).border={
-                top: {style:'thin'},
+            worksheet.getCell(`A${startRowIndex + 5}`).border = {
+                top: { style: 'thin' },
             }
-            worksheet.getCell(`A${startRowIndex+1}`).border={
-                bottom: {style:'thin'},
+            worksheet.getCell(`A${startRowIndex + 1}`).border = {
+                bottom: { style: 'thin' },
             }
-            worksheet.getCell(`A${startRowIndex+5}`).border={
-               
+            worksheet.getCell(`A${startRowIndex + 5}`).border = {
+
             }
-            worksheet.getCell(`A${startRowIndex+6}`).border={
-               
+            worksheet.getCell(`A${startRowIndex + 6}`).border = {
+
             }
-            worksheet.getCell(`A${startRowIndex+7}`).border={
-               
+            worksheet.getCell(`A${startRowIndex + 7}`).border = {
+
             }
-            worksheet.getCell(`G${startRowIndex+4}`).font = {
-                color: { argb: 'FFFF0000'},
-              };
-            worksheet.getRow(startRowIndex+1).height =25
-            worksheet.getRow(startRowIndex+7).height =25
-            worksheet.getRow(startRowIndex+6).height =25
-            worksheet.getRow(startRowIndex+5).height =25
+            worksheet.getCell(`G${startRowIndex + 4}`).font = {
+                color: { argb: 'FFFF0000' },
+            };
+            worksheet.getRow(startRowIndex + 1).height = 25
+            worksheet.getRow(startRowIndex + 7).height = 25
+            worksheet.getRow(startRowIndex + 6).height = 25
+            worksheet.getRow(startRowIndex + 5).height = 25
         });
         worksheet.properties.defaultRowHeight = 35;
-        
+
         worksheet.getColumn("B").width = 6.57
-        worksheet.getColumn("C").width =5.14
+        worksheet.getColumn("C").width = 5.14
         worksheet.getColumn("D").width = 7
         worksheet.getColumn("E").width = 7.14
         worksheet.getColumn("F").width = 7
@@ -248,7 +248,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
         worksheet.getColumn("K").width = 6
         worksheet.getColumn("L").width = 5.71
         worksheet.getColumn("M").width = 8.71
-        
+
 
         // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();

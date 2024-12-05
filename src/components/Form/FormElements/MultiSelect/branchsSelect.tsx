@@ -40,7 +40,7 @@ const BranchsSelectGroup: React.FC<BranchsSelectGroupProps> = ({
                 >
                     {data?.map((d) => (
                         <>
-                            <option value={d.code} className="text-dark-5 dark:text-dark-6">
+                            <option value={d.code} className="text-dark-5 dark:text-dark-6" key={d.code}>
                                 {d.code}
                             </option>
 

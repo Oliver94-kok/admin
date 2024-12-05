@@ -38,7 +38,10 @@ export async function getData() {
         cover: true,
         userId: true,
         users: {
-          select: { name: true, AttendBranch: { select: { team: true } } },
+          select: {
+            name: true,
+            AttendBranch: { select: { team: true, branch: true } },
+          },
         },
       },
     });

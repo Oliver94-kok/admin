@@ -3,6 +3,7 @@ import { AttendStatus } from "@prisma/client";
 // Define the AttendBranch interface
 interface AttendBranch {
   team: string;
+  branch: string | null;
 }
 
 // Define interfaces for the nested result data

@@ -21,6 +21,7 @@ export const apiAuthPrefix = [
   "/api/branch/dashboard",
   "/api/cron",
   "/api/cron/yesterday",
+  "/api/cron/check",
   "/api/salary",
   "/api/salary/all",
   "/api/salary/dashboard",
@@ -31,7 +32,7 @@ export const apiAuthPrefix = [
   "/api/leave/all",
   "/api/leave/dashboard",
   "/api/notify",
-  "/api/userattendant"
+  "/api/userattendant",
 ];
 
 export const Default_login_Redirect = "/dashboard";

@@ -1,4 +1,4 @@
-import { cronAttend, cronAttendCheckShift } from "@/data/attend";
+import { cronAttend, cronAttendCheckShift, isOffDay } from "@/data/attend";
 import { getAllUser } from "@/data/user";
 import {
   AttendanceSchema,
@@ -22,8 +22,10 @@ export const POST = async (req: Request) => {
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),
     );
+    console.log("🚀 ~ POST ~ attendedUserIds:", attendedUserIds);
     let user = await getAllUser();
     const absentUsers = user.filter((users) => !attendedUserIds.has(users.id));
+    console.log("🚀 ~ POST ~ absentUsers:", absentUsers);
 
     // const today = dayjs.utc().startOf("day");
     console.log("🚀 ~ POST ~ today:", today);
@@ -41,13 +43,31 @@ export const POST = async (req: Request) => {
             select: {
               clockIn: true,
               clockOut: true,
+              offDay: true,
             },
           });
 
           if (!shift?.clockIn || !shift?.clockOut) {
             throw new Error(`No shift found for user ${absentUser.id}`);
           }
-
+          if (shift.offDay) {
+            let day = shift.offDay.split(",");
+            let resultOffDay = await isOffDay(day, "yesterday");
+            if (resultOffDay) {
+              let data = {
+                userId: absentUser.id,
+                dates: today.toDate(),
+                status: AttendStatus.OffDay,
+              };
+              await db.attends.create({ data });
+              return {
+                userId: absentUser.id,
+                status: "marked_offday",
+                timestamp: new Date(),
+                message: "off day",
+              } as ProcessingResult;
+            }
+          }
           const now = new Date(today.format("YYYY-MM-DD"));
           const shiftIn = TimeUtils.createDateFromTimeString(
             now,
@@ -108,6 +128,7 @@ export const POST = async (req: Request) => {
       successful: processResults.filter(
         (result) => result.status === "fulfilled",
       ),
+
       failed: processResults.filter((result) => result.status === "rejected"),
       timestamp: new Date(),
       totalProcessed: processResults.length,

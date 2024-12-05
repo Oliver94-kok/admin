@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 
 interface ChildProps {
-  days: string[]
+  days: string | null
   setDays: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
@@ -55,10 +55,11 @@ const DayPicker = ({ days, setDays }: ChildProps) => {
         ref={inputRef}
         className="form-datepicker w-full rounded-[15px] border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
         placeholder={
-          selectedDays.length > 0
-            ? selectedDays.join(", ") // Display selected days in the placeholder
+          days!.length > 0
+            ? days! // Display selected days in the placeholder
             : "Select days"
         }
+        defaultValue={selectedDays}
         onClick={handleInputClick} // Toggle day picker visibility on input click
         readOnly // Make input read-only
       />

@@ -6,6 +6,6 @@
 
 */
 -- AlterTable
-ALTER TABLE `attends` DROP COLUMN `fine2`,
+ALTER TABLE `Attends` DROP COLUMN `fine2`,
     MODIFY `overtime` DOUBLE NULL,
     MODIFY `status` ENUM('Active', 'Full_Attend', 'No_ClockOut', 'No_ClockIn', 'Absent', 'Leave', 'Late') NOT NULL DEFAULT 'Active';

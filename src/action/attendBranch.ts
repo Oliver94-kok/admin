@@ -24,15 +24,15 @@ export const UpdateUserBranch = async (
   console.log("🚀 ~ data:", data);
   try {
     await db.attendBranch.update({ data, where: { id } });
-    if (offDay) {
-      const today = dayjs(offDay).format("YYYY-MM-DD");
-      let attendData = {
-        userId: id,
-        dates: new Date(today),
-        status: AttendStatus.Leave,
-      };
-      await db.attends.create({ data: attendData });
-    }
+    // if (offDay) {
+    //   const today = dayjs(offDay).format("YYYY-MM-DD");
+    //   let attendData = {
+    //     userId: id,
+    //     dates: new Date(today),
+    //     status: AttendStatus.Leave,
+    //   };
+    //   await db.attends.create({ data: attendData });
+    // }
     return { success: "data update" };
   } catch (error) {
     return { error: "error" };

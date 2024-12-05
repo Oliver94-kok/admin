@@ -193,30 +193,20 @@ export const getAttendLate = async (
     const startDate = dayjs()
       .year(year)
       .month(month - 1)
-      .startOf("month")
-      .toDate();
+      .startOf("month");
+
     const endDate = dayjs()
       .year(year)
       .month(month - 1)
-      .endOf("month")
-      .toDate();
+      .endOf("month");
+
     let salary = await db.attends.findMany({
       where: {
         userId,
-        OR: [
-          {
-            clockIn: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          {
-            clockOut: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-        ],
+        dates: {
+          gte: new Date(startDate.format("YYYY-MM-DD")),
+          lte: new Date(endDate.format("YYYY-MM-DD")),
+        },
       },
     });
     let noClockIn = salary.filter((item) => item.status == "Late").length;
@@ -240,30 +230,20 @@ export const getNoClockIn = async (
     const startDate = dayjs()
       .year(year)
       .month(month - 1)
-      .startOf("month")
-      .toDate();
+      .startOf("month");
+
     const endDate = dayjs()
       .year(year)
       .month(month - 1)
-      .endOf("month")
-      .toDate();
+      .endOf("month");
+
     let salary = await db.attends.findMany({
       where: {
         userId,
-        OR: [
-          {
-            clockIn: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          {
-            clockOut: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-        ],
+        dates: {
+          gte: new Date(startDate.format("YYYY-MM-DD")),
+          lte: new Date(endDate.format("YYYY-MM-DD")),
+        },
       },
     });
     let noClockIn = salary.filter(

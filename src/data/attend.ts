@@ -10,6 +10,7 @@ import timezone from "dayjs/plugin/timezone";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
 
 // Enable required dayjs plugins
 dayjs.extend(utc);
@@ -17,6 +18,7 @@ dayjs.extend(timezone);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(customParseFormat);
+dayjs.extend(duration);
 
 export const checkClockIn = async (userId: string) => {
   console.log("🚀 ~ checkClockIn ~ userId:", userId);
@@ -106,6 +108,58 @@ export const calOverTime2 = async (userId: string, clockOut: string) => {
   }
 };
 
+export const calculateOvertimeHours = async (
+  shiftEndTime: any,
+  actualClockOutTime: any,
+) => {
+  const scheduledEnd = dayjs(shiftEndTime);
+  const actualClockOut = dayjs(actualClockOutTime);
+
+  // Check if actual clock out is before or equal to scheduled end time
+  if (actualClockOut.isSameOrBefore(scheduledEnd)) {
+    return 0; // No overtime if clock out is not later than scheduled end
+  }
+
+  // Calculate total overtime minutes
+  const overtimeMinutes = dayjs
+    .duration(actualClockOut.diff(scheduledEnd))
+    .asMinutes();
+
+  // Calculate full hours of overtime, ensuring no negative value
+  const overtimeHours = Math.max(0, Math.floor(overtimeMinutes / 60));
+
+  return overtimeHours;
+};
+
+export const calculateWorkingHours = async (
+  clockInTime: any,
+  clockOutTime: any,
+) => {
+  // Convert to Day.js objects
+  const clockIn = dayjs(clockInTime);
+  const clockOut = dayjs(clockOutTime);
+
+  // Calculate total duration in hours
+  const workingHours = dayjs.duration(clockOut.diff(clockIn)).asHours();
+
+  // Round to 2 decimal places
+  return Number(workingHours.toFixed(2));
+};
+export const isOffDay = async (
+  offDays: string[],
+  type: string,
+): Promise<boolean> => {
+  if (type == "today") {
+    var currentDayName = dayjs().format("dddd");
+  } else {
+    var currentDayName = dayjs().subtract(1, "day").format("dddd");
+  }
+
+  return offDays.some((day) =>
+    currentDayName.toLowerCase().startsWith(day.toLowerCase().slice(0, 3)),
+  );
+};
+
 export const lateClockIn = async (userId: string, clockIn: string) => {
   let user = await db.attendBranch.findFirst({ where: { userId } });
   if (user) {
@@ -191,7 +245,7 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
 export const cronAttend = async (date: string) => {
   let dates = new Date(date);
   let resutl = await db.attends.findMany({
-    where: { dates: { equals: dates } },
+    where: { dates },
   });
   return resutl;
 };

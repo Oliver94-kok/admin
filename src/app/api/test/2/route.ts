@@ -1,154 +1,72 @@
-// import { calOverTime2, cronAttend } from "@/data/attend";
-// import { db } from "@/lib/db";
-// import { DateTime } from "luxon";
-// import { TimeUtils } from "@/lib/timeUtility";
-// import { AttendStatus } from "@prisma/client";
-// import dayjs from "dayjs";
-// import utc from "dayjs/plugin/utc";
-
-import { db } from "@/lib/db"
+import { calculateOvertimeHours } from "@/data/attend";
+import { getAttendLate } from "@/data/salary";
+import { db } from "@/lib/db";
+import { TimeUtils } from "@/lib/timeUtility";
 import dayjs from "dayjs";
 
-// export const dynamic = "force-dynamic";
 export const GET = async (request: Request) => {
+  const userId = "cm499nn7b000trjhznxcqy75f";
   const today = dayjs();
-  const now = new Date(today.format("YYYY-MM-DD"));
-  let user = await db.attends.findMany({where:{dates:now}})
-  return Response.json({user},{status:200})
-}
-// export const GET = async (request: Request) => {
-//     const today = dayjs();
-//     const now = new Date(today.format("YYYY-MM-DD"));
-//     let user = await db.attends.findFirst({where:{userId:"cm446pbz6006majoq7i3t9n1x",dates:now}})
-//     let resutl;
-//    if(user){
-//     let users = await db.attendBranch.findFirst({ where: { userId:user.userId } });
-
-//     let c = dayjs(user.clockOut);
-//     // var start = DateTime.fromISO(c.toISOString());
-//      var start = DateTime.fromISO( user!.clockOut!.toISOString());
-//      var nowstart = new Date(start.toString())
-//      const shiftOut = TimeUtils.createDateFromTimeString(
-//         now,
-//         users!.clockOut!,
-//         "out",
-//       );
-//     console.log("🚀 ~ calOverTime ~ start:", shiftOut);
-
-//     // var end = DateTime.fromISO(shiftOut!.toISOString()).set({
-//     //   year: start.year,
-//     //   month: start.month,
-//     //   day: ,
-//     // });
-
-//     console.log("🚀 ~ calOverTime ~ end:", end);
-
-//     var hour = start.diff(end, ["hours", "minutes", "seconds"]);
-//     console.log("hour sd ", hour);
-//     var min = hour.minutes;
-//     var checkNegative = hour.as("minute").toFixed();
-//     if (Number(checkNegative) < 0) {
-//       return   Response.json({ "resutl" :0},{status:200})
-//     }
-//     return Response.json({ "resutl":hour.as("minute").toFixed()},{status:200}) 
-    
-//    }
-//     return Response.json({user, resutl},{status:200})
-// }
-
-
-
-// export const POST = async (req: Request) => {
-//     const {data} =await req.json()
-//     const today = dayjs();
-  
-//     // Fetch users
-//     // let users = await db.user.findMany({where:{role:"USER"}});
-//     // const userIds: string[] = users.map(user => user.id);
-// //add the userid in the array
-//     const userIds: string[] = data
-//     console.log("userid",userIds)
-//     // Process users with error handling
-//     const processResults = await Promise.allSettled(
-//       userIds.map(async (u) => {
-//         try {
-//           // Find shift for the user
-//           let shift = await db.attendBranch.findFirst({where:{userId:u}});
-          
-//           // Create date
-//           const now = new Date(today.format("YYYY-MM-DD"));
-          
-//           // Validate shift exists
-//           if (!shift?.clockIn) {
-//             throw new Error(`No shift found for user ${u}`);
-//           }
-          
-//           // Create shift in time
-//           const shiftIn = TimeUtils.createDateFromTimeString(
-//             now,
-//             shift.clockIn,
-//             "in"
-//           );
-          
-          
-//           console.log("shiftIn ", shiftIn);
-          
-//           // Check if attendance exists
-//           let attend = await db.attends.findFirst({where:{userId:u, dates:now}});
-          
-//           // If no attendance, create it
-//           if (!attend) {
-//             console.log("masuk sini");
-//             let data = {
-//               userId: u,
-//               dates: now,
-//               clockIn: shiftIn,
-//               status:AttendStatus.Active
-  
-//             };
-            
-//             // Uncomment to actually create the record
-//             await db.attends.create({data})
-            
-//             return {
-//               userId: u,
-//               status: 'created',
-//               data: data
-//             };
-//           }
-          
-//           return {
-//             userId: u,
-//             status: 'already_exists'
-//           };
-//         } catch (error) {
-//           console.error(`Error processing user ${u}:`, error);
-//           return {
-//             userId: u,
-//             status: 'error',
-//             error: error instanceof Error ? error.message : String(error)
-//           };
-//         }
-//       })
-//     );
-    
-//     // Prepare results summary
-//     const results = {
-//       successful: processResults.filter(
-//         (result) => result.status === "fulfilled" && 
-//                    result.value.status === 'created'
-//       ),
-//       skipped: processResults.filter(
-//         (result) => result.status === "fulfilled" && 
-//                    result.value.status === 'skipped'
-//       ),
-//       failed: processResults.filter(
-//         (result) => result.status === "rejected" || 
-//                    (result.status === "fulfilled" && result.value.status === 'error')
-//       ),
-//       timestamp: new Date(),
-//       totalProcessed: processResults.length
-//     };
-    
-//     return Response.json({ results }, { status: 200 });
-//   };
+  let shift = await db.attendBranch.findFirst({ where: { userId } });
+  if (!shift?.clockIn) {
+    throw new Error(`No shift found for user ${userId}`);
+  }
+  const shiftIn = TimeUtils.createDateFromTimeString(
+    today.toDate(),
+    shift.clockIn,
+    "in",
+  );
+  let ss = dayjs(shiftIn).add(10, "minute");
+  let late = today.isAfter(ss);
+  if (late) {
+    var userlate = await getAttendLate(
+      userId,
+      new Date().getMonth() + 1,
+      new Date().getFullYear(),
+    );
+  }
+  const isBeforeEightAM = today.isBefore(
+    dayjs().tz().hour(8).minute(0).second(0).millisecond(0),
+  );
+  let data = {
+    userId,
+    dates: isBeforeEightAM ? today.add(1, "day").toDate() : today.toDate(),
+    clockIn: today.toISOString(),
+    // img: attendImg,
+    fine: userlate!,
+    // locationIn: location,
+  };
+  console.log("🚀 ~ POST ~ data:", data);
+  // let t = await db.attends.create({ data });
+  // await notificationClock(userId, notify);
+  // await SentNoti("Clock", "You have clock in", "", user?.username);
+  return Response.json({ data, shiftIn, today }, { status: 201 });
+};
+export const POST = async (req: Request) => {
+  const userId = "cm499nn7b000trjhznxcqy75f";
+  const today = dayjs();
+  let shift = await db.attendBranch.findFirst({ where: { userId } });
+  if (!shift?.clockOut) {
+    throw new Error(`No shift found for user ${userId}`);
+  }
+  const shiftOut = TimeUtils.createDateFromTimeString(
+    today.toDate(),
+    shift.clockOut,
+    "out",
+  );
+  let overtime = await calculateOvertimeHours(shiftOut, today);
+  let checkDate = TimeUtils.checkMorning(today.toISOString());
+  let data = {
+    userId,
+    dates: checkDate ? today.subtract(1, "day").toDate() : today.toDate(),
+    clockOut: today.toDate(),
+    // fine: fine2!,
+    // locationOut: location,
+    overtime: Number(overtime!),
+    // status: AttendStatus.No_ClockIn_ClockOut,
+  };
+  return Response.json(
+    { overtime, shiftOut, today, checkDate, data },
+    { status: 200 },
+  );
+};

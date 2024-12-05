@@ -66,7 +66,7 @@ export const BranchATable = ({
   const itemsPerPage = 150;
   const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
   const [selectBranchs, setSelectBranchs] = useState<{ id: string; code: string, team: string }[] | null>(null);
-  const [teamSelect, setTeamSelect] = useState("")
+  const [teamSelect, setTeamSelect] = useState<string | null>()
   // Paginate the data
   const filteredData = data.filter((teamA) =>
     teamA.users?.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -360,7 +360,7 @@ export const BranchATable = ({
               {teamA.branch}
               <BranchsSelectGroup
                 onSendData={onSendData}
-                initialValue={"P05"}
+                initialValue={teamA.branch!}
                 data={databranch}
               />
             </p>
@@ -427,7 +427,7 @@ export const BranchATable = ({
 
           <div className="col-span-1 flex items-center justify-center px-2">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              <DayPicker days={days} setDays={setDays} />
+              <DayPicker days={teamA.offDay} setDays={setDays} />
             </p>
           </div>
 

@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE `attends` ADD COLUMN `dates` DATE NOT NULL;
+ALTER TABLE `Attends` ADD COLUMN `dates` DATE NOT NULL;

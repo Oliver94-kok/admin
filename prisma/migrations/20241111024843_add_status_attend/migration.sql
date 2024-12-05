@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `attends` MODIFY `status` ENUM('Active', 'Full_Attend', 'No_ClockIn', 'Absent', 'Leave') NOT NULL DEFAULT 'Active';
+ALTER TABLE `Attends` MODIFY `status` ENUM('Active', 'Full_Attend', 'No_ClockIn', 'Absent', 'Leave') NOT NULL DEFAULT 'Active';
 
 -- AlterTable
-ALTER TABLE `salary` DROP COLUMN `day`;
+ALTER TABLE `Salary` DROP COLUMN `day`;

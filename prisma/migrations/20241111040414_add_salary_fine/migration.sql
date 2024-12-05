@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `salary` DROP COLUMN `fine`,
+ALTER TABLE `Salary` DROP COLUMN `fine`,
     DROP COLUMN `fine2`,
     ADD COLUMN `fineLate` INTEGER NULL,
     ADD COLUMN `fineNoClockIn` INTEGER NULL,

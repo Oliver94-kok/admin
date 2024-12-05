@@ -29,6 +29,7 @@ enum AttendStatus {
   Absent
   Leave
   Late
+  OffDay
 }
 
 model User {
