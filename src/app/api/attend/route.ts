@@ -86,7 +86,7 @@ export const POST = async (req: Request) => {
       let t = await db.attends.create({ data });
       await notificationClock(userId, notify);
       await SentNoti("Clock", "You have clock in", "", user?.username);
-      return Response.json({ id: t.id }, { status: 201 });
+      return Response.json({ id: t.id, timeIn: t.clockIn }, { status: 201 });
     } catch (error) {
       return Response.json({ error }, { status: 400 });
     }
@@ -163,7 +163,7 @@ export const PATCH = async (req: Request) => {
     let workingHour = await calculateWorkingHours(attend.clockIn, today);
     // let workingHour = await checkWorkingHour(attend?.clockIn as Date, clockOut);
     let data = {
-      clockOut,
+      clockOut: today.toISOString(),
       workingHour: workingHour,
       overtime: Number(overtime!),
       locationOut: location,
@@ -188,7 +188,7 @@ export const PATCH = async (req: Request) => {
     });
     await notificationClock(userId, notify);
     await SentNoti("Clock", "You have clock out", "", user?.username);
-    return Response.json({ data }, { status: 200 });
+    return Response.json({ timeOut: update.clockOut }, { status: 200 });
   } catch (error) {
     return Response.json({ error }, { status: 400 });
   }
