@@ -268,8 +268,7 @@ export const BranchATable = ({
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
-            {/* {dict.branches.branches} */}
-            Team
+            {dict.branches.team}
           </h5>
         </div>
         <div className="col-span-1 flex items-center justify-center">

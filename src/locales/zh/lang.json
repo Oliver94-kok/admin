@@ -33,6 +33,7 @@
   "branches": {
     "username": "用户名",
     "branches": "分行",
+    "team":"队伍",
     "clockintime": "上班打卡时间",
     "clockouttime": "下班打卡时间",
     "starton": "开始时间",

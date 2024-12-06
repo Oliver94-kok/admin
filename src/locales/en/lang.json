@@ -33,6 +33,7 @@
   "branches": {
     "username": "Username",
     "branches": "Branches",
+    "team":"Team",
     "clockintime": "Clock-In time",
     "clockouttime": "Clock-Out time",
     "starton": "Start On",
