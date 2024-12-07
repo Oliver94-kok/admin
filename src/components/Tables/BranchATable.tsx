@@ -355,8 +355,8 @@ export const BranchATable = ({
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {teamA.branch}
+            <p className="text-xs font-medium text-dark dark:text-dark-6">
+              Branch: <span className="text-primary font-bold">{teamA.branch}</span>
               <BranchsSelectGroup
                 onSendData={onSendData}
                 initialValue={teamA.branch!}
