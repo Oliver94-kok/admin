@@ -1,3 +1,4 @@
+import { isOffDay } from "@/data/attend";
 import { getNoClockIn } from "@/data/salary";
 import { AttendanceService } from "@/lib/attendService";
 import { db } from "@/lib/db";
@@ -33,6 +34,7 @@ export const POST = async (req: Request) => {
     throw new Error(`No shift found for user ${user!.id}`);
   }
   let yesterday = dayjs(t).subtract(1, "day");
+
   if (user) {
     console.log("value from db ", user.dates);
     let sameDay = dayjs(user.dates).isSame(t);
@@ -63,6 +65,20 @@ export const POST = async (req: Request) => {
         shift.clockOut,
         "out",
       );
+
+      if (shift.offDay) {
+        let day = shift.offDay.split(",");
+        let resultOffDay = await isOffDay(day, "yesterday");
+        if (resultOffDay) {
+          let data = {
+            userId: userId,
+            dates: yesterday.toDate(),
+            status: AttendStatus.OffDay,
+          };
+          await db.attends.create({ data });
+          return Response.json({}, { status: 400 });
+        }
+      }
       let shifts = await attendanceService.cronAttendCheckShift(
         shiftIn,
         shiftOut,
@@ -117,6 +133,19 @@ export const POST = async (req: Request) => {
       }
     }
   } else {
+    if (shift.offDay) {
+      let day = shift.offDay.split(",");
+      let resultOffDay = await isOffDay(day, "yesterday");
+      if (resultOffDay) {
+        let data = {
+          userId: userId,
+          dates: yesterday.toDate(),
+          status: AttendStatus.OffDay,
+        };
+        await db.attends.create({ data });
+        return Response.json({}, { status: 400 });
+      }
+    }
     let yesterdayUser = await db.attends.findFirst({
       where: { userId, dates: yesterday.toDate() },
     });
