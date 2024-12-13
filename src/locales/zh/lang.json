@@ -30,6 +30,15 @@
     "entername": "请输入全名",
     "adduser": "添加用户"
   },
+  "userdata": {
+    "selectteam": "选择团队",
+    "choosemonth": "选择月份",
+    "chooseyear": "选择年份",
+    "exportform": "导出数据",
+    "selectyear": "选择年份",
+    "chooseteam": "选择团队",
+    "export": "导出"
+  },
   "branches": {
     "username": "用户名",
     "branches": "分行",

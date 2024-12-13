@@ -30,6 +30,15 @@
     "entername": "Enter full name",
     "adduser": "Add User"
   },
+  "userdata": {
+    "selectteam": "Select Team",
+    "choosemonth": "Choose Month",
+    "chooseyear": "Choose Year",
+    "exportform": "Export Data",
+    "selectyear": "Select Year",
+    "chooseteam": "Choose Team",
+    "export": "Export"
+  },
   "branches": {
     "username": "Username",
     "branches": "Branches",
