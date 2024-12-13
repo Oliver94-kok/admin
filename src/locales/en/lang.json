@@ -33,6 +33,7 @@
   "userdata": {
     "selectteam": "Select Team",
     "choosemonth": "Choose Month",
+    "selectmonth": "Select Month",
     "chooseyear": "Choose Year",
     "exportform": "Export Data",
     "selectyear": "Select Year",
