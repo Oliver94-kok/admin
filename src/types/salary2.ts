@@ -29,7 +29,7 @@ interface User {
 }
 
 // Define the salary interface
-interface Salary {
+export interface Salary {
   id: string;
   month: number;
   year: number;
