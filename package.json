@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.59.7",
+    "@types/exceljs": "^0.5.3",
     "@types/file-saver": "^2.0.7",
     "@types/js-cookie": "^3.0.6",
     "@types/negotiator": "^0.6.3",

@@ -126,9 +126,9 @@ const FormLayout = () => {
             })
             addFormattedRows(["", ""], { noBorder: true });
         });
-        worksheet.properties.defaultRowHeight = 35;
+        worksheet.properties.defaultRowHeight = 30;
 
-
+        worksheet.getColumn('A').width = 12; // You can also use the column letter
 
 
         // Save workbook
@@ -168,7 +168,6 @@ const FormLayout = () => {
                                         onChange={(e) => setYear(e.target.value)}
                                     >
                                         <option value="">{dict.userdata.chooseyear}</option>
-                                        <option value="2023">2023</option>
                                         <option value="2024">2024</option>
                                         <option value="2025">2025</option>
                                     </select>
@@ -206,6 +205,7 @@ const FormLayout = () => {
                                         onChange={(e) => setTeam(e.target.value)}
                                     >
                                         <option value="">{dict.userdata.chooseteam}</option>
+                                        <option value="All">All Team</option>
                                         <option value="A">A</option>
                                         <option value="B">B</option>
                                         <option value="C">C</option>

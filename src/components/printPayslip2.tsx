@@ -137,8 +137,8 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
 
         // Set row height for row 2 (header) and row 3 (sub-header), adjust according to your needs
         ws['!rows'][1] = { hpt: 20 };
-        ws['!rows'][2] = { hpt: 30 };  // Row with "底薪", "日", "实薪", etc.
-
+        ws['!rows'][2] = { hpt: 37 };  // Row with "底薪", "日", "实薪", etc.
+        ws['!rows'][3] = { hpt: 25 };
 
         // Add worksheet to workbook and export
         utils.book_append_sheet(wb, ws, "Payslip");
