@@ -7,6 +7,7 @@ export interface LeavesInterface {
   endDate: string;
   status: string;
   img: string | null;
+  branch: string | null;
   users: {
     name: string;
     username: string;

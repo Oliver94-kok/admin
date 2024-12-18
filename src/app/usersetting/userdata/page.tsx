@@ -110,25 +110,25 @@ const FormLayout = () => {
             return row;
         };
 
-        data.forEach((item, index) => {
+        // Populate worksheet with data
+        data.forEach((item) => {
             const { name, branch, attend } = item;
 
-
-            const startRowIndex = worksheet.rowCount;
-
-            // Add employee section
             addFormattedRows([`${branch}`, `${name}`], { bold: true });
             attend.map((a) => {
-                addFormattedRows([
-                    `${a.dates}`, "in", `${a.clockIn}`, "out", `${a.clockOut}`
-                ],);
-
-            })
+                addFormattedRows([`${a.dates}`, "in", `${a.clockIn}`, "out", `${a.clockOut}`]);
+            });
             addFormattedRows(["", ""], { noBorder: true });
         });
-        worksheet.properties.defaultRowHeight = 30;
-
-        worksheet.getColumn('A').width = 12; // You can also use the column letter
+        worksheet.properties.defaultRowHeight = 25;
+        worksheet.eachRow((row) => {
+            row.height = 25;
+        });
+        // Set a uniform width for all columns
+        const totalColumns = worksheet.columnCount; // Adjust column count if needed
+        for (let i = 1; i <= totalColumns; i++) {
+            worksheet.getColumn(i).width = 12; // Adjust column width as needed
+        }
 
 
         // Save workbook

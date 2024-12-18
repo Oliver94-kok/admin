@@ -294,7 +294,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {leave.users?.AttendBranch?.team}
+              {leave.users?.AttendBranch?.team}({leave.branch})
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">

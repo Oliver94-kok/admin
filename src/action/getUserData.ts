@@ -16,10 +16,15 @@ export const getDataUser = async (
   try {
     const firstDay = dayjs(`${year}-${month}-01`);
     const lastDay = firstDay.endOf("month");
-    let users = await db.attendBranch.findMany({
-      where: { team },
-      select: { userId: true },
-    });
+    // Adjust the query to handle "All Team" case
+    const users = team === "All" 
+      ? await db.attendBranch.findMany({
+          select: { userId: true },
+        })
+      : await db.attendBranch.findMany({
+          where: { team },
+          select: { userId: true },
+        });
 
     let result = await Promise.all(
       users.map(async (u) => {
