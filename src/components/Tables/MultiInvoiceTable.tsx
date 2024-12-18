@@ -211,28 +211,16 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
-            worksheet.getCell(`A${startRowIndex + 5}`).border = {
-                top: { style: 'thin' },
-            }
-            worksheet.getCell(`A${startRowIndex + 1}`).border = {
-                bottom: { style: 'thin' },
-            }
-            worksheet.getCell(`A${startRowIndex + 5}`).border = {
+            // Set row height for specific rows
+            worksheet.getRow(startRowIndex + 1).height = 20; // Header row height
+            worksheet.getRow(startRowIndex + 2).height = 25; // Sub-header row height
+            worksheet.getRow(startRowIndex + 3).height = 37; // Data row height
 
-            }
-            worksheet.getCell(`A${startRowIndex + 6}`).border = {
-
-            }
-            worksheet.getCell(`A${startRowIndex + 7}`).border = {
-
-            }
-            worksheet.getCell(`G${startRowIndex + 4}`).font = {
-                color: { argb: 'FFFF0000' },
-            };
-            worksheet.getRow(startRowIndex + 1).height = 25
-            worksheet.getRow(startRowIndex + 7).height = 25
-            worksheet.getRow(startRowIndex + 6).height = 25
-            worksheet.getRow(startRowIndex + 5).height = 25
+            // Additional row heights as needed
+            worksheet.getRow(startRowIndex + 4).height = 22;
+            worksheet.getRow(startRowIndex + 5).height = 22;
+            worksheet.getRow(startRowIndex + 6).height = 22;
+            worksheet.getRow(startRowIndex + 7).height = 22;
         });
         worksheet.properties.defaultRowHeight = 35;
 
