@@ -22,9 +22,18 @@ dayjs.extend(duration);
 
 export const checkClockIn = async (userId: string) => {
   console.log("🚀 ~ checkClockIn ~ userId:", userId);
-
+  const today = dayjs();
+  const t = new Date(today.format("YYYY-MM-DD"));
   let user = await db.attends.findFirst({
-    where: { userId, status: "Active" },
+    where: {
+      userId,
+      OR: [
+        { status: "Active" },
+        {
+          dates: t,
+        },
+      ],
+    },
   });
   return user;
 };

@@ -70,6 +70,10 @@ export const POST = async (req: Request) => {
         let day = shift.offDay.split(",");
         let resultOffDay = await isOffDay(day, "yesterday");
         if (resultOffDay) {
+          let resultOffday = await db.attends.findFirst({
+            where: { userId, dates: yesterday.toDate() },
+          });
+          if (resultOffday) return Response.json({}, { status: 400 });
           let data = {
             userId: userId,
             dates: yesterday.toDate(),
