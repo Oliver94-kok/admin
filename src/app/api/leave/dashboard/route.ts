@@ -24,6 +24,7 @@ export const GET = async (req: NextRequest) => {
           AttendBranch: {
             select: {
               team: true,
+              branch: true,
             },
           },
         },

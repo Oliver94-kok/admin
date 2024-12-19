@@ -12,6 +12,6 @@ export interface LeavesInterface {
     name: string;
     username: string;
     userImg: string | null;
-    AttendBranch: { team: string } | null;
+    AttendBranch: { team: string; branch: string | null } | null;
   } | null;
 }
