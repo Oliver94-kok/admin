@@ -235,8 +235,8 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getRow(startRowIndex + 3).height = 37; // Data row height
 
             // Additional row heights as needed
-            worksheet.getRow(startRowIndex + 4).height = 24;
-            worksheet.getRow(startRowIndex + 5).height = 24;
+            worksheet.getRow(startRowIndex + 4).height = 43;
+            worksheet.getRow(startRowIndex + 5).height = 34;
             worksheet.getRow(startRowIndex + 6).height = 24;
             worksheet.getRow(startRowIndex + 7).height = 24;
         });
