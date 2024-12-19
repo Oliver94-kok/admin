@@ -1,147 +1,119 @@
-"use client";
+"use client"
 
-import { AttendanceResult, SalaryRecord } from "@/types/salary2";
+import { AttendanceResult, SalaryRecord } from "@/types/salary2"
 import { useRef } from "react";
 import { Range, utils, writeFileXLSX } from "xlsx";
 
 interface MultiInvoiceProp {
-    data: SalaryRecord[];
+    data: SalaryRecord[]
 }
 
 export const Payslip2 = ({ data }: MultiInvoiceProp) => {
     const containerRef = useRef(null);
 
     const getDate = (data: AttendanceResult, type: string) => {
-        let d: number[] = [];
+        let d: number[] = []
         let totals = 0;
-        if (type === "Late") {
+        if (type == "Late") {
             data.dataLate.map((e) => {
-                let dd = e.dates.getDate();
+                let dd = e.dates.getDate()
                 d.push(dd);
-                totals = totals + e.fine!;
-            });
-            return `Late * ${d.join(", ")} RM${totals}`;
-        } else if (type === "NoInOut") {
+                totals = totals + e.fine!
+            })
+            const lateNumbers: string = `Late * ${d.join(', ')} RM${totals}`;
+            return lateNumbers
+        } else if (type == "NoInOut") {
             data.dataLate.map((e) => {
-                let dd = e.dates.getDate();
+                let dd = e.dates.getDate()
                 d.push(dd);
-                totals = totals + e.fine!;
-            });
-            return `No clock in or out * ${d.join(", ")} RM${totals}`;
+                totals = totals + e.fine!
+            })
+            const lateNumbers: string = `No clock in or out * ${d.join(', ')} RM${totals}`;
+            return lateNumbers
         }
-        return "1212";
-    };
+        return "1212"
+    }
 
     const OnSave = () => {
         if (!data.length) return;
 
-        // 创建 Excel 数据
+        // Create worksheet data array
         const wsData: unknown[][] = [];
-        const merges: Range[] = []; // 存储合并单元格信息
 
-        // 动态添加员工数据
+        // Add data for each employee with headers and styling
         data.forEach((item, index) => {
             const { salary, result } = item;
-            const rowOffset = wsData.length; // 当前数据的行偏移量
 
-            // 添加标题
+            // Add title
             wsData.push([`${salary.year} - ${salary.month}`]);
-            wsData.push([]); // 空行
+            wsData.push([]); // Blank row
 
-            // 添加主表头
+            // Add headers
             wsData.push([
-                "Name",
-                "Day",
-                "",
-                "Basic",
-                "Bonus",
-                "Allow",
-                "",
-                "Advance",
-                "Short",
-                "Cover",
-                "",
-                "",
-                "Total",
+                "Name", "Day", "", "Basic", "Bonus", "Allow", "",
+                "Advance", "Short", "Cover", "", "", "Total"
             ]);
 
-            // 添加子表头
+            // Add sub-headers
             wsData.push([
-                salary.users?.name || "",
-                "底薪",
-                "日",
-                "实薪",
-                "奖金",
-                "津贴",
-                "迟到\n扣款",
-                "借粮",
-                "少/多",
-                "加班\n晚班",
-                "交通\n补贴",
-                "M",
-                "total",
+                salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
+                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
             ]);
 
-            // 添加员工数据
+            // Add employee data
             wsData.push([
-                "", // 姓名空行，用于合并
+                "", // Empty for merged name
                 salary.perDay || "-",
                 salary.workingDay || "-",
                 salary.perDay || "-",
                 salary.bonus || "-",
                 salary.allowance || "-",
                 salary.fineLate! + salary.fineNoClockIn! || "-",
-                "-",
-                "-",
-                salary.overTime || "-",
-                "-",
-                "-",
-                salary.total || "-",
+                "-", "-", salary.overTime || "-", "-", "-",
+                salary.total || "-"
             ]);
 
-            // 添加迟到和无打卡信息
+            // Add late and no clock information
             wsData.push([getDate(result, "Late")]);
             wsData.push([getDate(result, "NoInOut")]);
 
-            // 添加合并单元格
-            merges.push(
-                { s: { r: rowOffset + 2, c: 1 }, e: { r: rowOffset + 2, c: 2 } }, // Day headers
-                { s: { r: rowOffset + 2, c: 5 }, e: { r: rowOffset + 2, c: 6 } }, // Allow headers
-                { s: { r: rowOffset + 2, c: 9 }, e: { r: rowOffset + 2, c: 11 } } // Cover headers
-            );
-
-            // 添加间隔行（如果不是最后一个员工）
+            // Add spacing between employees
             if (index < data.length - 1) {
                 wsData.push([]);
             }
         });
 
-        // 创建工作簿
+        // Create a new workbook
         const wb = utils.book_new();
         const ws = utils.aoa_to_sheet(wsData);
 
-        // 设置列宽
-        ws["!cols"] = [
+        // Set column widths
+        ws['!cols'] = [
             { wch: 10 }, // Name
             { wch: 11 }, // Day
-            { wch: 4 }, // 日
-            { wch: 6 }, // Basic
-            { wch: 6 }, // Bonus
+            { wch: 4 },  // 日
+            { wch: 6 },  // Basic
+            { wch: 6 },  // Bonus
             { wch: 12 }, // Allow
-            { wch: 6 }, // Advance
-            { wch: 5 }, // Short
+            { wch: 6 },  // Advance
+            { wch: 5 },  // Short
             { wch: 15 }, // Cover
-            { wch: 5 }, // 加班晚班
-            { wch: 5 }, // 交通补贴
-            { wch: 4 }, // M
-            { wch: 6 }, // Total
+            { wch: 5 },  // 加班晚班
+            { wch: 5 },  // 交通补贴
+            { wch: 4 },  // M
+            { wch: 6 },  // Total
         ];
 
-        // 应用合并
-        ws["!merges"] = merges;
+        // Define merges
+        const merges: Range[] = [
+            { s: { r: 2, c: 1 }, e: { r: 2, c: 2 } }, // Merge Day headers
+            { s: { r: 2, c: 5 }, e: { r: 2, c: 6 } }, // Merge Allow headers
+            { s: { r: 2, c: 9 }, e: { r: 2, c: 11 } }, // Merge Cover headers
+        ];
+        ws['!merges'] = merges;
 
-        // 设置单元格样式
-        const range = utils.decode_range(ws["!ref"] || "A1");
+        // Add cell styles
+        const range = utils.decode_range(ws['!ref'] || "A1");
         for (let R = range.s.r; R <= range.e.r; R++) {
             for (let C = range.s.c; C <= range.e.c; C++) {
                 const cell = utils.encode_cell({ r: R, c: C });
@@ -160,10 +132,17 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
             }
         }
 
-        // 导出 Excel 文件
+        // Set specific row heights
+        ws['!rows'] = [];
+        ws['!rows'][1] = { hpt: 20 }; // Header row
+        ws['!rows'][2] = { hpt: 37 }; // Sub-header row
+        ws['!rows'][3] = { hpt: 25 }; // Data row
+
+        // Add worksheet to workbook and export
         utils.book_append_sheet(wb, ws, "Payslip");
         writeFileXLSX(wb, "PayslipReport.xlsx");
     };
+
 
     return (
         <>
@@ -178,7 +157,7 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                 <div ref={containerRef}>
                     {data.map((item, index) => {
                         const { salary, result } = item;
-                        const total = salary.total! - salary.fineLate! - salary.fineNoClockIn!;
+                        const total = salary.total! - salary.fineLate! - salary.fineNoClockIn!
 
                         return (
                             <div key={index} className="mb-8">
@@ -247,5 +226,5 @@ export const Payslip2 = ({ data }: MultiInvoiceProp) => {
                 </div>
             </div>
         </>
-    );
-};
+    )
+}
