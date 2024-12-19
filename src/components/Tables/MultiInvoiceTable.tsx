@@ -172,15 +172,8 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.mergeCells(`F${startRowIndex + 1}:G${startRowIndex + 1}`); // Merge "Allow"
             worksheet.mergeCells(`J${startRowIndex + 1}:L${startRowIndex + 1}`); // Merge "Cover"
 
-
             // Add employee section
             addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
-
-
-            // Merge cells for Main Headers
-            worksheet.mergeCells(`B${startRowIndex + 1}:C${startRowIndex + 1}`); // Merge "Day"
-            worksheet.mergeCells(`F${startRowIndex + 1}:G${startRowIndex + 1}`); // Merge "Allow"
-            worksheet.mergeCells(`J${startRowIndex + 1}:L${startRowIndex + 1}`); // Merge "Cover"
 
             // Add Sub-Headers
             addFormattedRows([
