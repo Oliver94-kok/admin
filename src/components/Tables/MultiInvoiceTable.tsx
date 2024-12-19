@@ -157,36 +157,41 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             const { salary, result } = item;
             const AbsentLength = result.dataAbsent.length;
 
-            const startRowIndex = worksheet.rowCount;
+            const startRowIndex = worksheet.rowCount + 1;
 
-            // Merge Sub-header rows (3rd and 4th)
-            worksheet.mergeCells(`B${startRowIndex + 2}:B${startRowIndex + 3}`);
-            worksheet.mergeCells(`C${startRowIndex + 2}:C${startRowIndex + 3}`);
-            // 其他列的合并代码...
+            // Add Main Header (e.g., "2024 - 12")
+            addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
 
-            // Merge Numeric Data rows (5th and 6th)
-            worksheet.mergeCells(`B${startRowIndex + 4}:B${startRowIndex + 5}`);
-            worksheet.mergeCells(`C${startRowIndex + 4}:C${startRowIndex + 5}`);
-            // 其他列的合并代码...
+            // Add Section Header (e.g., "B372")
+            addFormattedRows([`${salary.users?.AttendBranch?.branch}`, "Day", "", "Basic", "Bonus", "Allow", "",
+                "Advance", "Short", "Cover", "", "", "Total"
+            ], { bold: true });
+
+            // Merge cells for Main Headers
+            worksheet.mergeCells(`B${startRowIndex + 1}:C${startRowIndex + 1}`); // Merge "Day"
+            worksheet.mergeCells(`F${startRowIndex + 1}:G${startRowIndex + 1}`); // Merge "Allow"
+            worksheet.mergeCells(`J${startRowIndex + 1}:L${startRowIndex + 1}`); // Merge "Cover"
+
 
             // Add employee section
             addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
 
 
-            // Main headers
-            addFormattedRows([
-                ` ${salary.users?.AttendBranch?.branch}`, "Day", "", "Basic", "Bonus", "Allow", "",
-                "Advance", "Short", "Cover", "", "", "Total"
-            ], { bold: true });
+            // Merge cells for Main Headers
+            worksheet.mergeCells(`B${startRowIndex + 1}:C${startRowIndex + 1}`); // Merge "Day"
+            worksheet.mergeCells(`F${startRowIndex + 1}:G${startRowIndex + 1}`); // Merge "Allow"
+            worksheet.mergeCells(`J${startRowIndex + 1}:L${startRowIndex + 1}`); // Merge "Cover"
 
-            // Sub-headers
+            // Add Sub-Headers
             addFormattedRows([
                 salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
                 "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
-            ], {
-                bold: false,
-                alignment: { horizontal: 'center', vertical: 'middle', wrapText: true },
-            });
+            ], { alignment: { horizontal: 'center', vertical: 'middle', wrapText: true } });
+
+            // Merge cells for Sub-Headers
+            worksheet.mergeCells(`A${startRowIndex + 2}:A${startRowIndex + 3}`);
+            worksheet.mergeCells(`M${startRowIndex + 2}:M${startRowIndex + 3}`);
+
 
             // Numeric data row
             addFormattedRows([
@@ -205,67 +210,37 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 salary.total || 0
             ], { alignment: { horizontal: 'center', vertical: 'middle', } });
 
-            // Absences and fines details
+            // Merge cells for Totals row
+            worksheet.mergeCells(`A${startRowIndex + 4}:M${startRowIndex + 4}`);
+            worksheet.getCell(`M${startRowIndex + 3}`).value = {
+                formula: `=SUM(D${startRowIndex + 3}:L${startRowIndex + 3})`,
+            };
+
+            // Add Absence and Fine Details
             addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
-            // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
-            // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
-            addFormattedRows([
-                `${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
-            ], { alignment: { horizontal: 'left', wrapText: true } });
+            addFormattedRows([`${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`], {
+                alignment: { horizontal: 'left', wrapText: true },
+            });
 
-            // Merge header cells for grouped columns
-            worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
-            worksheet.mergeCells(`M${startRowIndex + 3}`, `M${startRowIndex + 4}`);
-            worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // Merge "Day"
-            worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow"
-            worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover"
-            worksheet.mergeCells(`A${startRowIndex + 5}`, `M${startRowIndex + 5}`);
-            worksheet.mergeCells(`A${startRowIndex + 6}`, `M${startRowIndex + 6}`);
-            worksheet.getCell(`M${startRowIndex + 4}`).value = {
-                formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
-            };
-            worksheet.getCell(`A${startRowIndex + 5}`).border = {
-                top: { style: 'thin' },
-            }
-            worksheet.getCell(`A${startRowIndex + 1}`).border = {
-                bottom: { style: 'thin' },
-            }
-            worksheet.getCell(`A${startRowIndex + 5}`).border = {
+            // Customize Row Heights
+            worksheet.getRow(startRowIndex).height = 24; // Header row height
+            worksheet.getRow(startRowIndex + 1).height = 24; // Sub-header
+            worksheet.getRow(startRowIndex + 2).height = 24; // Numeric data
 
-            }
-            worksheet.getCell(`A${startRowIndex + 6}`).border = {
-
-            }
-            worksheet.getCell(`A${startRowIndex + 7}`).border = {
-
-            }
-            worksheet.getCell(`G${startRowIndex + 4}`).font = {
-                color: { argb: 'FFFF0000' },
-            };
-            // Set row height for specific rows
-            worksheet.getRow(startRowIndex + 1).height = 24; // Header row height
-            worksheet.getRow(startRowIndex + 2).height = 24; // Sub-header
-            worksheet.getRow(startRowIndex + 3).height = 24;  // Hide row 4
-            worksheet.getRow(startRowIndex + 4).height = 24; // Numeric data
-            worksheet.getRow(startRowIndex + 5).height = 24;
-            worksheet.getRow(startRowIndex + 6).height = 24;
-            worksheet.getRow(startRowIndex + 7).height = 24;
+            // Customize Column Widths
+            worksheet.getColumn("B").width = 6.57;
+            worksheet.getColumn("C").width = 5.14;
+            worksheet.getColumn("D").width = 7;
+            worksheet.getColumn("E").width = 7.14;
+            worksheet.getColumn("F").width = 7;
+            worksheet.getColumn("G").width = 7.57;
+            worksheet.getColumn("H").width = 9.14;
+            worksheet.getColumn("I").width = 5.43;
+            worksheet.getColumn("J").width = 6.43;
+            worksheet.getColumn("K").width = 6;
+            worksheet.getColumn("L").width = 5.71;
+            worksheet.getColumn("M").width = 8.71;
         });
-        worksheet.properties.defaultRowHeight = 35;
-
-        worksheet.getColumn("B").width = 6.57
-        worksheet.getColumn("C").width = 5.14
-        worksheet.getColumn("D").width = 7
-        worksheet.getColumn("E").width = 7.14
-        worksheet.getColumn("F").width = 7
-        worksheet.getColumn("G").width = 7.57
-        worksheet.getColumn("H").width = 9.14
-        worksheet.getColumn("I").width = 5.43
-        worksheet.getColumn("J").width = 6.43
-        worksheet.getColumn("K").width = 6
-        worksheet.getColumn("L").width = 5.71
-        worksheet.getColumn("M").width = 8.71
-
 
         // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();
