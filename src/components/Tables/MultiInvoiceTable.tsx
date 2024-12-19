@@ -159,6 +159,16 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
 
             const startRowIndex = worksheet.rowCount;
 
+            // Merge Sub-header rows (3rd and 4th)
+            worksheet.mergeCells(`B${startRowIndex + 2}:B${startRowIndex + 3}`);
+            worksheet.mergeCells(`C${startRowIndex + 2}:C${startRowIndex + 3}`);
+            // 其他列的合并代码...
+
+            // Merge Numeric Data rows (5th and 6th)
+            worksheet.mergeCells(`B${startRowIndex + 4}:B${startRowIndex + 5}`);
+            worksheet.mergeCells(`C${startRowIndex + 4}:C${startRowIndex + 5}`);
+            // 其他列的合并代码...
+
             // Add employee section
             addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
 
@@ -173,7 +183,10 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             addFormattedRows([
                 salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
                 "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
-            ], { bold: false });
+            ], {
+                bold: false,
+                alignment: { horizontal: 'center', vertical: 'middle', wrapText: true },
+            });
 
             // Numeric data row
             addFormattedRows([
@@ -231,11 +244,9 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             };
             // Set row height for specific rows
             worksheet.getRow(startRowIndex + 1).height = 24; // Header row height
-            worksheet.getRow(startRowIndex + 2).height = 25; // Sub-header row height
-            worksheet.getRow(startRowIndex + 3).height = 37; // Data row height
-
-            // Additional row heights as needed
-            worksheet.getRow(startRowIndex + 4).height = 24;
+            worksheet.getRow(startRowIndex + 2).height = 24; // Sub-header
+            worksheet.getRow(startRowIndex + 3).height = 24;  // Hide row 4
+            worksheet.getRow(startRowIndex + 4).height = 24; // Numeric data
             worksheet.getRow(startRowIndex + 5).height = 24;
             worksheet.getRow(startRowIndex + 6).height = 24;
             worksheet.getRow(startRowIndex + 7).height = 24;
