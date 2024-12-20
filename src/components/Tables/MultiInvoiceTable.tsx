@@ -193,11 +193,11 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             ], { alignment: { horizontal: 'center', vertical: 'middle', } });
 
             // Absences and fines details
-            addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
+            // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
             addFormattedRows([
-                `${getDate(result, "Late", 0)} ${getDate(result, "NoInOut", 0)}`
+                `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
             ], { alignment: { horizontal: 'left', wrapText: true } });
 
             // Merge header cells for grouped columns
@@ -207,7 +207,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow"
             worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover"
             worksheet.mergeCells(`A${startRowIndex + 5}`, `M${startRowIndex + 5}`);
-            worksheet.mergeCells(`A${startRowIndex + 6}`, `M${startRowIndex + 6}`);
+            // worksheet.mergeCells(`A${startRowIndex + 6}`, `M${startRowIndex + 6}`);
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
@@ -223,22 +223,22 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`A${startRowIndex + 6}`).border = {
 
             }
-            worksheet.getCell(`A${startRowIndex + 7}`).border = {
+            // worksheet.getCell(`A${startRowIndex + 7}`).border = {
 
-            }
+            // }
             worksheet.getCell(`G${startRowIndex + 4}`).font = {
                 color: { argb: 'FFFF0000' },
             };
             // Set row height for specific rows
-            worksheet.getRow(startRowIndex + 1).height = 24; // Header row height
-            worksheet.getRow(startRowIndex + 2).height = 25; // Sub-header row height
-            worksheet.getRow(startRowIndex + 3).height = 37; // Data row height
+            worksheet.getRow(startRowIndex + 1).height = 67; // Header row height
+            worksheet.getRow(startRowIndex + 2).height = 67; // Sub-header row height
+            worksheet.getRow(startRowIndex + 3).height = 67; // Data row height
 
             // Additional row heights as needed
-            worksheet.getRow(startRowIndex + 4).height = 43;
-            worksheet.getRow(startRowIndex + 5).height = 34;
-            worksheet.getRow(startRowIndex + 6).height = 24;
-            worksheet.getRow(startRowIndex + 7).height = 24;
+            worksheet.getRow(startRowIndex + 4).height = 67;
+            worksheet.getRow(startRowIndex + 5).height = 67;
+            worksheet.getRow(startRowIndex + 6).height = 67;
+            // worksheet.getRow(startRowIndex + 7).height = 53;
         });
         worksheet.properties.defaultRowHeight = 35;
 
