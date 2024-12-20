@@ -224,9 +224,9 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`A${startRowIndex + 5}`).border = {
 
             }
-            worksheet.getCell(`A${startRowIndex + 6}`).border = {
+            // worksheet.getCell(`A${startRowIndex + 6}`).border = {
 
-            }
+            // }
             // worksheet.getCell(`A${startRowIndex + 7}`).border = {
 
             // }
@@ -241,7 +241,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             // Additional row heights as needed
             worksheet.getRow(startRowIndex + 4).height = 53.25;
             worksheet.getRow(startRowIndex + 5).height = 53.25;
-            worksheet.getRow(startRowIndex + 6).height = 53.25;
+            // worksheet.getRow(startRowIndex + 6).height = 53.25;
             // worksheet.getRow(startRowIndex + 7).height = 53;
         });
         worksheet.properties.defaultRowHeight = 35;
