@@ -198,7 +198,11 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
             addFormattedRows([
                 `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
-            ], { alignment: { horizontal: 'left', wrapText: true } });
+            ], {
+                alignment: {
+                    horizontal: 'left', wrapText: true, vertical: 'middle'
+                }
+            });
 
             // Merge header cells for grouped columns
             worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
@@ -230,14 +234,14 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 color: { argb: 'FFFF0000' },
             };
             // Set row height for specific rows
-            worksheet.getRow(startRowIndex + 1).height = 67; // Header row height
-            worksheet.getRow(startRowIndex + 2).height = 67; // Sub-header row height
-            worksheet.getRow(startRowIndex + 3).height = 67; // Data row height
+            worksheet.getRow(startRowIndex + 1).height = 53.25; // Header row height
+            worksheet.getRow(startRowIndex + 2).height = 53.25; // Sub-header row height
+            worksheet.getRow(startRowIndex + 3).height = 53.25; // Data row height
 
             // Additional row heights as needed
-            worksheet.getRow(startRowIndex + 4).height = 67;
-            worksheet.getRow(startRowIndex + 5).height = 67;
-            worksheet.getRow(startRowIndex + 6).height = 67;
+            worksheet.getRow(startRowIndex + 4).height = 53.25;
+            worksheet.getRow(startRowIndex + 5).height = 53.25;
+            worksheet.getRow(startRowIndex + 6).height = 53.25;
             // worksheet.getRow(startRowIndex + 7).height = 53;
         });
         worksheet.properties.defaultRowHeight = 35;
