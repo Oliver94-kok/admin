@@ -4,6 +4,8 @@ import { AttendStatus } from "@prisma/client";
 interface AttendBranch {
   team: string;
   branch: string | null;
+  clockIn: string | null;
+  clockOut: string | null;
 }
 
 // Define interfaces for the nested result data

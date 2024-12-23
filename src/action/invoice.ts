@@ -70,7 +70,14 @@ export async function getData(): Promise<SalaryRecord[]> {
               users: {
                 select: {
                   name: true,
-                  AttendBranch: { select: { team: true, branch: true } },
+                  AttendBranch: {
+                    select: {
+                      team: true,
+                      branch: true,
+                      clockIn: true,
+                      clockOut: true,
+                    },
+                  },
                 },
               },
             },
@@ -88,6 +95,8 @@ export async function getData(): Promise<SalaryRecord[]> {
                     ? {
                         team: salary.users.AttendBranch.team,
                         branch: salary.users.AttendBranch.branch,
+                        clockIn: salary.users.AttendBranch.clockIn,
+                        clockOut: salary.users.AttendBranch.clockOut,
                       }
                     : null,
                 }

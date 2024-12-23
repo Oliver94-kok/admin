@@ -118,7 +118,36 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
         }
         return "1212"
     }
+    const parseTimeToMinutes = (time: string): number => {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
 
+    const isTimeInRange = (time: string, startTime: string, endTime: string): boolean => {
+        const timeInMinutes = parseTimeToMinutes(time);
+        const startInMinutes = parseTimeToMinutes(startTime);
+        const endInMinutes = parseTimeToMinutes(endTime);
+        return timeInMinutes >= startInMinutes && timeInMinutes <= endInMinutes;
+    };
+    const checkShift = (clockIn: string) => {
+        if (clockIn) {
+            if (isTimeInRange(clockIn, '07:00', '10:00')) {
+                return '早班';
+            }
+
+            // Mid shift (中班): 11 AM - 17:00 (5 PM)
+            if (isTimeInRange(clockIn, '11:00', '17:00')) {
+                return '中班';
+            }
+
+            // Night shift (晚班): 7 PM - 10 PM
+            if (isTimeInRange(clockIn, '19:00', '22:00')) {
+                return '晚班';
+            }
+        }
+
+        return '';
+    }
     const saveAsExcel = async () => {
         if (!datas.length) return;
 
@@ -158,9 +187,9 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             const AbsentLength = result.dataAbsent.length;
 
             const startRowIndex = worksheet.rowCount;
-
+            const shift = checkShift(salary.users?.AttendBranch?.clockIn!);
             // Add employee section
-            addFormattedRows([`${salary.year} - ${salary.month}`], { bold: true });
+            addFormattedRows([`${salary.year} - ${salary.month}`, `${shift}`], { bold: true });
 
 
             // Main headers
