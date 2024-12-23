@@ -82,7 +82,7 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
       let teams = getteam(team)
       let t = data?.filter((d) => d.team == teams)
       setBranch(data)
-      setSelectBranchs(t || [])
+      setSelectBranchs(data || [])
       console.log("🚀 ~ getBranch ~ data:", data)
     } else {
 
