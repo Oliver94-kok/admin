@@ -139,15 +139,40 @@ export const POST = async (req: Request) => {
   } else {
     if (shift.offDay) {
       let day = shift.offDay.split(",");
-      let resultOffDay = await isOffDay(day, "yesterday");
+      let resultOffDay = await isOffDay(day, "today");
       if (resultOffDay) {
+        let resultOffdays = await db.attends.findFirst({
+          where: { userId, dates: today.toDate() },
+        });
+        if (resultOffdays)
+          return Response.json(
+            {
+              id: resultOffdays.id,
+              clockIn: resultOffdays.clockIn,
+              clockOut: resultOffdays.clockOut,
+              locationIn: resultOffdays.locationIn,
+              locationOut: resultOffdays.locationOut,
+              status: resultOffdays.status,
+            },
+            { status: 400 },
+          );
         let data = {
           userId: userId,
-          dates: yesterday.toDate(),
+          dates: t,
           status: AttendStatus.OffDay,
         };
-        await db.attends.create({ data });
-        return Response.json({}, { status: 400 });
+        let r = await db.attends.create({ data });
+        return Response.json(
+          {
+            id: r.id,
+            clockIn: r.clockIn,
+            clockOut: r.clockOut,
+            locationIn: r.locationIn,
+            locationOut: r.locationOut,
+            status: r.status,
+          },
+          { status: 400 },
+        );
       }
     }
     let yesterdayUser = await db.attends.findFirst({

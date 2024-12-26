@@ -32,10 +32,7 @@ import { TimeUtils } from "@/lib/timeUtility";
 
 export const GET = async (req: Request) => {
   // let result = await db.attends.findMany({ where: { dates: t } });
-  let user = await db.user.findFirst({
-    where: { id: "cm446nk8k005uajoqghixtz06" },
-    include: { AttendBranch: true },
-  });
+  let user = await db.attends.findMany();
   return Response.json({ user }, { status: 200 });
 };
 
