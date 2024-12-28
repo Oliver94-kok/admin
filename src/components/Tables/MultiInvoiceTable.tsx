@@ -239,11 +239,11 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
 
             const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
 
+            totalCell.style = {};
+            totalCell.value = totalSalaryRaw;
             totalCell.font = {
                 color: { argb: isNegative ? 'FFFF0000' : 'FF000000' },
             };
-
-            totalCell.value = totalSalaryRaw;
 
             addFormattedRows([
                 `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
