@@ -191,6 +191,12 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             // Add employee section
             addFormattedRows([`${salary.year} - ${salary.month}`, `${shift}`], { bold: true });
 
+            // Apply bottom border only to the cell containing `${shift}`
+            const yearMonthRowIndex = worksheet.rowCount; // Index of the last added row
+            const shiftCell = worksheet.getRow(yearMonthRowIndex).getCell(2); // Assuming `${shift}` is in the second cell
+            shiftCell.border = {
+                bottom: { style: 'thin' }, // Apply thin bottom border
+            };
 
             // Main headers
             addFormattedRows([
