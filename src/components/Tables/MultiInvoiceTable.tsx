@@ -211,21 +211,29 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             ], { bold: false });
 
             // Numeric data row
+            const totalSalary = salary.perDay! * salary.workingDay!;
+            const totalBonus = salary.bonus || 0;
+            const totalAllowance = salary.allowance || 0;
+            const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut! + (AbsentLength * 2 * salary.perDay!)) || 0;
+            const totalOvertime = salary.overTime || 0;
+            const total = totalSalary + totalBonus + totalAllowance + totalFine + totalOvertime;  // Calculate the sum here
+
             addFormattedRows([
                 "", // Empty cell for merged name
                 salary.perDay || 0,
                 salary.workingDay || 0,
-                salary.perDay! * salary.workingDay! || 0,
-                salary.bonus || 0,
-                salary.allowance || 0,
-                -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut! + (AbsentLength * 2 * salary.perDay!)) || 0,
+                totalSalary,
+                totalBonus,
+                totalAllowance,
+                totalFine,
                 0,
                 0,
-                salary.overTime || 0,
+                totalOvertime,
                 0,
                 0,
-                salary.total || 0
+                total || 0
             ], { alignment: { horizontal: 'center', vertical: 'middle', } });
+
 
             // Absences and fines details
             // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
@@ -250,11 +258,10 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
-            // Apply red font color for negative values in the total column
+
             const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
 
-            // Safely check if the value is a number
-            if (typeof totalCell.value === 'number' && totalCell.value < 0) {
+            if (total < 0) {
                 totalCell.font = {
                     color: { argb: 'FFFF0000' } // Red for negative values
                 };
