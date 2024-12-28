@@ -210,8 +210,6 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
             ], { bold: false });
 
-
-
             // Numeric data row
             addFormattedRows([
                 "", // Empty cell for merged name
@@ -233,18 +231,6 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
-            // Apply red font color if total salary is negative
-            const totalSalaryRaw = salary.total?.toString() || "0"; // 确保为字符串
-            const isNegative = totalSalaryRaw.startsWith("-");
-
-            const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
-
-            totalCell.style = {};
-            totalCell.value = totalSalaryRaw;
-            totalCell.font = {
-                color: { argb: isNegative ? 'FFFF0000' : 'FF000000' },
-            };
-
             addFormattedRows([
                 `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
             ], {
@@ -264,6 +250,22 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
+            worksheet.addConditionalFormatting({
+                ref: `M${startRowIndex + 4}`, // 要应用条件格式的单元格范围
+                rules: [
+                    {
+                        type: 'expression', // 使用表达式规则
+                        formulae: [`M${startRowIndex + 4}<0`], // 条件：单元格值小于 0
+                        style: {
+                            font: {
+                                color: { argb: 'FFFF0000' }, // 红色字体
+                            },
+                        },
+                        priority: 1, // 设置优先级，1 为最高优先级
+                    },
+                ],
+            });
+
             worksheet.getCell(`A${startRowIndex + 5}`).border = {
                 top: { style: 'thin' },
             }
