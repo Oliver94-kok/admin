@@ -234,23 +234,16 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
             // Apply red font color if total salary is negative
-            const totalSalaryRaw = salary.total || "0";
-            const totalSalary = typeof totalSalaryRaw === "string" && totalSalaryRaw.startsWith("-")
-                ? Number(totalSalaryRaw)
-                : Number(totalSalaryRaw);
+            const totalSalaryRaw = salary.total?.toString() || "0"; // 确保为字符串
+            const isNegative = totalSalaryRaw.startsWith("-");
 
             const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
-            totalCell.value = totalSalary;
 
-            if (typeof totalSalaryRaw === "string" && totalSalaryRaw.startsWith("-")) {
-                totalCell.font = {
-                    color: { argb: 'FFFF0000' },
-                };
-            } else {
-                totalCell.font = {
-                    color: { argb: 'FF000000' },
-                };
-            }
+            totalCell.font = {
+                color: { argb: isNegative ? 'FFFF0000' : 'FF000000' },
+            };
+
+            totalCell.value = totalSalaryRaw;
 
             addFormattedRows([
                 `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
