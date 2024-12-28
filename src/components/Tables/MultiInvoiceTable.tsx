@@ -250,21 +250,15 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             worksheet.getCell(`M${startRowIndex + 4}`).value = {
                 formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
             };
-            worksheet.addConditionalFormatting({
-                ref: `M${startRowIndex + 4}`, // 要应用条件格式的单元格范围
-                rules: [
-                    {
-                        type: 'expression', // 使用表达式规则
-                        formulae: [`M${startRowIndex + 4}<0`], // 条件：单元格值小于 0
-                        style: {
-                            font: {
-                                color: { argb: 'FFFF0000' }, // 红色字体
-                            },
-                        },
-                        priority: 1, // 设置优先级，1 为最高优先级
-                    },
-                ],
-            });
+            // Apply red font color for negative values in the total column
+            const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
+
+            // Safely check if the value is a number
+            if (typeof totalCell.value === 'number' && totalCell.value < 0) {
+                totalCell.font = {
+                    color: { argb: 'FFFF0000' } // Red for negative values
+                };
+            }
 
             worksheet.getCell(`A${startRowIndex + 5}`).border = {
                 top: { style: 'thin' },
