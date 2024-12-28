@@ -209,7 +209,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
                 "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
             ], { bold: false });
-
+            const totalSalary = salary.total || 0;
             // Numeric data row
             addFormattedRows([
                 "", // Empty cell for merged name
@@ -224,13 +224,21 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 salary.overTime || 0,
                 0,
                 0,
-                salary.total || 0
+                totalSalary
             ], { alignment: { horizontal: 'center', vertical: 'middle', } });
 
             // Absences and fines details
             // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
             // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
+            // Apply red font color if total salary is negative
+            const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
+            if (totalSalary < 0) {
+                totalCell.font = {
+                    color: { argb: 'FFFF0000' }, // Red color for negative values
+                };
+            }
+
             addFormattedRows([
                 `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
             ], {
