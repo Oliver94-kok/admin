@@ -8,6 +8,7 @@ import Loader from "@/components/common/Loader";
 import { getDataUser } from "@/action/getUserData";
 export const dynamicParams = true;
 import ExcelJS from 'exceljs';
+import { Buffer } from 'buffer';
 
 const dictionaries = {
     en: () => import("../../../locales/en/lang.json").then((module) => module.default),
@@ -21,6 +22,7 @@ interface userExcel {
         clockIn: string | null;
         clockOut: string | null;
         dates: string;
+        photoPath?: string; // Optional property for the photo path
     }[];
 }
 
@@ -77,12 +79,6 @@ const FormLayout = () => {
             const row = worksheet.addRow(rowData);
 
             row.eachCell((cell) => {
-                // cell.border = {
-                //     top: { style: 'thin' },
-                //     left: { style: 'thin' },
-                //     bottom: { style: 'thin' },
-                //     right: { style: 'thin' }
-                // };
                 if (!options.noBorder) {
                     cell.border = {
                         top: { style: 'thin' },
@@ -91,10 +87,7 @@ const FormLayout = () => {
                         right: { style: 'thin' }
                     };
                 } else {
-                    // Remove border by setting it to undefined
-                    cell.border = {
-
-                    };
+                    cell.border = {};
                 }
                 if (options.bold) {
                     cell.font = { bold: true };
@@ -110,36 +103,69 @@ const FormLayout = () => {
             return row;
         };
 
-        // Populate worksheet with data
-        data.forEach((item) => {
+        // Add photos to the worksheet
+        const addImageFromUrl = async (url: string, rowIndex: number, colIndex: number) => {
+            try {
+                // Fetch the image data from the URL
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+
+                // Directly use the ArrayBuffer for image
+                const imageId = workbook.addImage({
+                    buffer: arrayBuffer,  // Use arrayBuffer directly
+                    extension: 'jpeg', // Adjust extension if needed
+                });
+
+                worksheet.addImage(imageId, {
+                    tl: { col: colIndex - 1, row: rowIndex - 1 },
+                    ext: { width: 50, height: 50 }, // Adjust size as needed
+                });
+            } catch (error) {
+                console.error(`Failed to fetch image from ${url}:`, error);
+            }
+        };
+
+        let currentRow = 1;
+
+        for (const item of data) {
             const { name, branch, attend } = item;
 
             addFormattedRows([`${branch}`, `${name}`], { bold: true });
-            attend.map((a) => {
+            currentRow++;
+
+            for (const a of attend) {
                 addFormattedRows([`${a.dates}`, "in", `${a.clockIn}`, "out", `${a.clockOut}`]);
-            });
+                currentRow++;
+
+                // Add photo to the worksheet for this attendance row
+                if (a.photoPath) {
+                    await addImageFromUrl(`https://image.ocean00.com${a.photoPath}`, currentRow, 6);
+                }
+            }
+
             addFormattedRows(["", ""], { noBorder: true });
-        });
+            currentRow++;
+        }
+
         worksheet.properties.defaultRowHeight = 25;
         worksheet.eachRow((row) => {
             row.height = 25;
         });
-        // Set a uniform width for all columns
-        const totalColumns = worksheet.columnCount; // Adjust column count if needed
-        for (let i = 1; i <= totalColumns; i++) {
-            worksheet.getColumn(i).width = 12; // Adjust column width as needed
-        }
 
+        const totalColumns = worksheet.columnCount;
+        for (let i = 1; i <= totalColumns; i++) {
+            worksheet.getColumn(i).width = 12;
+        }
 
         // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        // link.download = 'PayslipReport.xlsx';
-        link.download = `report team ${team}-${month}-${year}.xlsx`;
+        link.download = `PayslipReport.xlsx`;
         link.click();
     };
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
