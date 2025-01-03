@@ -22,7 +22,7 @@ interface userExcel {
         clockIn: string | null;
         clockOut: string | null;
         dates: string;
-        photoPath?: string; // Optional property for the photo path
+        img: string | null; // Optional property for the photo path
     }[];
 }
 
@@ -139,8 +139,8 @@ const FormLayout = () => {
                 currentRow++;
 
                 // Add photo to the worksheet for this attendance row
-                if (a.photoPath) {
-                    await addImageFromUrl(`https://image.ocean00.com${a.photoPath}`, currentRow, 6);
+                if (a.img) {
+                    await addImageFromUrl(`https://image.ocean00.com${a.img}`, currentRow, 6);
                 }
             }
 
