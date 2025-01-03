@@ -107,33 +107,18 @@ const FormLayout = () => {
         // Add photos to the worksheet
         const addImageFromUrl = async (url: string, rowIndex: number, colIndex: number) => {
             try {
-                // Fetch the image data from the URL
                 const response = await fetch(url);
                 const arrayBuffer = await response.arrayBuffer();
 
-                // Directly use the ArrayBuffer for the image
+                // Directly use the ArrayBuffer for image
                 const imageId = workbook.addImage({
-                    buffer: arrayBuffer, // Use arrayBuffer directly
+                    buffer: arrayBuffer,  // Use arrayBuffer directly
                     extension: 'jpeg', // Adjust extension if needed
                 });
 
-                // Adjust the image placement to center in the cell
-                const rowHeight = worksheet.getRow(rowIndex).height || 40; // Default or assigned row height
-                const colWidth = worksheet.getColumn(colIndex).width || 12; // Default or assigned column width
-
-                // Calculate position (in points, considering 7.5 points per width unit)
-                const cellWidthInPoints = colWidth * 7.5;
-                const cellHeightInPoints = rowHeight;
-
-                const imageWidth = 50; // Set your image width
-                const imageHeight = 50; // Set your image height
-
-                const offsetX = (cellWidthInPoints - imageWidth) / 2;
-                const offsetY = (cellHeightInPoints - imageHeight) / 2;
-
                 worksheet.addImage(imageId, {
-                    tl: { col: colIndex - 1 + offsetX / cellWidthInPoints, row: rowIndex - 1 + offsetY / cellHeightInPoints },
-                    ext: { width: imageWidth, height: imageHeight }, // Image size
+                    tl: { col: colIndex - 1, row: rowIndex - 1 },
+                    ext: { width: 50, height: 50 }, // Adjust size as needed
                 });
             } catch (error) {
                 console.error(`Failed to fetch image from ${url}:`, error);
@@ -177,7 +162,7 @@ const FormLayout = () => {
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `PayslipReport.xlsx`;
+        link.download = `UserData.xlsx`;
         link.click();
     };
 
