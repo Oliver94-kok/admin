@@ -8,29 +8,29 @@ import axios from "axios";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-const fetchImageBuffer = async (
-  imageUrl: string,
-  retries = 3,
-  timeout = 5000,
-) => {
-  try {
-    const response = await axios.get(imageUrl, {
-      responseType: "arraybuffer",
-      timeout: timeout, // Set a timeout for the request
-    });
-    return Buffer.from(response.data, "base64");
-  } catch (error) {
-    if (retries > 0) {
-      console.warn(
-        `Retrying image fetch for ${imageUrl}. Retries left: ${retries - 1}`,
-      );
-      return fetchImageBuffer(imageUrl, retries - 1, timeout); // Retry the request
-    } else {
-      console.error(`Failed to fetch image from ${imageUrl}:`, error);
-      return null; // Return null if all retries fail
-    }
-  }
-};
+// const fetchImageBuffer = async (
+//   imageUrl: string,
+//   retries = 3,
+//   timeout = 5000,
+// ) => {
+//   try {
+//     const response = await axios.get(imageUrl, {
+//       responseType: "arraybuffer",
+//       timeout: timeout, // Set a timeout for the request
+//     });
+//     return Buffer.from(response.data, "base64");
+//   } catch (error) {
+//     if (retries > 0) {
+//       console.warn(
+//         `Retrying image fetch for ${imageUrl}. Retries left: ${retries - 1}`,
+//       );
+//       return fetchImageBuffer(imageUrl, retries - 1, timeout); // Retry the request
+//     } else {
+//       console.error(`Failed to fetch image from ${imageUrl}:`, error);
+//       return null; // Return null if all retries fail
+//     }
+//   }
+// };
 
 export const getDataUser = async (
   year: number,
@@ -85,12 +85,12 @@ export const getDataUser = async (
         const localizedAttends = await Promise.all(
           attends.map(async (attend) => {
             // Fetch the image buffer from the URL
-            let imageBuffer;
-            if (attend.img != null) {
-              imageBuffer = await fetchImageBuffer(
-                `http://image.ocean00.com${attend.img}`,
-              );
-            }
+            // let imageBuffer;
+            // if (attend.img != null) {
+            //   imageBuffer = await fetchImageBuffer(
+            //     `http://image.ocean00.com${attend.img}`,
+            //   );
+            // }
 
             return {
               ...attend,
@@ -102,7 +102,7 @@ export const getDataUser = async (
                 ? dayjs.utc(attend.clockOut).local().format("h:mm A")
                 : null,
               dates: dayjs(attend.dates).format("YYYY-MM-DD"),
-              img: imageBuffer, // Replace the image URL with the buffer
+              // img: imageBuffer, // Replace the image URL with the buffer
             };
           }),
         );
