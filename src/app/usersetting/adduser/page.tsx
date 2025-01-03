@@ -8,9 +8,13 @@ export const dynamic = "force-dynamic";
 import { useSession, SessionProvider } from 'next-auth/react';
 import { roleAdmin } from "@/lib/function";
 import { getDataBranch } from "@/data/branch";
+import { Metadata } from "next";
 export const dynamicParams = true;
 // Correctly set revalidate value
 // export const revalidate = 1;
+export const metadata: Metadata = {
+  title: "Add User Page",
+};
 const dictionaries = {
   en: () => import('../../../locales/en/lang.json').then((module) => module.default),
   zh: () => import('../../../locales/zh/lang.json').then((module) => module.default),

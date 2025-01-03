@@ -9,7 +9,11 @@ import { getDataUser } from "@/action/getUserData";
 export const dynamicParams = true;
 import ExcelJS from 'exceljs';
 import { Buffer } from 'buffer';
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "User Data Page",
+};
 const dictionaries = {
     en: () => import("../../../locales/en/lang.json").then((module) => module.default),
     zh: () => import("../../../locales/zh/lang.json").then((module) => module.default),
@@ -148,9 +152,9 @@ const FormLayout = () => {
             currentRow++;
         }
 
-        worksheet.properties.defaultRowHeight = 25;
+        worksheet.properties.defaultRowHeight = 40;
         worksheet.eachRow((row) => {
-            row.height = 25;
+            row.height = 40;
         });
 
         const totalColumns = worksheet.columnCount;

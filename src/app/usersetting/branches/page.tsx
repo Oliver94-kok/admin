@@ -18,6 +18,9 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
+export const metadata: Metadata = {
+  title: "Branches Page",
+};
 // Correctly set revalidate value
 // export const revalidate = 1;
 const Branches = () => {
