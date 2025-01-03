@@ -11,9 +11,6 @@ import useSWR from 'swr';
 import { useSession, SessionProvider } from 'next-auth/react';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
-export const metadata: Metadata = {
-    title: "Dashboard Page",
-};
 
 const Dashboard = () => {
     const session = useSession();

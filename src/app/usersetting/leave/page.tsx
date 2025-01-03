@@ -18,9 +18,6 @@ export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 import { useSession, SessionProvider } from 'next-auth/react';
 
-export const metadata: Metadata = {
-  title: "Leave Page",
-};
 // Correctly set revalidate value
 // export const revalidate = 1;
 const Leave = () => {
