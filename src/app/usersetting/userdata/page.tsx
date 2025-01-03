@@ -70,7 +70,7 @@ const FormLayout = () => {
         if (!data.length) return;
 
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Payslips');
+        const worksheet = workbook.addWorksheet('UserData');
 
         const addFormattedRows = (rowData: any[], options: {
             bold?: boolean,
@@ -111,15 +111,29 @@ const FormLayout = () => {
                 const response = await fetch(url);
                 const arrayBuffer = await response.arrayBuffer();
 
-                // Directly use the ArrayBuffer for image
+                // Directly use the ArrayBuffer for the image
                 const imageId = workbook.addImage({
-                    buffer: arrayBuffer,  // Use arrayBuffer directly
+                    buffer: arrayBuffer, // Use arrayBuffer directly
                     extension: 'jpeg', // Adjust extension if needed
                 });
 
+                // Adjust the image placement to center in the cell
+                const rowHeight = worksheet.getRow(rowIndex).height || 40; // Default or assigned row height
+                const colWidth = worksheet.getColumn(colIndex).width || 12; // Default or assigned column width
+
+                // Calculate position (in points, considering 7.5 points per width unit)
+                const cellWidthInPoints = colWidth * 7.5;
+                const cellHeightInPoints = rowHeight;
+
+                const imageWidth = 50; // Set your image width
+                const imageHeight = 50; // Set your image height
+
+                const offsetX = (cellWidthInPoints - imageWidth) / 2;
+                const offsetY = (cellHeightInPoints - imageHeight) / 2;
+
                 worksheet.addImage(imageId, {
-                    tl: { col: colIndex - 1, row: rowIndex - 1 },
-                    ext: { width: 50, height: 50 }, // Adjust size as needed
+                    tl: { col: colIndex - 1 + offsetX / cellWidthInPoints, row: rowIndex - 1 + offsetY / cellHeightInPoints },
+                    ext: { width: imageWidth, height: imageHeight }, // Image size
                 });
             } catch (error) {
                 console.error(`Failed to fetch image from ${url}:`, error);
