@@ -22,21 +22,6 @@ export const GET = async (request: NextRequest) => {
 
   if (userId) {
     if (Number(month) == 3) {
-      const startDate = currentDate
-        .subtract(2, "month")
-        .startOf("month")
-        .toDate();
-      const endDate = currentDate.endOf("month").toDate();
-      var threeMonth = await db.attends.findMany({
-        where: { userId, dates: { gte: startDate, lte: endDate } },
-        select: {
-          id: true,
-          clockIn: true,
-          clockOut: true,
-          status: true,
-          dates: true,
-        },
-      });
       var result = await getLastThreeMonthsData(userId);
 
       return Response.json({ result }, { status: 200 });

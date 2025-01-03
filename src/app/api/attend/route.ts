@@ -40,58 +40,11 @@ export const POST = async (req: Request) => {
   const { userId, clockIn, imgClockIn, clockOut, late, location, notify } =
     await req.json();
   let check = await checkClockIn(userId);
+  console.log("🚀 ~ POST ~ check:", check);
   const user = await getUserById(userId);
   const today = dayjs();
-  if (check?.status == "Active" || check?.status == "Full_Attend")
+  if (check)
     return Response.json({ error: "User aldready clock in" }, { status: 400 });
-  if (check?.status == "Absent") {
-    try {
-      let fine2 = await getNoClockIn(
-        userId,
-        new Date().getMonth() + 1,
-        new Date().getFullYear(),
-      );
-      let shift = await db.attendBranch.findFirst({ where: { userId } });
-      if (!shift?.clockOut) {
-        return Response.json(
-          { error: `No shift found for user ${userId}` },
-          { status: 400 },
-        );
-      }
-      const shiftOut = TimeUtils.createDateFromTimeString(
-        today.toDate(),
-        shift.clockOut,
-        "out",
-      );
-      let overtime = await calculateOvertimeHours(shiftOut, today);
-      let checkDate = TimeUtils.checkMorning(today.toISOString());
-
-      let data = {
-        userId,
-        dates: checkDate ? today.subtract(1, "day").toDate() : today.toDate(),
-        clockOut: today.toISOString(),
-        fine: fine2!,
-        locationOut: location,
-        overtime: Number(overtime!),
-        status: AttendStatus.No_ClockIn_ClockOut,
-      };
-      console.log("🚀 ~ POST ~ data:", data);
-      let t = await db.attends.create({ data });
-      await CheckSalarys({
-        userId,
-        fineLate: null,
-        fineNoClockIn: fine2,
-        fineNoClockOut: null,
-        overtime: Number(overtime!),
-        workingHour: null,
-      });
-      await notificationClock(userId, notify);
-      await SentNoti("Clock", "You have clock out", "", user?.username);
-      return Response.json({ id: t.id }, { status: 201 });
-    } catch (error) {
-      return Response.json({ error }, { status: 400 });
-    }
-  }
 
   if (clockIn) {
     try {
@@ -134,6 +87,7 @@ export const POST = async (req: Request) => {
       await SentNoti("Clock", "You have clock in", "", user?.username);
       return Response.json({ id: t.id, timeIn: t.clockIn }, { status: 201 });
     } catch (error) {
+      console.log("🚀 ~ POST ~ error:", error);
       return Response.json({ error }, { status: 400 });
     }
   }
@@ -189,8 +143,9 @@ export const PATCH = async (req: Request) => {
   const { userId, clockOut, id, location, notify } = await req.json();
   console.log("🚀 ~ PATCH ~ clockOut:", clockOut);
   let attend = await checkClockIn(userId);
-  if (!attend)
+  if (attend?.status == "Full_Attend")
     return Response.json({ error: "you have clock out" }, { status: 400 });
+  if (!attend) return Response.json({ error: "No data" }, { status: 400 });
   try {
     const today = dayjs();
     let shift = await db.attendBranch.findFirst({ where: { userId } });

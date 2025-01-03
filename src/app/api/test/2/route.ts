@@ -1,3 +1,4 @@
+import { getDataUser } from "@/action/getUserData";
 import { calculateOvertimeHours } from "@/data/attend";
 import { getAttendLate } from "@/data/salary";
 import { db } from "@/lib/db";
@@ -5,68 +6,62 @@ import { TimeUtils } from "@/lib/timeUtility";
 import dayjs from "dayjs";
 
 export const GET = async (request: Request) => {
-  const userId = "cm499nn7b000trjhznxcqy75f";
-  const today = dayjs();
-  let shift = await db.attendBranch.findFirst({ where: { userId } });
-  if (!shift?.clockIn) {
-    throw new Error(`No shift found for user ${userId}`);
+  try {
+    const users = await getDataUser(2024, 12, "A");
+    return Response.json(users, { status: 200 });
+  } catch (error) {
+    return Response.json(error, { status: 500 });
   }
-  const shiftIn = TimeUtils.createDateFromTimeString(
-    today.toDate(),
-    shift.clockIn,
-    "in",
-  );
-  let ss = dayjs(shiftIn).add(10, "minute");
-  let late = today.isAfter(ss);
-  if (late) {
-    var userlate = await getAttendLate(
-      userId,
-      new Date().getMonth() + 1,
-      new Date().getFullYear(),
-    );
-  }
-  const isBeforeEightAM = today.isBefore(
-    dayjs().tz().hour(8).minute(0).second(0).millisecond(0),
-  );
-  let data = {
-    userId,
-    dates: isBeforeEightAM ? today.add(1, "day").toDate() : today.toDate(),
-    clockIn: today.toISOString(),
-    // img: attendImg,
-    fine: userlate!,
-    // locationIn: location,
-  };
-  console.log("🚀 ~ POST ~ data:", data);
-  // let t = await db.attends.create({ data });
-  // await notificationClock(userId, notify);
-  // await SentNoti("Clock", "You have clock in", "", user?.username);
-  return Response.json({ data, shiftIn, today }, { status: 201 });
 };
 export const POST = async (req: Request) => {
-  const userId = "cm499nn7b000trjhznxcqy75f";
-  const today = dayjs();
-  let shift = await db.attendBranch.findFirst({ where: { userId } });
-  if (!shift?.clockOut) {
-    throw new Error(`No shift found for user ${userId}`);
+  try {
+    const users = await db.user.findMany({
+      where: { AttendBranch: { team: "D" } },
+      select: { id: true },
+    });
+    const results = await Promise.allSettled(
+      users.map(async (u) => {
+        try {
+          const data = Array.from({ length: 12 }, (_, i) => ({
+            userId: u.id,
+            month: i + 1,
+            year: 2025,
+          }));
+
+          const created = await db.salary.createMany({ data });
+          return {
+            userId: u.id,
+            status: "fulfilled",
+            created: true,
+            count: created.count,
+          };
+        } catch (error) {
+          return {
+            userId: u.id,
+            status: "rejected",
+            error: error instanceof Error ? error.message : "Unknown error",
+            created: false,
+          };
+        }
+      }),
+    );
+
+    const summary = {
+      total: users.length,
+      successful: results.filter((r) => r.status === "fulfilled").length,
+      failed: results.filter((r) => r.status === "rejected").length,
+      details: results,
+    };
+
+    return Response.json(summary, { status: 200 });
+  } catch (error) {
+    console.error("Main operation failed:", error);
+    return Response.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+        status: "failed",
+      },
+      { status: 500 },
+    );
   }
-  const shiftOut = TimeUtils.createDateFromTimeString(
-    today.toDate(),
-    shift.clockOut,
-    "out",
-  );
-  let overtime = await calculateOvertimeHours(shiftOut, today);
-  let checkDate = TimeUtils.checkMorning(today.toISOString());
-  let data = {
-    userId,
-    dates: checkDate ? today.subtract(1, "day").toDate() : today.toDate(),
-    clockOut: today.toDate(),
-    // fine: fine2!,
-    // locationOut: location,
-    overtime: Number(overtime!),
-    // status: AttendStatus.No_ClockIn_ClockOut,
-  };
-  return Response.json(
-    { overtime, shiftOut, today, checkDate, data },
-    { status: 200 },
-  );
 };

@@ -22,20 +22,19 @@ dayjs.extend(duration);
 
 export const checkClockIn = async (userId: string) => {
   console.log("🚀 ~ checkClockIn ~ userId:", userId);
-  const today = dayjs();
-  const t = new Date(today.format("YYYY-MM-DD"));
-  let user = await db.attends.findFirst({
-    where: {
-      userId,
-      OR: [
-        { status: "Active" },
-        {
-          dates: t,
-        },
-      ],
-    },
-  });
-  return user;
+  try {
+    const today = dayjs();
+    const t = new Date(today.format("YYYY-MM-DD"));
+    let user = await db.attends.findFirst({
+      where: {
+        userId,
+        dates: t,
+      },
+    });
+    return user;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const checkClockLate = async (userid: string) => {
@@ -319,7 +318,7 @@ export async function getLastThreeMonthsData(userId: string) {
       ]);
 
       return {
-        month: date.format("MM"),
+        month: date.format("M"),
         data: attendanceData,
         stats: {
           fullAttend:
