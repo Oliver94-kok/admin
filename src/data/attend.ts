@@ -28,7 +28,7 @@ export const checkClockIn = async (userId: string) => {
     let user = await db.attends.findFirst({
       where: {
         userId,
-        dates: t,
+        OR: [{ dates: t }, { status: "Active" }],
       },
     });
     return user;

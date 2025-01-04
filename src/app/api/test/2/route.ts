@@ -7,38 +7,26 @@ import dayjs from "dayjs";
 
 export const GET = async (request: Request) => {
   try {
-    const users = await getDataUser(2024, 12, "A");
-    return Response.json(users, { status: 200 });
-  } catch (error) {
-    return Response.json(error, { status: 500 });
-  }
-};
-export const POST = async (req: Request) => {
-  try {
     const users = await db.user.findMany({
       where: { AttendBranch: { team: "D" } },
       select: { id: true },
     });
+
     const results = await Promise.allSettled(
       users.map(async (u) => {
         try {
-          const data = Array.from({ length: 12 }, (_, i) => ({
-            userId: u.id,
-            month: i + 1,
-            year: 2025,
-          }));
+          let salary = await db.salary.findMany({ where: { userId: u.id } });
 
-          const created = await db.salary.createMany({ data });
           return {
             userId: u.id,
-            status: "fulfilled",
+            type: "success",
             created: true,
-            count: created.count,
+            length: salary.length,
           };
         } catch (error) {
           return {
             userId: u.id,
-            status: "rejected",
+            type: "error",
             error: error instanceof Error ? error.message : "Unknown error",
             created: false,
           };
@@ -46,11 +34,88 @@ export const POST = async (req: Request) => {
       }),
     );
 
+    // Map the settled promises to your desired format
+    const processedResults = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
+    });
+
     const summary = {
       total: users.length,
-      successful: results.filter((r) => r.status === "fulfilled").length,
-      failed: results.filter((r) => r.status === "rejected").length,
-      details: results,
+      successful: processedResults.filter((r) => r.type === "success").length,
+      have: processedResults.filter((r) => r.type === "have").length,
+      failed: processedResults.filter((r) => r.type === "error").length,
+      details: processedResults,
+    };
+
+    return Response.json(summary, { status: 200 });
+  } catch (error) {
+    return Response.json(error, { status: 500 });
+  }
+};
+export const POST = async (req: Request) => {
+  try {
+    const users = await db.user.findMany({
+      where: { AttendBranch: { team: "c" } },
+      select: { id: true },
+    });
+
+    const results = await Promise.allSettled(
+      users.map(async (u) => {
+        try {
+          let salary = await db.salary.findFirst({
+            where: { userId: u.id, year: 2025, month: 1 },
+          });
+
+          const created = await db.salary.updateMany({
+            where: { userId: salary?.userId },
+            data: { perDay: salary?.perDay },
+          });
+          return {
+            userId: u.id,
+            type: "success",
+            created: true,
+            count: created.count,
+          };
+        } catch (error) {
+          return {
+            userId: u.id,
+            type: "error",
+            error: error instanceof Error ? error.message : "Unknown error",
+            created: false,
+          };
+        }
+      }),
+    );
+
+    // Map the settled promises to your desired format
+    const processedResults = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
+    });
+
+    const summary = {
+      total: users.length,
+      successful: processedResults.filter((r) => r.type === "success").length,
+      have: processedResults.filter((r) => r.type === "have").length,
+      failed: processedResults.filter((r) => r.type === "error").length,
+      details: processedResults,
     };
 
     return Response.json(summary, { status: 200 });

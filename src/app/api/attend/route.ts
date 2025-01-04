@@ -143,6 +143,7 @@ export const PATCH = async (req: Request) => {
   const { userId, clockOut, id, location, notify } = await req.json();
   console.log("🚀 ~ PATCH ~ clockOut:", clockOut);
   let attend = await checkClockIn(userId);
+  console.log("🚀 ~ PATCH ~ attend:", attend);
   if (attend?.status == "Full_Attend")
     return Response.json({ error: "you have clock out" }, { status: 400 });
   if (!attend) return Response.json({ error: "No data" }, { status: 400 });
@@ -172,7 +173,7 @@ export const PATCH = async (req: Request) => {
     };
     let update = await db.attends.update({
       data,
-      where: { id: id },
+      where: { id: attend.id },
     });
     await CheckSalarys({
       userId,
