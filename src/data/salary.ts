@@ -1,11 +1,16 @@
 import { db } from "@/lib/db";
-import { checkClockLate } from "./attend";
-import { Prisma } from "@prisma/client";
+import {
+  calculateOvertimeHours,
+  calculateWorkingHours,
+  checkClockLate,
+} from "./attend";
+import { AttendStatus, Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import isBetween from "dayjs/plugin/isBetween";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { TimeUtils } from "@/lib/timeUtility";
 
 // Initialize dayjs plugins
 dayjs.extend(utc);
@@ -132,57 +137,6 @@ export const CheckSalarys = async ({
     return;
   }
 };
-
-// export const checkSalary = async (
-//   userId: string,
-//   fine: number,
-//   fine2: number,
-//   days: any,
-//   overTimeHour: number,
-//   workingHour?: number,
-// ) => {
-//   let salary = await getSalaryByUserId(userId);
-//   if (salary) {
-//     let late = 0;
-//     let dbfine = 0;
-//     if (fine) {
-//       late = salary.late! + 1;
-//       dbfine = salary.fine! + fine;
-//     }
-//     let dbfine2 = 0;
-//     let notClockIn = 0;
-//     if (fine2) {
-//       dbfine2 = salary.fine2! + fine2;
-//       notClockIn = salary.notClockIn! + 1;
-//     }
-//     const currentArray = Array.isArray(salary?.day) ? salary?.day : [];
-//     const updatedArray = [...currentArray, days];
-//     let sortArray = updatedArray.sort((a, b) => a.id - b.id);
-//     let day = salary.workingDay! + 1;
-//     let ot = salary.overTimeHour! + overTimeHour;
-//     let workingHoour = salary.workingHoour! + workingHour!;
-//     let data = {
-//       fine: dbfine,
-//       fine2: dbfine2,
-//       workingDay: day,
-//       overTimeHour: ot,
-//       workingHoour,
-//       notClockIn,
-//       late,
-//       day: sortArray,
-//     };
-
-//     await db.salary.update({
-//       where: {
-//         id: salary.id,
-//       },
-//       data,
-//     });
-//   }
-
-//   // let result = await createSalary(userId, 1, overTimeHour, fine);
-//   // return result;
-// };
 
 export const getAttendLate = async (
   userId: string,
@@ -329,4 +283,160 @@ export const getAllresultAttend = async (
   let notClockOut = result.filter((e) => e.status == "No_ClockIn_ClockOut");
   let dataAbsent = result.filter((e) => e.status == "Absent");
   return { dataAbsent, notClockIn, notClockOut, dataLate };
+};
+const checkLate = async () => {};
+export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
+  try {
+    const users = await db.user.findMany({ where: { AttendBranch: { team } } });
+    const results = await Promise.allSettled(
+      users.map(async (user) => {
+        try {
+          let attends = await db.attends.findMany({
+            where: {
+              userId: user.id,
+              dates: {
+                gte: new Date("2025-01-01"),
+                lte: new Date("2025-01-31"),
+              },
+            },
+          });
+          let shift = await db.attendBranch.findFirst({
+            where: { userId: user.id },
+          });
+          if (!shift?.clockIn || !shift?.clockOut) {
+            throw new Error(`No shift found for user ${user.id}`);
+          }
+
+          let totalDAy = dayjs().subtract(1, "days").format("D");
+          let x = 1;
+          let total_fine = 0;
+          attends.map(async (attend) => {
+            const shiftIn = TimeUtils.createDateFromTimeString(
+              attend.dates,
+              shift.clockIn!,
+              "in",
+            );
+            const shiftOut = TimeUtils.createDateFromTimeString(
+              attend.dates,
+              shift.clockOut!,
+              "out",
+            );
+            let inattend = dayjs(attend.clockIn);
+            let outattend = dayjs(attend.clockOut);
+            let dates = dayjs(attend.dates);
+            let same = dates.isSame("2025-01-01");
+            let lateClockIN;
+            if (attend.clockIn) {
+              let ss = dayjs(shiftIn).add(10, "minute");
+              lateClockIN = inattend.isAfter(ss);
+            }
+            let fine = 0;
+            if (same) {
+              if (lateClockIN) {
+                fine = 50;
+                total_fine = fine + total_fine;
+              }
+              if (attend.clockOut) {
+                let overtime = await calculateOvertimeHours(
+                  shiftOut,
+                  attend.clockOut,
+                );
+                let workingHour = await calculateWorkingHours(
+                  attend.clockIn,
+                  attend.clockOut,
+                );
+                await db.attends.update({
+                  where: { id: attend.id },
+                  data: {
+                    fine,
+                    overtime,
+                    workingHour,
+                    status: lateClockIN
+                      ? AttendStatus.Late
+                      : AttendStatus.Full_Attend,
+                  },
+                });
+              }
+            } else {
+              if (lateClockIN) {
+                let check = total_fine == 50 ? 50 : 100;
+                total_fine = check + total_fine;
+                fine = check;
+              }
+              if (attend.clockOut) {
+                let overtime = await calculateOvertimeHours(
+                  shiftOut,
+                  attend.clockOut,
+                );
+                let workingHour = await calculateWorkingHours(
+                  attend.clockIn,
+                  attend.clockOut,
+                );
+                await db.attends.update({
+                  where: { id: attend.id },
+                  data: {
+                    fine,
+                    overtime,
+                    workingHour,
+                    status: lateClockIN
+                      ? AttendStatus.Late
+                      : AttendStatus.Full_Attend,
+                  },
+                });
+              } else {
+              }
+            }
+          });
+          let salary = await db.salary.findFirst({
+            where: { userId: user.id, month: 1, year: 2025 },
+          });
+          await db.salary.update({
+            where: { id: salary?.id },
+            data: { workingDay: attends.length },
+          });
+          return {
+            userId: user.id,
+            type: "Done",
+            totalDAy,
+            daywork: attends.length,
+            f: new Date("2025-01-01"),
+            l: new Date("2025-01-31"),
+          };
+        } catch (error) {
+          return {
+            userId: user.id,
+            type: "error",
+            error: error instanceof Error ? error.message : "Unknown error",
+            created: false,
+          };
+        }
+      }),
+    );
+    const processedResults = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
+    });
+    const summary = {
+      total: results.length,
+      moreFour: {
+        total: processedResults.filter((r) => r.type === "Not same").length,
+        detail: processedResults.filter((r) => r.type === "Not same"),
+      },
+      lessfour: {
+        total: processedResults.filter((r) => r.type === "Done").length,
+        detail: processedResults.filter((r) => r.type === "Done"),
+      },
+    };
+    return summary;
+  } catch (error) {
+    return error;
+  }
 };

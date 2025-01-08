@@ -11,6 +11,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
+import { TimeUtils } from "@/lib/timeUtility";
 
 // Enable required dayjs plugins
 dayjs.extend(utc);
@@ -332,3 +333,92 @@ export async function getLastThreeMonthsData(userId: string) {
 
   return monthsData;
 }
+const addAttendByDate = async () => {
+  try {
+    let today = new Date("2025-01-01");
+    const users = await db.attends.findMany({
+      where: { dates: today, users: { AttendBranch: { team: "D" } } },
+    });
+    const results = await Promise.allSettled(
+      users.map(async (u) => {
+        try {
+          if (
+            u.status == "Full_Attend" ||
+            u.status == "No_ClockIn_ClockOut" ||
+            u.status == "Leave" ||
+            u.status == "OffDay"
+          ) {
+            return {
+              userId: u.id,
+              attend_status: u.status,
+              type: "Have",
+            };
+          }
+          let shift = await db.attendBranch.findFirst({
+            where: { userId: u.userId },
+          });
+          if (!shift?.clockIn || !shift?.clockOut) {
+            throw new Error(`No shift found for user ${u.userId}`);
+          }
+
+          const now = new Date();
+          const shiftIn = TimeUtils.createDateFromTimeString(
+            today,
+            shift.clockIn,
+            "in",
+          );
+          const shiftOut = TimeUtils.createDateFromTimeString(
+            today,
+            shift.clockOut,
+            "out",
+          );
+          await db.attends.update({
+            where: { id: u.id },
+            data: {
+              clockIn: shiftIn,
+              clockOut: shiftOut,
+              status: "Full_Attend",
+            },
+          });
+          return {
+            userId: u.id,
+            attend_status: u.status,
+            type: "Update",
+            shiftIn,
+            shiftOut,
+          };
+        } catch (error) {
+          return {
+            userId: u.userId,
+            type: "error",
+            error: error instanceof Error ? error.message : "Unknown error",
+            created: false,
+          };
+        }
+      }),
+    );
+    const processedResults = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
+    });
+    const summary = {
+      total: users.length,
+      Update: processedResults.filter((r) => r.type === "Update").length,
+      have: processedResults.filter((r) => r.type === "Have").length,
+      failed: processedResults.filter((r) => r.type === "error").length,
+      details: processedResults,
+    };
+    return Response.json(summary, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return Response.json(error, { status: 400 });
+  }
+};
