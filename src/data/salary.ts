@@ -313,12 +313,12 @@ export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
           attends.map(async (attend) => {
             const shiftIn = TimeUtils.createDateFromTimeString(
               attend.dates,
-              shift.clockIn!,
+              shift?.clockIn!,
               "in",
             );
             const shiftOut = TimeUtils.createDateFromTimeString(
               attend.dates,
-              shift.clockOut!,
+              shift?.clockOut!,
               "out",
             );
             let inattend = dayjs(attend.clockIn);
