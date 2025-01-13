@@ -368,7 +368,7 @@ export const BranchATable = ({
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
               <ClockinSelectGroup
                 onSendData={onSendData}
-                initialValue={teamA.clockIn ? teamA.clockIn : "00:00"}
+                initialValue={teamA.clockIn ? teamA.clockIn : "-"}
               />
             </p>
           </div>
@@ -376,7 +376,7 @@ export const BranchATable = ({
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
               <ClockoutSelectGroup
                 onSendData={onSendData}
-                initialValue={teamA.clockOut ? teamA.clockOut : "00:00"}
+                initialValue={teamA.clockOut ? teamA.clockOut : "-"}
               />
             </p>
           </div>

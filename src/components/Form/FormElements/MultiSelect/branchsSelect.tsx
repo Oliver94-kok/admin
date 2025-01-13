@@ -13,7 +13,7 @@ const BranchsSelectGroup: React.FC<BranchsSelectGroupProps> = ({
     initialValue,
     data
 }) => {
-    const [selectedOption, setSelectedOption] = useState<string>("");
+    const [selectedOption, setSelectedOption] = useState<string>(initialValue);
     const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
     console.log("initisl value", initialValue);
     const changeTextColor = () => {
@@ -28,8 +28,8 @@ const BranchsSelectGroup: React.FC<BranchsSelectGroupProps> = ({
 
             <div className="relative rounded-[7px] bg-white dark:bg-dark-2">
                 <select
-                    defaultValue={initialValue}
-                    // value={selectedOption}
+                    // defaultValue={initialValue}
+                    value={selectedOption}
                     onChange={(e) => {
                         setSelectedOption(e.target.value);
                         onSendData(typeData.BRANCH, e.target.value);
@@ -38,6 +38,10 @@ const BranchsSelectGroup: React.FC<BranchsSelectGroupProps> = ({
                     className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${isOptionSelected ? "text-dark dark:text-white" : ""
                         }`}
                 >
+                    <option value="-" className="text-dark-5 dark:text-dark-6" >
+                        -
+                    </option>
+
                     {data?.map((d) => (
                         <>
                             <option value={d.code} className="text-dark-5 dark:text-dark-6" key={d.code}>

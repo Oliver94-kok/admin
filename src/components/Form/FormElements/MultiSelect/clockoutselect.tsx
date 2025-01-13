@@ -36,6 +36,9 @@ const ClockoutSelectGroup: React.FC<ClockoutSelectGroupProps> = ({
           className={`relative z-10 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-11.5 py-3 pl-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 ${isOptionSelected ? "text-dark dark:text-white" : ""
             }`}
         >
+          <option value="-" className="text-dark-5 dark:text-dark-6">
+            -
+          </option>
           <option value="00:00" className="text-dark-5 dark:text-dark-6">
             00:00
           </option>
