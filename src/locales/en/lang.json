@@ -59,8 +59,11 @@
     "fine": "Fine",
     "enterot": "OT",
     "enterbonus": "Bonus",
-    "enterallow": "Allowance",
-    "entercover": "Cover",
+    "enteradvance": "Advance",
+    "entershort": "Short",
+    "entertransport": "Transport",
+    "enterallow": "Allow",
+    "enterm": "M",
     "totalsalary": "Total Salary",
     "print": "Print",
     "selectall": "Select all",
@@ -72,8 +75,12 @@
     "removestatus": "Are you sure you want to remove this salary component?",
     "addot": "Add OT",
     "addbonus": "Add Bonus",
-    "addallow": "Add Allowance",
-    "addcover": "Add Cover"
+    "addadvance": "Add Advance",
+    "addshort": "Add Short",
+    "addtransport": "Add Transport",
+    "addallow": "Add Allow",
+    "addm": "Add M",
+    "addthis":"Are you sure you want to add this?"
   },
   "leave": {
     "userleave": "User Leave",

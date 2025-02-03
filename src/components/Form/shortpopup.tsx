@@ -1,11 +1,11 @@
-// src/components/BonusPopup.tsx
-import React, { useEffect, useState } from 'react';
+// src/components/ShortPopup.tsx
+import React, { useState, useEffect } from 'react';
 import Modal from '../modal'; // Make sure this path is correct
 import MultiSelect from './MultiSelect'; // Ensure this import path is correct
 import { SelectedItem, typeComponentSalary } from '../Tables/SalaryTable';
 import { getLocale } from '@/locales/dictionary';
 
-interface BonusPopupProps {
+interface ShortPopupProps {
     isOpen: boolean;
     onClose: () => void;
     onAddItem: (item: string, id: string, type: typeComponentSalary) => void;
@@ -14,7 +14,7 @@ interface BonusPopupProps {
     type: typeComponentSalary
 }
 
-const BonusPopup: React.FC<BonusPopupProps> = ({ isOpen, onClose, onAddItem, id, items, type }) => {
+const ShortPopup: React.FC<ShortPopupProps> = ({ isOpen, onClose, onAddItem, id, items, type }) => {
     const [inputValue, setInputValue] = useState('');
     const [dict, setDict] = useState<any>(null); // State to hold the dictionary
 
@@ -48,7 +48,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ isOpen, onClose, onAddItem, id,
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className={`popup ${isOpen ? 'open' : ''}`}>
                 <div className="p-4">
-                    <h2 className="text-lg font-semibold mb-4">{dict.salary.addbonus}</h2>
+                    <h2 className="text-lg font-semibold mb-4">{dict.salary.addshort}</h2>
                     <div className="flex gap-2 mb-4">
                         <input
                             type="text"
@@ -70,4 +70,4 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ isOpen, onClose, onAddItem, id,
     );
 };
 
-export default BonusPopup;
+export default ShortPopup;

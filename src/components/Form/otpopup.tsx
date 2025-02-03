@@ -1,8 +1,9 @@
 // src/components/PopupForm.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../modal'; // Make sure this path is correct
 import MultiSelect from './MultiSelect'; // Ensure this import path is correct
 import { SelectedItem, typeComponentSalary } from '../Tables/SalaryTable';
+import { getLocale } from '@/locales/dictionary';
 
 interface OtPopupProps {
     isOpen: boolean;
@@ -16,10 +17,11 @@ interface OtPopupProps {
 
 const OTPopup: React.FC<OtPopupProps> = ({ isOpen, onClose, onAddItem, id, items, type }) => {
     const [inputValue, setInputValue] = useState('');
+    const [dict, setDict] = useState<any>(null); // State to hold the dictionary
 
     const handleAddItem = () => {
         if (inputValue.trim()) {
-            const confirmAdd = window.confirm("Are you sure you want to add this?");
+            const confirmAdd = window.confirm(dict.salary.addthis);
             if (confirmAdd) {
                 onAddItem(inputValue.trim(), id, type);
                 setInputValue('');
@@ -27,11 +29,29 @@ const OTPopup: React.FC<OtPopupProps> = ({ isOpen, onClose, onAddItem, id, items
         }
     };
 
+    useEffect(() => {
+        const locale = getLocale();
+
+        const loadDictionary = async () => {
+            const dictionaries = {
+                en: () => import('../../locales/en/lang.json').then((module) => module.default),
+                zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
+            };
+
+            const languageDict = await dictionaries[locale]();
+            setDict(languageDict);
+        };
+
+        loadDictionary();
+    }, []);
+
+    if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className={`popup ${isOpen ? 'open' : ''}`}>
                 <div className="p-4">
-                    <h2 className="text-lg font-semibold mb-4">Add OT</h2>
+                    <h2 className="text-lg font-semibold mb-4">{dict.salary.addot}</h2>
                     <div className="flex gap-2 mb-4">
                         <input
                             type="text"

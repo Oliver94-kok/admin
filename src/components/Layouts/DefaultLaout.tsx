@@ -24,8 +24,8 @@ export default function DefaultLayout({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Star ===== --> */}
-          <main>
-            <div className="w-[1920px] h-[1280px] max-w-full p-4 md:p-6 2xl:p-10 overflow-auto">
+          <main className="flex-1 overflow-x-auto">
+            <div className="w-max min-w-[1280px] p-4 md:p-6 2xl:p-10">
               {children}
             </div>
           </main>

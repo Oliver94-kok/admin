@@ -9,10 +9,10 @@ import { addPerDay } from "@/action/addperDay";
 import { AddOverTime, delOvetime } from "@/action/salaryOt";
 import BonusPopup from "../Form/bonuspopup";
 import AllowPopup from "../Form/allowpopup";
-import CoverPopup from "../Form/coverpopup";
+import MPopup from "../Form/mpopup";
 import { AddAllow, delAllow } from "@/action/salaryAllow";
 import { AddBonus, delBonus } from "@/action/salaryBonus";
-import { AddCover, delCover } from "@/action/salaryCover";
+import { AddCover, AddTransport, delCover } from "@/action/salaryTransport";
 import OTPopup from "../Form/otpopup";
 import { ComponentSalary } from "../Form/componentSalary";
 
@@ -24,6 +24,12 @@ import { setDataCookies } from "@/action/invoice";
 import BranchSelectGroup from "../Form/FormElements/MultiSelect/branchselect";
 import { useSession } from "next-auth/react";
 import { roleAdmin } from "@/lib/function";
+import AdvancePopup from "../Form/advancepopup";
+import ShortPopup from "../Form/shortpopup";
+import TransportPopup from "../Form/transportpopup";
+import { AddAdvance, delAdvance } from "@/action/salaryAdvance";
+import { AddShort, delShort } from "@/action/salaryShort";
+import { AddM, delM } from "@/action/salaryM";
 
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
@@ -49,7 +55,10 @@ export enum typeComponentSalary {
   OverTime,
   Bonus,
   Allowance,
-  Cover,
+  Advance,
+  Short,
+  Transport,
+  M,
 }
 
 const SalaryTable = ({
@@ -275,8 +284,8 @@ const SalaryTable = ({
     type: typeComponentSalary,
   ) => {
     switch (type) {
-      case typeComponentSalary.OverTime:
-        AddOverTime(id, Number(item)).then((data) => {
+      case typeComponentSalary.Bonus:
+        AddBonus(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -288,18 +297,14 @@ const SalaryTable = ({
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
-                  ? {
-                    ...user,
-                    ...{ overTime: Number(item), total: data.total },
-                  }
+                  ? { ...user, ...{ bonus: Number(item), total: data.total } }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success add overtime", {
+            toast.success("Success add Bonus ", {
               position: "top-center",
             });
-            console.info(data.success);
             return;
           }
         });
@@ -325,15 +330,15 @@ const SalaryTable = ({
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success add allowance", {
+            toast.success("Success add Allowance", {
               position: "top-center",
             });
             return;
           }
         });
         break;
-      case typeComponentSalary.Bonus:
-        AddBonus(id, Number(item)).then((data) => {
+      case typeComponentSalary.Advance:
+        AddAdvance(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -345,20 +350,24 @@ const SalaryTable = ({
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
-                  ? { ...user, ...{ bonus: Number(item), total: data.total } }
+                  ? {
+                    ...user,
+                    ...{ advance: Number(item), total: data.total },
+                  }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success add bonus ", {
+            toast.success("Success add Advance", {
               position: "top-center",
             });
+            console.info(data.success);
             return;
           }
         });
         break;
-      case typeComponentSalary.Cover:
-        AddCover(id, Number(item)).then((data) => {
+      case typeComponentSalary.Short:
+        AddShort(id, Number(item)).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -370,12 +379,99 @@ const SalaryTable = ({
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
-                  ? { ...user, ...{ cover: Number(item), total: data.total } }
+                  ? {
+                    ...user,
+                    ...{ short: Number(item), total: data.total },
+                  }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success add cover", {
+            toast.success("Success add Short", {
+              position: "top-center",
+            });
+            console.info(data.success);
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.OverTime:
+        AddOverTime(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center",
+            });
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id
+                  ? {
+                    ...user,
+                    ...{ overTime: Number(item), total: data.total },
+                  }
+                  : user,
+              ),
+            );
+            mutate("/api/salary/dashboard");
+            toast.success("Success add Overtime", {
+              position: "top-center",
+            });
+            console.info(data.success);
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.Transport:
+        AddTransport(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center",
+            });
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id
+                  ? {
+                    ...user,
+                    ...{ transport: Number(item), total: data.total },
+                  }
+                  : user,
+              ),
+            );
+            mutate("/api/salary/dashboard");
+            toast.success("Success add Transport", {
+              position: "top-center",
+            });
+            console.info(data.success);
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.M:
+        AddM(id, Number(item)).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center",
+            });
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id
+                  ? { ...user, ...{ m: Number(item), total: data.total } }
+                  : user,
+              ),
+            );
+            mutate("/api/salary/dashboard");
+            toast.success("Success add M", {
               position: "top-center",
             });
             return;
@@ -385,7 +481,6 @@ const SalaryTable = ({
       default:
         break;
     }
-
     handleCloseForm(); // Close the form after adding
   };
 
@@ -404,8 +499,8 @@ const SalaryTable = ({
 
     console.log("🚀 ~ handleRemoveComponentSalary ~ id:", id);
     switch (type) {
-      case typeComponentSalary.OverTime:
-        delOvetime(id).then((data) => {
+      case typeComponentSalary.Bonus:
+        delBonus(id).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -417,12 +512,12 @@ const SalaryTable = ({
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
-                  ? { ...user, ...{ overTime: null, total: data.total } }
+                  ? { ...user, ...{ bonus: null, total: data.total } }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success remove overtime", {
+            toast.success("Success remove Bonus", {
               position: "top-center",
             });
             return;
@@ -447,15 +542,15 @@ const SalaryTable = ({
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success remove allowance", {
+            toast.success("Success remove Allowance", {
               position: "top-center",
             });
             return;
           }
         });
         break;
-      case typeComponentSalary.Bonus:
-        delBonus(id).then((data) => {
+      case typeComponentSalary.Advance:
+        delAdvance(id).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -467,20 +562,20 @@ const SalaryTable = ({
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
-                  ? { ...user, ...{ bonus: null, total: data.total } }
+                  ? { ...user, ...{ advance: null, total: data.total } }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success remove bonus", {
+            toast.success("Success remove Advance", {
               position: "top-center",
             });
             return;
           }
         });
         break;
-      case typeComponentSalary.Cover:
-        delCover(id).then((data) => {
+      case typeComponentSalary.Short:
+        delShort(id).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -492,12 +587,87 @@ const SalaryTable = ({
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
-                  ? { ...user, ...{ cover: null, total: data.total } }
+                  ? { ...user, ...{ short: null, total: data.total } }
                   : user,
               ),
             );
             mutate("/api/salary/dashboard");
-            toast.success("Success remove cover", {
+            toast.success("Success remove Short", {
+              position: "top-center",
+            });
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.OverTime:
+        delOvetime(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center",
+            });
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id
+                  ? { ...user, ...{ overTime: null, total: data.total } }
+                  : user,
+              ),
+            );
+            mutate("/api/salary/dashboard");
+            toast.success("Success remove Overtime", {
+              position: "top-center",
+            });
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.Transport:
+        delM(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center",
+            });
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id
+                  ? { ...user, ...{ transport: null, total: data.total } }
+                  : user,
+              ),
+            );
+            mutate("/api/salary/dashboard");
+            toast.success("Success remove Transport", {
+              position: "top-center",
+            });
+            return;
+          }
+        });
+        break;
+      case typeComponentSalary.M:
+        delM(id).then((data) => {
+          if (data.error) {
+            console.error(data.error);
+            toast.error(data.error, {
+              position: "top-center",
+            });
+            return;
+          }
+          if (data.success) {
+            setDataSalary((prevUsers) =>
+              prevUsers.map((user) =>
+                user.id === id
+                  ? { ...user, ...{ m: null, total: data.total } }
+                  : user,
+              ),
+            );
+            mutate("/api/salary/dashboard");
+            toast.success("Success remove M", {
               position: "top-center",
             });
             return;
@@ -614,138 +784,154 @@ const SalaryTable = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-13 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-13 md:px-6 2xl:px-7.5">
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.username}
-          </h5>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">
-            {dict.branches.branches}
-            {/* <BranchSelectGroup
+      <main className="w-full overflow-x-auto whitespace-nowrap">
+        <div className="min-w-[2500px] p-4 md:p-6 2xl:p-10 grid grid-cols-[repeat(16,minmax(100px,1fr))]">
+          {/* <div className=""> */}
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.username}
+            </h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.branches.branches}
+              {/* <BranchSelectGroup
               onSendData={onSendData}
               initialValue={teamA.team}
             /> */}
-          </h5>
-        </div>
-        <div
-          className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("perDay")}
-        >
-          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.basic}
-          </h5>
-          {sortColumn === "perDay" && (
-            <span
-              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
-            >
-              {sortOrder === "asc" ? "▲" : "▼"}
-            </span>
-          )}
-        </div>
-
-        <div
-          className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("ot")}
-        >
-          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.ot}
-          </h5>
-          {sortColumn === "ot" && (
-            <span
-              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
-            >
-              {sortOrder === "asc" ? "▲" : "▼"}
-            </span>
-          )}
-        </div>
-        <div
-          className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("workingDay")}
-        >
-          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.totalworkingday}
-          </h5>
-          {sortColumn === "workingDay" && (
-            <span
-              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
-            >
-              {sortOrder === "asc" ? "▲" : "▼"}
-            </span>
-          )}
-        </div>
-        <div
-          className="col-span-1 flex cursor-pointer items-center justify-center"
-        // onClick={() => handleSort("late")}
-        >
-          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.fine}</h5>
-          {sortColumn === "late" && (
-            <span
-              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
-            >
-              {sortOrder === "asc" ? "▲" : "▼"}
-            </span>
-          )}
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterot}</h5>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterbonus}</h5>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.enterallow}
-          </h5>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.entercover}</h5>
-        </div>
-        <div
-          className="col-span-1 flex cursor-pointer items-center justify-center"
-          onClick={() => handleSort("total")}
-        >
-          <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.totalsalary}
-          </h5>
-          {sortColumn === "total" && (
-            <span
-              className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
-            >
-              {sortOrder === "asc" ? "▲" : "▼"}
-            </span>
-          )}
-        </div>
-        <div className="col-span-1 flex flex-col items-center justify-center">
-          <button
-            onClick={handlePrint}
-            className="text-sm font-medium uppercase hover:text-blue-600 xsm:text-base"
+            </h5>
+          </div>
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center"
+            onClick={() => handleSort("perDay")}
           >
-            {dict.salary.print}
-          </button>
-          <label className="mt-2 flex items-center">
-            <input
-              type="checkbox"
-              checked={selectAll} // Bind checkbox to selectAll state
-              onChange={handleSelectAllChange} // Handle change
-              className="mr-2"
-            />
-            <span className="text-sm">{dict.salary.selectall}</span>
-          </label>
-        </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <h5 className="text-sm font-medium uppercase xsm:text-base">
-            {dict.salary.actions}
-          </h5>
-        </div>
-      </div>
+            <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.basic}
+            </h5>
+            {sortColumn === "perDay" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
+              </span>
+            )}
+          </div>
 
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center"
+            onClick={() => handleSort("ot")}
+          >
+            <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.ot}
+            </h5>
+            {sortColumn === "ot" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
+              </span>
+            )}
+          </div>
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center"
+            onClick={() => handleSort("workingDay")}
+          >
+            <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.totalworkingday}
+            </h5>
+            {sortColumn === "workingDay" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
+              </span>
+            )}
+          </div>
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center"
+          // onClick={() => handleSort("late")}
+          >
+            <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.fine}</h5>
+            {sortColumn === "late" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
+              </span>
+            )}
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterbonus}</h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.enterallow}
+            </h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.enteradvance}
+            </h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.entershort}
+            </h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterot}</h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.entertransport}
+            </h5>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterm}</h5>
+          </div>
+          <div
+            className="col-span-1 flex cursor-pointer items-center justify-center"
+            onClick={() => handleSort("total")}
+          >
+            <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.totalsalary}
+            </h5>
+            {sortColumn === "total" && (
+              <span
+                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+              >
+                {sortOrder === "asc" ? "▲" : "▼"}
+              </span>
+            )}
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            <button
+              onClick={handlePrint}
+              className="text-sm font-medium uppercase hover:text-blue-600 xsm:text-base"
+            >
+              {dict.salary.print}
+            </button>
+            <label className="mt-2 flex items-center">
+              <input
+                type="checkbox"
+                checked={selectAll} // Bind checkbox to selectAll state
+                onChange={handleSelectAllChange} // Handle change
+                className="mr-2"
+              />
+              <span className="text-sm">{dict.salary.selectall}</span>
+            </label>
+          </div>
+          <div className="col-span-1 flex items-center justify-center">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              {dict.salary.actions}
+            </h5>
+          </div>
+          {/* </div> */}
+        </div>
+      </main >
       {currentData.map((salary, key) => (
         <div
-          className={`grid grid-cols-13 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-13 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
-            ? ""
-            : "border-b border-stroke dark:border-dark-3"
+          className={`grid grid-cols-[repeat(16,minmax(100px,1fr))] border-t border-stroke px-4 py-4.5 dark:border-dark-3 md:px-6 2xl:px-7.5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
             }`}
           key={key}
         >
@@ -809,36 +995,6 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("OT", id, salary.id)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {/* <MultiSelect
-                items={selectedItems}
-                onRemove={handleRemoveOverTime}
-                id={id}
-              /> */}
-              {salary.overTime && (
-                <>
-                  <ComponentSalary
-                    amount={salary.overTime}
-                    type={typeComponentSalary.OverTime}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-
-            <button
               disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Bonus", id, salary.id)}
@@ -887,21 +1043,130 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
+              disabled={isDisabled}
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("Advance", id, salary.id)}
+            >
+              {dict.salary.add}{" "}
+            </button>
+            {/* MultiSelect component */}
+            <div className="items-center justify-center px-5">
+              {salary.advance && (
+                <>
+                  {" "}
+                  <ComponentSalary
+                    amount={salary.advance.toString()}
+                    type={typeComponentSalary.Advance}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />{" "}
+                </>
+              )}
+            </div>
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Cover", id, salary.id)}
+              onClick={() => handleOpenForm("Short", id, salary.id)}
             >
               {dict.salary.add}{" "}
             </button>
 
             {/* MultiSelect component */}
             <div className="items-center justify-center px-5">
-              {salary.cover && (
+              {/* <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveOverTime}
+                id={id}
+              /> */}
+              {salary.short && (
                 <>
                   {" "}
                   <ComponentSalary
-                    amount={salary.cover}
-                    type={typeComponentSalary.Cover}
+                    amount={salary.short}
+                    type={typeComponentSalary.Short}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />{" "}
+                </>
+              )}
+            </div>
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button
+              // disabled={isDisabled}
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("OT", id, salary.id)}
+            >
+              {dict.salary.add}{" "}
+            </button>
+
+            {/* MultiSelect component */}
+            <div className="items-center justify-center px-5">
+              {/* <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveOverTime}
+                id={id}
+              /> */}
+              {salary.overTime && (
+                <>
+                  {" "}
+                  <ComponentSalary
+                    amount={salary.overTime}
+                    type={typeComponentSalary.OverTime}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />{" "}
+                </>
+              )}
+            </div>
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+
+            <button
+              disabled={isDisabled}
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("Transport", id, salary.id)}
+            >
+              {dict.salary.add}{" "}
+            </button>
+
+            {/* MultiSelect component */}
+            <div className="items-center justify-center px-5">
+              {salary.transport && (
+                <>
+                  <ComponentSalary
+                    amount={salary.transport}
+                    type={typeComponentSalary.Transport}
+                    id={salary.id}
+                    handleRemove={handleRemoveComponentSalary}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+          <div className="col-span-1 flex flex-col items-center justify-center">
+            {/* ButtonPopup component */}
+            <button
+              // disabled={isDisabled}
+              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+              onClick={() => handleOpenForm("M", id, salary.id)}
+            >
+              {dict.salary.add}{" "}
+            </button>
+
+            {/* MultiSelect component */}
+            <div className="items-center justify-center px-5">
+              {salary.m && (
+                <>
+                  {" "}
+                  <ComponentSalary
+                    amount={salary.m}
+                    type={typeComponentSalary.M}
                     id={salary.id}
                     handleRemove={handleRemoveComponentSalary}
                   />{" "}
@@ -1034,16 +1299,6 @@ const SalaryTable = ({
       {/* Combined Popups */}
       {isFormOpen && (
         <>
-          {activePopup === "OT" && (
-            <OTPopup
-              isOpen={true}
-              onClose={handleCloseForm}
-              onAddItem={handleAddComponentSalary} // Use the specific handler
-              id={idSalary}
-              items={selectedItems}
-              type={typeComponentSalary.OverTime}
-            />
-          )}
           {activePopup === "Bonus" && (
             <BonusPopup
               isOpen={true}
@@ -1064,14 +1319,54 @@ const SalaryTable = ({
               type={typeComponentSalary.Allowance}
             />
           )}
-          {activePopup === "Cover" && (
-            <CoverPopup
+          {activePopup === "Advance" && (
+            <AdvancePopup
               isOpen={true}
               onClose={handleCloseForm}
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
-              type={typeComponentSalary.Cover}
+              type={typeComponentSalary.Bonus}
+            />
+          )}
+          {activePopup === "Short" && (
+            <ShortPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
+              items={selectedItems}
+              type={typeComponentSalary.Allowance}
+            />
+          )}
+          {activePopup === "OT" && (
+            <OTPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
+              items={selectedItems}
+              type={typeComponentSalary.OverTime}
+            />
+          )}
+          {activePopup === "Transport" && (
+            <TransportPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
+              items={selectedItems}
+              type={typeComponentSalary.Transport}
+            />
+          )}
+          {activePopup === "M" && (
+            <MPopup
+              isOpen={true}
+              onClose={handleCloseForm}
+              onAddItem={handleAddComponentSalary} // Use the specific handler
+              id={idSalary}
+              items={selectedItems}
+              type={typeComponentSalary.M}
             />
           )}
         </>

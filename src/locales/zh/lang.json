@@ -59,8 +59,11 @@
     "fine": "罚款",
     "enterot": "加班",
     "enterbonus": "奖金",
+    "enteradvance": "借粮",
+    "entershort": "少/多",
+    "entertransport": "交通补贴",
     "enterallow": "津贴",
-    "entercover": "补贴",
+    "enterm": "马票",
     "totalsalary": "总工资",
     "print": "打印",
     "selectall": "全选",
@@ -72,8 +75,12 @@
     "removestatus": "您确定要删除这个薪资组件吗？",
     "addot": "添加加班费",
     "addbonus": "添加奖金",
+    "addadvance": "添加借粮",
+    "addshort": "添加少/多",
+    "addtransport": "添加交通补贴",
     "addallow": "添加津贴",
-    "addcover": "添加补贴"
+    "addm": "添加马票",
+    "addthis":"您确定要添加此内容吗？"
   },
   "leave": {
     "userleave": "用户请假",
