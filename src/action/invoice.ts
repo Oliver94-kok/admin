@@ -67,6 +67,10 @@ export async function getData(): Promise<SalaryRecord[]> {
               allowance: true,
               cover: true,
               userId: true,
+              advances: true,
+              transport: true,
+              short: true,
+              m: true,
               users: {
                 select: {
                   name: true,

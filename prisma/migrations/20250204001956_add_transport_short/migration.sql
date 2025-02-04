@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `Salary` ADD COLUMN `m` DOUBLE NULL,
+    ADD COLUMN `short` DOUBLE NULL,
+    ADD COLUMN `transport` DOUBLE NULL;

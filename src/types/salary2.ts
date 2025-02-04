@@ -51,6 +51,10 @@ export interface Salary {
   cover: number | null;
   userId: string;
   users: User | null;
+  advances: number | null;
+  transport: number | null;
+  short: number | null;
+  m: number | null;
 }
 
 // Define the main interface that combines both

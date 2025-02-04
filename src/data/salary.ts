@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/lib/db";
 import {
   calculateOvertimeHours,
@@ -11,6 +13,9 @@ import timezone from "dayjs/plugin/timezone";
 import isBetween from "dayjs/plugin/isBetween";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { TimeUtils } from "@/lib/timeUtility";
+import { SalaryUser } from "@/types/salary";
+import { AttendanceResult, Salary, SalaryRecord } from "@/types/salary2";
+import { getAllresultAttend } from "@/lib/salaryPrintService";
 
 // Initialize dayjs plugins
 dayjs.extend(utc);
@@ -261,29 +266,31 @@ export const getNoClockOut = async (
     return null;
   }
 };
-export const getAllresultAttend = async (
-  userId: string,
-  month: number,
-  year: number,
-) => {
-  const firstDay = dayjs()
-    .year(year)
-    .month(month - 1)
-    .startOf("month");
-  const lastDay = dayjs()
-    .year(year)
-    .month(month - 1)
-    .endOf("month");
-  let result = await db.attends.findMany({
-    where: { userId, dates: { gte: firstDay.toDate(), lte: lastDay.toDate() } },
-    select: { status: true, dates: true, fine: true },
-  });
-  let dataLate = result.filter((e) => e.status == "Late");
-  let notClockIn = result.filter((e) => e.status == "No_ClockIn_ClockOut");
-  let notClockOut = result.filter((e) => e.status == "No_ClockIn_ClockOut");
-  let dataAbsent = result.filter((e) => e.status == "Absent");
-  return { dataAbsent, notClockIn, notClockOut, dataLate };
-};
+// export const getAllresultAttend = async (
+//   userId: string,
+//   month: number,
+//   year: number,
+// ) => {
+//   const firstDay = dayjs()
+//     .year(year)
+//     .month(month - 1)
+//     .startOf("month");
+//   const lastDay = dayjs()
+//     .year(year)
+//     .month(month - 1)
+//     .endOf("month");
+//   let result = await db.attends.findMany({
+//     where: { userId, dates: { gte: firstDay.toDate(), lte: lastDay.toDate() } },
+//     select: { status: true, dates: true, fine: true },
+//   });
+//   let dataLate = result.filter((e) => e.status == "Late");
+//   let No_ClockIn_ClockOut = result.filter(
+//     (e) => e.status == "No_ClockIn_ClockOut",
+//   );
+//   let notClockOut = result.filter((e) => e.status == "No_ClockIn_ClockOut");
+//   let dataAbsent = result.filter((e) => e.status == "Absent");
+//   return { dataAbsent, No_ClockIn_ClockOut, dataLate };
+// };
 const checkLate = async () => {};
 export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
   try {
@@ -438,5 +445,121 @@ export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
     return summary;
   } catch (error) {
     return error;
+  }
+};
+
+export const excelData = async (
+  month: number,
+  year: number,
+): Promise<SalaryRecord[]> => {
+  try {
+    // Get initial salary records
+    const salaryRecords = await db.salary.findMany({
+      where: { month, year, users: { role: "USER" } },
+      select: {
+        id: true,
+        month: true,
+        year: true,
+        workingDay: true,
+        workingHoour: true,
+        fineLate: true,
+        fineNoClockIn: true,
+        fineNoClockOut: true,
+        late: true,
+        notClockIn: true,
+        overTimeHour: true,
+        overTime: true,
+        total: true,
+        perDay: true,
+        bonus: true,
+        allowance: true,
+        cover: true,
+        userId: true,
+        advances: true,
+        transport: true,
+        short: true,
+        m: true,
+        users: {
+          select: {
+            name: true,
+            AttendBranch: {
+              select: {
+                team: true,
+                branch: true,
+                clockIn: true,
+                clockOut: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Batch processing with controlled concurrency
+    const BATCH_SIZE = 3;
+    const results: SalaryRecord[] = [];
+
+    // Process records in batches
+    for (let i = 0; i < salaryRecords.length; i += BATCH_SIZE) {
+      // Get a batch of records
+      const batchRecords = salaryRecords.slice(i, i + BATCH_SIZE);
+
+      // Process current batch
+      const batchResults = await Promise.all(
+        batchRecords.map(async (salary) => {
+          try {
+            // Ensure users and AttendBranch are properly mapped
+            const mappedSalary: Salary = {
+              ...salary,
+              users: salary.users
+                ? {
+                    name: salary.users.name,
+                    AttendBranch: salary.users.AttendBranch
+                      ? {
+                          team: salary.users.AttendBranch.team,
+                          branch: salary.users.AttendBranch.branch,
+                          clockIn: salary.users.AttendBranch.clockIn,
+                          clockOut: salary.users.AttendBranch.clockOut,
+                        }
+                      : null,
+                  }
+                : null,
+            };
+
+            const result = await getAllresultAttend(
+              salary.userId!,
+              salary.month!,
+              salary.year!,
+            );
+
+            // Ensure the entire record matches SalaryRecord
+            const completeRecord: SalaryRecord = {
+              salary: mappedSalary,
+              result,
+            };
+
+            return completeRecord;
+          } catch (error) {
+            console.error(`Error processing salary record:`, error);
+            return null;
+          }
+        }),
+      );
+
+      // Add non-null results to the main results array
+      results.push(
+        ...batchResults.filter(
+          (result): result is SalaryRecord => result !== null,
+        ),
+      );
+
+      // Optional: Add a small delay between batches to prevent overwhelming the database
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    return results;
+  } catch (error) {
+    console.error("Error in excelData:", error);
+    return [];
   }
 };

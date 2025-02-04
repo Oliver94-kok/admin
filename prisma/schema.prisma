@@ -86,6 +86,10 @@ model Salary {
   bonus          Float?
   allowance      Float?
   cover          Float?
+  transport      Float?
+  short          Float?
+  m              Float?
+  advances       Float?
   userId         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

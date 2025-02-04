@@ -12,7 +12,7 @@ import AllowPopup from "../Form/allowpopup";
 import MPopup from "../Form/mpopup";
 import { AddAllow, delAllow } from "@/action/salaryAllow";
 import { AddBonus, delBonus } from "@/action/salaryBonus";
-import { AddCover, AddTransport, delCover } from "@/action/salaryTransport";
+import { AddTransport, delTransport } from "@/action/salaryTransport";
 import OTPopup from "../Form/otpopup";
 import { ComponentSalary } from "../Form/componentSalary";
 
@@ -30,7 +30,10 @@ import TransportPopup from "../Form/transportpopup";
 import { AddAdvance, delAdvance } from "@/action/salaryAdvance";
 import { AddShort, delShort } from "@/action/salaryShort";
 import { AddM, delM } from "@/action/salaryM";
-
+import { excelData } from "@/data/salary";
+import LoadingButton from "../Buttons/loadingButton";
+import ExcelJS from 'exceljs';
+import { AttendanceResult } from "@/types/salary2";
 export type SelectedItem = {
   id: string; // Assuming 'id' is a string, ensure it's the same in the selectedItems type.
   item: string; // 'item' should also be a string.
@@ -90,6 +93,7 @@ const SalaryTable = ({
   const [isDisabled, setIsDisabled] = useState(false);
   const { ids, addId, addIds, removeId, clearIds } = useIdStore()
   const [selectedTeam, setSelectedTeam] = useState<string>('');
+  const [printLoading, setLoadingPrint] = useState<boolean>(false)
   useEffect(() => {
     if (data) {
       setDataSalary(data);
@@ -171,17 +175,259 @@ const SalaryTable = ({
   };
 
   // Function to handle printing of selected entries
-  const handlePrint = () => {
-    if (ids.length == 0) {
-      alert("No items selected for printing.");
-      return;
+  const getDate = (data: AttendanceResult, type: string, perDay: number) => {
+    let d: number[] = []
+    let totals = 0;
+    if (type == "Late") {
+      data.dataLate.map((e) => {
+        let dd = e.dates.getDate()
+        d.push(dd);
+        totals = totals + e.fine!
+      })
+      const lateNumbers: string = `Late * ${d.join(', ')} RM${totals}`;
+      return lateNumbers
+    } else if (type == "NoInOut") {
+      data.No_ClockIn_ClockOut.map((e) => {
+        let dd = e.dates.getDate()
+        d.push(dd);
+        totals = totals + e.fine!
+      })
+      const lateNumbers: string = `No clock in or out * ${d.join(', ')} RM${totals}`;
+      return lateNumbers
+    } else if (type == "Absent") {
+      data.dataAbsent.map((e) => {
+        let dd = e.dates.getDate();
+        d.push(dd)
+      })
+      totals = data.dataAbsent.length * 2 * perDay;
+      const lateNumbers: string = `Absent * ${d.join(', ')} RM${totals}`;
+      return lateNumbers
+    }
+    return "1212"
+  }
+  const parseTimeToMinutes = (time: string): number => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const isTimeInRange = (time: string, startTime: string, endTime: string): boolean => {
+    const timeInMinutes = parseTimeToMinutes(time);
+    const startInMinutes = parseTimeToMinutes(startTime);
+    const endInMinutes = parseTimeToMinutes(endTime);
+    return timeInMinutes >= startInMinutes && timeInMinutes <= endInMinutes;
+  };
+  const checkShift = (clockIn: string) => {
+    if (clockIn) {
+      if (isTimeInRange(clockIn, '07:00', '10:00')) {
+        return '早班';
+      }
+
+      // Mid shift (中班): 11 AM - 17:00 (5 PM)
+      if (isTimeInRange(clockIn, '11:00', '17:00')) {
+        return '中班';
+      }
+
+      // Night shift (晚班): 7 PM - 10 PM
+      if (isTimeInRange(clockIn, '19:00', '22:00')) {
+        return '晚班';
+      }
     }
 
-    setDataCookies(ids)
-    // saveSalaryUsersToStorage();
-    router.push("/invoice");
-    console.log("Printing selected items:", ids);
-  };
+    return '';
+  }
+  const handlePrint = async () => {
+    try {
+      setLoadingPrint(true)
+      let printData = await excelData(Number(currentMonth), Number(currentYear));
+      console.log("🚀 ~ handlePrint ~ printData:", printData)
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Payslips');
+
+      const addFormattedRows = (rowData: any[], options: {
+        bold?: boolean,
+        alignment?: Partial<ExcelJS.Alignment>
+      } = {}) => {
+        const row = worksheet.addRow(rowData);
+
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+
+          if (options.bold) {
+            cell.font = { bold: true };
+          }
+
+          cell.alignment = options.alignment || {
+            vertical: 'middle',
+            horizontal: 'center',
+            wrapText: true
+          };
+        });
+
+        return row;
+      };
+
+      printData.forEach((item, index) => {
+        const { salary, result } = item;
+        const AbsentLength = result.dataAbsent.length;
+
+        const startRowIndex = worksheet.rowCount;
+        const shift = checkShift(salary.users?.AttendBranch?.clockIn!);
+        // Add employee section
+        addFormattedRows([`${salary.year} - ${salary.month}`, `${shift}`], { bold: true });
+
+        // Apply bottom border only to the cell containing `${shift}`
+        const yearMonthRowIndex = worksheet.rowCount; // Index of the last added row
+        const shiftCell = worksheet.getRow(yearMonthRowIndex).getCell(2); // Assuming `${shift}` is in the second cell
+        shiftCell.border = {
+          bottom: { style: 'thin' }, // Apply thin bottom border
+        };
+
+        // Main headers
+        addFormattedRows([
+          ` ${salary.users?.AttendBranch?.branch}`, "Day", "", "Basic", "Bonus", "Allow", "",
+          "Advance", "Short", "Cover", "", "", "Total", "M"
+        ], { bold: true });
+
+        // Sub-headers
+        addFormattedRows([
+          salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
+          "借粮", "少/多", "加班\n晚班", "交通\n补贴", "", "total", "马票"
+        ], { bold: false });
+
+        // Numeric data row
+        const totalSalary = salary.perDay! * salary.workingDay!;
+        const totalBonus = salary.bonus || 0;
+        const totalAllowance = salary.allowance || 0;
+        const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut! + (AbsentLength * 2 * salary.perDay!)) || 0;
+        const totalOvertime = salary.overTime || 0;
+        const total = totalSalary + totalBonus + totalAllowance + totalFine + totalOvertime;  // Calculate the sum here
+
+        addFormattedRows([
+          "", // Empty cell for merged name
+          salary.perDay || 0,
+          salary.workingDay || 0,
+          totalSalary,
+          totalBonus,
+          totalAllowance,
+          totalFine,
+          salary.advances,
+          salary.short,
+          totalOvertime,
+          salary.transport,
+          0,
+          total || 0,
+          salary.m
+        ], { alignment: { horizontal: 'center', vertical: 'middle', } });
+
+
+        // Absences and fines details
+        // addFormattedRows([getDate(result, "Absent", salary.perDay!)], { alignment: { horizontal: 'left' } });
+        // addFormattedRows([getDate(result, "Late", 0)], { alignment: { horizontal: 'left' } });
+        // addFormattedRows([getDate(result, "NoInOut", 0)], { alignment: { horizontal: 'left' } });
+        addFormattedRows([
+          `${getDate(result, "Absent", salary.perDay!)} \n${getDate(result, "Late", 0)} \n${getDate(result, "NoInOut", 0)}`
+        ], {
+          alignment: {
+            horizontal: 'left', wrapText: true, vertical: 'middle'
+          }
+        });
+
+        // Merge header cells for grouped columns
+        worksheet.mergeCells(`A${startRowIndex + 3}`, `A${startRowIndex + 4}`);
+        worksheet.mergeCells(`M${startRowIndex + 3}`, `M${startRowIndex + 4}`);
+        worksheet.mergeCells(`B${startRowIndex + 2}`, `C${startRowIndex + 2}`); // Merge "Day"
+        worksheet.mergeCells(`F${startRowIndex + 2}`, `G${startRowIndex + 2}`); // Merge "Allow"
+        worksheet.mergeCells(`J${startRowIndex + 2}`, `L${startRowIndex + 2}`); // Merge "Cover"
+        worksheet.mergeCells(`A${startRowIndex + 5}`, `M${startRowIndex + 5}`);
+        // worksheet.mergeCells(`A${startRowIndex + 6}`, `M${startRowIndex + 6}`);
+        worksheet.getCell(`M${startRowIndex + 4}`).value = {
+          formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
+        };
+
+        const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
+
+        if (total < 0) {
+          totalCell.font = {
+            color: { argb: 'FFFF0000' } // Red for negative values
+          };
+        }
+
+        worksheet.getCell(`A${startRowIndex + 5}`).border = {
+          top: { style: 'thin' },
+        }
+        worksheet.getCell(`A${startRowIndex + 1}`).border = {
+          bottom: { style: 'thin' },
+        }
+        worksheet.getCell(`H${startRowIndex + 4}`).border = {
+          bottom: { style: 'thin' },
+        }
+        worksheet.getCell(`K${startRowIndex + 4}`).border = {
+          bottom: { style: 'thin' },
+        }
+        worksheet.getCell(`I${startRowIndex + 4}`).border = {
+          bottom: { style: 'thin' },
+          left: { style: 'thin' },
+        }
+        worksheet.getCell(`N${startRowIndex + 4}`).border = {
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        }
+        worksheet.getCell(`A${startRowIndex + 5}`).border = {
+
+        }
+        // worksheet.getCell(`A${startRowIndex + 6}`).border = {
+
+        // }
+        // worksheet.getCell(`A${startRowIndex + 7}`).border = {
+
+        // }
+        worksheet.getCell(`G${startRowIndex + 4}`).font = {
+          color: { argb: 'FFFF0000' },
+        };
+        // Set row height for specific rows
+        worksheet.getRow(startRowIndex + 1).height = 53.25; // Header row height
+        worksheet.getRow(startRowIndex + 2).height = 53.25; // Sub-header row height
+        worksheet.getRow(startRowIndex + 3).height = 53.25; // Data row height
+
+        // Additional row heights as needed
+        worksheet.getRow(startRowIndex + 4).height = 53.25;
+        worksheet.getRow(startRowIndex + 5).height = 53.25;
+        // worksheet.getRow(startRowIndex + 6).height = 53.25;
+        // worksheet.getRow(startRowIndex + 7).height = 53;
+      });
+      worksheet.properties.defaultRowHeight = 35;
+
+      worksheet.getColumn("B").width = 6.57
+      worksheet.getColumn("C").width = 5.14
+      worksheet.getColumn("D").width = 7
+      worksheet.getColumn("E").width = 7.14
+      worksheet.getColumn("F").width = 7
+      worksheet.getColumn("G").width = 7.57
+      worksheet.getColumn("H").width = 9.14
+      worksheet.getColumn("I").width = 5.43
+      worksheet.getColumn("J").width = 6.43
+      worksheet.getColumn("K").width = 6
+      worksheet.getColumn("L").width = 5.71
+      worksheet.getColumn("M").width = 8.71
+
+
+      // Save workbook
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'PayslipReport.xlsx';
+      link.click();
+      setLoadingPrint(false)
+    } catch (error) {
+      setLoadingPrint(false)
+    }
+  }
   const onChangeTeam = (team: string) => {
     setSelectedTeam(team)
     setCurrentPage(1);
@@ -283,6 +529,7 @@ const SalaryTable = ({
     id: string,
     type: typeComponentSalary,
   ) => {
+    console.log("🚀 ~ type:", type)
     switch (type) {
       case typeComponentSalary.Bonus:
         AddBonus(id, Number(item)).then((data) => {
@@ -347,12 +594,13 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
+            console.log("🚀 ~ AddAdvance ~ data:", data)
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
                   ? {
                     ...user,
-                    ...{ advance: Number(item), total: data.total },
+                    ...{ advances: Number(item), total: data.total },
                   }
                   : user,
               ),
@@ -625,7 +873,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Transport:
-        delM(id).then((data) => {
+        delTransport(id).then((data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -905,12 +1153,13 @@ const SalaryTable = ({
             )}
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">
-            <button
+            {/* <button
               onClick={handlePrint}
               className="text-sm font-medium uppercase hover:text-blue-600 xsm:text-base"
             >
               {dict.salary.print}
-            </button>
+            </button> */}
+            <LoadingButton name={dict.salary.print} click={handlePrint} isloading={printLoading} />
             <label className="mt-2 flex items-center">
               <input
                 type="checkbox"
@@ -1051,11 +1300,11 @@ const SalaryTable = ({
             </button>
             {/* MultiSelect component */}
             <div className="items-center justify-center px-5">
-              {salary.advance && (
+              {salary.advances && (
                 <>
                   {" "}
                   <ComponentSalary
-                    amount={salary.advance.toString()}
+                    amount={salary.advances.toString()}
                     type={typeComponentSalary.Advance}
                     id={salary.id}
                     handleRemove={handleRemoveComponentSalary}
@@ -1067,7 +1316,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              // disabled={isDisabled}
+              // disabled={salary.short != null ? true:false}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Short", id, salary.id)}
             >
@@ -1326,7 +1575,7 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
-              type={typeComponentSalary.Bonus}
+              type={typeComponentSalary.Advance}
             />
           )}
           {activePopup === "Short" && (
@@ -1336,7 +1585,7 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
-              type={typeComponentSalary.Allowance}
+              type={typeComponentSalary.Short}
             />
           )}
           {activePopup === "OT" && (

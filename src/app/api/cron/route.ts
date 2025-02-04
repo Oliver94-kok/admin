@@ -1,4 +1,4 @@
-import { cronAttend, cronAttendCheckShift } from "@/data/attend";
+import { cronAttend, cronAttendCheckShift, isOffDay } from "@/data/attend";
 import { getAllUser } from "@/data/user";
 import {
   AttendanceSchema,
@@ -39,13 +39,31 @@ export const POST = async (req: Request) => {
             select: {
               clockIn: true,
               clockOut: true,
+              offDay: true,
             },
           });
 
           if (!shift?.clockIn || !shift?.clockOut) {
             throw new Error(`No shift found for user ${absentUser.id}`);
           }
-
+          if (shift.offDay) {
+            let day = shift.offDay.split(",");
+            let resultOffDay = await isOffDay(day, "today");
+            if (resultOffDay) {
+              let data = {
+                userId: absentUser.id,
+                dates: today.toDate(),
+                status: AttendStatus.OffDay,
+              };
+              await db.attends.create({ data });
+              return {
+                userId: absentUser.id,
+                status: "marked_offday",
+                timestamp: new Date(),
+                message: "off day",
+              } as ProcessingResult;
+            }
+          }
           const now = new Date();
           const shiftIn = TimeUtils.createDateFromTimeString(
             now,

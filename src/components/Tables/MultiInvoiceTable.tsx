@@ -201,13 +201,13 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
             // Main headers
             addFormattedRows([
                 ` ${salary.users?.AttendBranch?.branch}`, "Day", "", "Basic", "Bonus", "Allow", "",
-                "Advance", "Short", "Cover", "", "", "Total"
+                "Advance", "Short", "Cover", "", "", "Total", "M"
             ], { bold: true });
 
             // Sub-headers
             addFormattedRows([
                 salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
-                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total"
+                "借粮", "少/多", "加班\n晚班", "交通\n补贴", "", "total", "马票"
             ], { bold: false });
 
             // Numeric data row
@@ -231,7 +231,8 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
                 totalOvertime,
                 0,
                 0,
-                total || 0
+                total || 0,
+                0
             ], { alignment: { horizontal: 'center', vertical: 'middle', } });
 
 

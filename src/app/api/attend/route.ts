@@ -57,7 +57,7 @@ export const POST = async (req: Request) => {
         shift.clockIn,
         "in",
       );
-      let ss = dayjs(shiftIn).add(10, "minute");
+      let ss = dayjs(shiftIn).add(659, "second");
       let late = today.isAfter(ss);
       if (late) {
         var userlate = await getAttendLate(

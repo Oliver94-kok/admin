@@ -11,15 +11,20 @@ export interface SalaryUser {
   overTime: number | null;
   bonus: number | null;
   allowance: number | null;
-  advance: number | null;
+  advances: number | null;
   short: number | null;
   transport: number | null;
   m: number | null;
   total: number | null;
   perDay: number | null;
-  users: { name: string; username: string; userImg: string | null,AttendBranch: {
-    team: string;
-} | null; } | null;
+  users: {
+    name: string;
+    username: string;
+    userImg: string | null;
+    AttendBranch: {
+      team: string;
+    } | null;
+  } | null;
 }
 
 export interface userInvoice {

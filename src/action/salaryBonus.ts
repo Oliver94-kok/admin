@@ -3,10 +3,18 @@
 import { db } from "@/lib/db";
 
 export const AddBonus = async (id: string, bonus: number) => {
-  let user = await db.salary.findFirst({ where: { id } });
-  if (!user) return { error: "cannot find user" };
-  let total = user?.total! + bonus;
   try {
+    let user = await db.salary.findFirst({ where: { id } });
+    if (!user) return { error: "cannot find user" };
+
+    let total = 0;
+    if (user.total == null) {
+      let t = user?.workingDay! * user?.perDay!;
+      total = t + bonus;
+    } else {
+      total = user?.total! + bonus;
+    }
+
     await db.salary.update({ where: { id }, data: { bonus, total } });
     return { success: "Success ", total };
   } catch (error) {
