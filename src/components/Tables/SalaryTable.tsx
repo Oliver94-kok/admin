@@ -991,9 +991,9 @@ const SalaryTable = ({
           </select>
 
           {/* Check button beside the month dropdown */}
-          <button className="ml-5 rounded bg-blue-500 px-4 py-2 pl-5 pr-5 font-bold text-white hover:bg-blue-600">
+          {/* <button className="ml-5 rounded bg-blue-500 px-4 py-2 pl-5 pr-5 font-bold text-white hover:bg-blue-600">
             {dict.salary.check}
-          </button>
+          </button> */}
           {session.data?.user.role == 'ADMIN' ? (
             <>
               <select
