@@ -11,13 +11,13 @@ export const AddAdvance = async (id: string, advance: number) => {
     let total = 0;
     if (user.total == null) {
       let t = user?.workingDay! * user?.perDay!;
-      total = t + advance;
+      total = t - advance;
     } else {
-      total = user?.total! + advance;
+      total = user?.total! - advance;
     }
     await db.salary.update({
       where: { id },
-      data: { advances: advance, total },
+      data: { advances: Math.abs(advance) * -1, total },
     });
     return { success: "Success ", total };
   } catch (error) {

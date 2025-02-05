@@ -451,11 +451,17 @@ export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
 export const excelData = async (
   month: number,
   year: number,
+  team: string,
 ): Promise<SalaryRecord[]> => {
   try {
     // Get initial salary records
+
     const salaryRecords = await db.salary.findMany({
-      where: { month, year, users: { role: "USER" } },
+      where: {
+        month,
+        year,
+        users: { role: "USER", AttendBranch: { team } },
+      },
       select: {
         id: true,
         month: true,
@@ -494,6 +500,7 @@ export const excelData = async (
         },
       },
     });
+    console.log("🚀 ~ salaryRecords:", salaryRecords);
 
     // Batch processing with controlled concurrency
     const BATCH_SIZE = 3;

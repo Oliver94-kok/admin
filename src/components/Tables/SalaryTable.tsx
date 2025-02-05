@@ -238,7 +238,7 @@ const SalaryTable = ({
   const handlePrint = async () => {
     try {
       setLoadingPrint(true)
-      let printData = await excelData(Number(currentMonth), Number(currentYear));
+      let printData = await excelData(Number(currentMonth), Number(currentYear), selectedTeam);
       console.log("🚀 ~ handlePrint ~ printData:", printData)
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Payslips');
@@ -290,13 +290,13 @@ const SalaryTable = ({
         // Main headers
         addFormattedRows([
           ` ${salary.users?.AttendBranch?.branch}`, "Day", "", "Basic", "Bonus", "Allow", "",
-          "Advance", "Short", "Cover", "", "", "Total", "M"
+          "Advance", "Short", "Cover", "", "", "Total",
         ], { bold: true });
 
         // Sub-headers
         addFormattedRows([
           salary.users?.name, "底薪", "日", "实薪", "奖金", "津贴", "迟到\n扣款",
-          "借粮", "少/多", "加班\n晚班", "交通\n补贴", "", "total", "马票"
+          "借粮", "少/多", "加班\n晚班", "交通\n补贴", "M", "total",
         ], { bold: false });
 
         // Numeric data row
@@ -319,9 +319,9 @@ const SalaryTable = ({
           salary.short,
           totalOvertime,
           salary.transport,
-          0,
+          salary.m,
           total || 0,
-          salary.m
+
         ], { alignment: { horizontal: 'center', vertical: 'middle', } });
 
 
@@ -350,11 +350,24 @@ const SalaryTable = ({
         };
 
         const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
-
+        const advance = worksheet.getCell(`H${startRowIndex + 4}`);
+        const short = worksheet.getCell(`I${startRowIndex + 4}`);
         if (total < 0) {
           totalCell.font = {
             color: { argb: 'FFFF0000' } // Red for negative values
           };
+
+        }
+        if (salary.advances! < 0) {
+          advance.font = {
+            color: { argb: 'FFFF0000' }
+          }
+
+        }
+        if (salary.short! < 0) {
+          short.font = {
+            color: { argb: 'FFFF0000' }
+          }
         }
 
         worksheet.getCell(`A${startRowIndex + 5}`).border = {
@@ -373,9 +386,9 @@ const SalaryTable = ({
           bottom: { style: 'thin' },
           left: { style: 'thin' },
         }
-        worksheet.getCell(`N${startRowIndex + 4}`).border = {
+        worksheet.getCell(`L${startRowIndex + 4}`).border = {
           bottom: { style: 'thin' },
-          right: { style: 'thin' },
+          left: { style: 'thin' },
         }
         worksheet.getCell(`A${startRowIndex + 5}`).border = {
 
@@ -386,6 +399,9 @@ const SalaryTable = ({
         // worksheet.getCell(`A${startRowIndex + 7}`).border = {
 
         // }
+        worksheet.getCell(`A${startRowIndex + 5}`).font = {
+          color: { argb: 'FFFF0000' },
+        }
         worksheet.getCell(`G${startRowIndex + 4}`).font = {
           color: { argb: 'FFFF0000' },
         };

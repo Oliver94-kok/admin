@@ -17,7 +17,11 @@ import { DateTime } from "luxon";
 export const GET = async (request: Request) => {
   try {
     let salary = await db.salary.findMany({
-      where: { year: 2025, month: 1 },
+      where: {
+        month: 2,
+        year: 2025,
+        users: { role: "USER", AttendBranch: { team: "A" } },
+      },
     });
     return Response.json(salary);
   } catch (error) {

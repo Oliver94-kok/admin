@@ -102,7 +102,7 @@ export const POST = async (req: Request) => {
   try {
     let today = dayjs().subtract(1, "days");
     console.log("🚀 ~ POST ~ today:", today.toDate());
-    let t = new Date("2025-01-03");
+    let t = new Date("2025-02-04");
     console.log("🚀 ~ POST ~ t:", t);
     const users = await db.attends.findMany({
       where: { dates: t, status: "Active" },
