@@ -304,7 +304,11 @@ const SalaryTable = ({
         const totalBonus = salary.bonus || 0;
         const totalAllowance = salary.allowance || 0;
         const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut! + (AbsentLength * 2 * salary.perDay!)) || 0;
+        const totalAdvances = salary.advances || 0;
+        const totalShort = salary.short || 0;
         const totalOvertime = salary.overTime || 0;
+        const totalTransport = salary.transport || 0;
+        const totalM = salary.m || 0;
         const total = totalSalary + totalBonus + totalAllowance + totalFine + totalOvertime;  // Calculate the sum here
 
         addFormattedRows([
@@ -315,11 +319,11 @@ const SalaryTable = ({
           totalBonus,
           totalAllowance,
           totalFine,
-          salary.advances,
-          salary.short,
+          totalAdvances,
+          totalShort,
           totalOvertime,
-          salary.transport,
-          salary.m,
+          totalTransport,
+          totalM,
           total || 0,
 
         ], { alignment: { horizontal: 'center', vertical: 'middle', } });
