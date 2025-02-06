@@ -94,7 +94,7 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
 
   return (
     <div
-      className="w-[1920px] min-w-[1280px] p-4 md:p-6 2xl:p-10">
+      className="w-[1920px] min-w-[1280px]">
       <div
         className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
            px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10">
