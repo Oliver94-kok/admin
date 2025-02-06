@@ -34,8 +34,8 @@ export const POST = async (req: Request) => {
   await CheckSalarys({
     userId,
     fineLate: null,
-    fineNoClockIn: null,
-    fineNoClockOut: fine,
+    fineNoClockIn: fine,
+    fineNoClockOut: null,
     overtime: null,
     workingHour: null,
   });
