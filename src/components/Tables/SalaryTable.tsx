@@ -1052,8 +1052,8 @@ const SalaryTable = ({
         </div>
       </div>
 
-      <main className="w-full overflow-x-auto whitespace-nowrap">
-        <div className="min-w-[2500px] p-4 md:p-6 2xl:p-10 grid grid-cols-[repeat(16,minmax(100px,1fr))]">
+      <main className="w-full min-w-[1280px]">
+        <div className="w-full min-w-[1280px] p-4 md:p-6 2xl:p-10 grid grid-cols-[repeat(16,minmax(100px,1fr))]">
           {/* <div className=""> */}
           <div className="col-span-1 flex items-center justify-center">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
