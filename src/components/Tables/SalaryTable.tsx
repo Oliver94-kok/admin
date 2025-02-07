@@ -1264,7 +1264,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              disabled={isDisabled}
+              // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Bonus", id, salary.id)}
             >
@@ -1288,7 +1288,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              disabled={isDisabled}
+              // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Allow", id, salary.id)}
             >
@@ -1312,7 +1312,7 @@ const SalaryTable = ({
           <div className="col-span-1 flex flex-col items-center justify-center">
             {/* ButtonPopup component */}
             <button
-              disabled={isDisabled}
+              // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Advance", id, salary.id)}
             >
@@ -1397,7 +1397,7 @@ const SalaryTable = ({
             {/* ButtonPopup component */}
 
             <button
-              disabled={isDisabled}
+              // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
               onClick={() => handleOpenForm("Transport", id, salary.id)}
             >
