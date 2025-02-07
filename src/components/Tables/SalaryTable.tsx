@@ -353,6 +353,9 @@ const SalaryTable = ({
           formula: `=SUM(D${startRowIndex + 4}:L${startRowIndex + 4})`
         };
 
+        worksheet.getCell(`D${startRowIndex + 4}`).value = {
+          formula: `=B${startRowIndex + 4} * C${startRowIndex + 4}`  // `B2` 和 `C2` 的乘积，存放在 `D2`
+        };
         const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
         const advance = worksheet.getCell(`H${startRowIndex + 4}`);
         const short = worksheet.getCell(`I${startRowIndex + 4}`);
