@@ -143,6 +143,71 @@ export const CheckSalarys = async ({
   }
 };
 
+export const calculateTotalSalaryUser = async (userId: string) => {
+  try {
+    let salary = await db.salary.findFirst({
+      where: {
+        userId,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+      },
+    });
+    if (!salary) throw new Error("Not found user salary");
+    let totalAbsent = salary.absent! * salary.perDay! * 2;
+    let totalWorkingDay = salary.workingDay! * salary.perDay!;
+    let totalFine = salary.fineLate! + salary.fineNoClockIn!;
+    let totalSide =
+      salary.bonus! +
+      salary.short! -
+      salary.advances! +
+      salary.allowance! +
+      salary.m! +
+      salary.transport! +
+      salary.cover! +
+      salary.overTime!;
+    let total = totalWorkingDay + totalSide - totalAbsent - totalFine;
+    let result = await db.salary.update({
+      where: { id: salary.id },
+      data: { total },
+    });
+    return result;
+  } catch (error) {
+    console.log("🚀 ~ calculateTotalSalaryUser ~ error:", error);
+    return error;
+  }
+};
+export const calculateTotalSalaryUserBySalaryId = async (id: string) => {
+  try {
+    let salary = await db.salary.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!salary) throw new Error("Not found user salary");
+    let totalAbsent = salary.absent! * salary.perDay! * 2;
+    let totalWorkingDay = salary.workingDay! * salary.perDay!;
+    let totalFine = salary.fineLate! + salary.fineNoClockIn!;
+    let totalSide =
+      salary.bonus! +
+      salary.short! -
+      salary.advances! +
+      salary.allowance! +
+      salary.m! +
+      salary.transport! +
+      salary.cover! +
+      salary.overTime!;
+    let total = totalWorkingDay + totalSide - totalAbsent - totalFine;
+    let result = await db.salary.update({
+      where: { id: salary.id },
+      data: { total },
+    });
+    return result.total;
+  } catch (error) {
+    console.log("🚀 ~ calculateTotalSalaryUser ~ error:", error);
+    return error;
+  }
+};
+
 export const getAttendLate = async (
   userId: string,
   month: number,

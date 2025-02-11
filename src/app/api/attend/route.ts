@@ -7,6 +7,7 @@ import {
   lateClockIn,
 } from "@/data/attend";
 import {
+  calculateTotalSalaryUser,
   CheckSalarys,
   createSalary,
   getAttendLate,
@@ -131,6 +132,7 @@ export const POST = async (req: Request) => {
       overtime: Number(overtime!),
       workingHour: null,
     });
+    await calculateTotalSalaryUser(userId);
     await notificationClock(userId, notify);
     await SentNoti("Clock", "You have clock out", "", user?.username);
     return Response.json({ id: t.id }, { status: 201 });
@@ -183,7 +185,7 @@ export const PATCH = async (req: Request) => {
       overtime: Number(overtime!),
       workingHour: workingHour,
     });
-
+    await calculateTotalSalaryUser(userId);
     let user = await db.user.findFirst({
       where: { id: userId },
       select: { username: true },

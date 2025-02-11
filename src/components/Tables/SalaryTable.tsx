@@ -830,6 +830,7 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
+
             setDataSalary((prevUsers) =>
               prevUsers.map((user) =>
                 user.id === id
@@ -1261,7 +1262,7 @@ const SalaryTable = ({
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-              {salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut!}
+              {salary.fineLate! + salary.fineNoClockIn! + (salary.perDay! * salary.absent! * 2)}
             </p>
           </div>
           <div className="col-span-1 flex flex-col items-center justify-center">

@@ -8,6 +8,7 @@ import {
   extractDateAndDay,
   formatDateTime,
 } from "@/lib/function";
+import { leaveType } from "@/types/leave";
 import dayjs from "dayjs";
 const { DateTime } = require("luxon");
 import { v7 as uuidv7 } from "uuid";
@@ -32,18 +33,56 @@ export const ApproveLeave = async (status: string, id: string) => {
         console.log("🚀 ~ ApproveLeave ~ startLeave:", startLeave);
         const endLeave = await extractDateAndDay(check?.endDate!);
         console.log("🚀 ~ ApproveLeave ~ endLeave:", endLeave);
+        let checkLeaveType = leaveType.filter((e) => e == check?.type);
+
         if (startLeave == endLeave) {
           await addLeaveAttend(
             check?.userId!,
             `${startLeave.year}-${startLeave.month}-${startLeave.day}`,
           );
+          if (checkLeaveType) {
+            let salary = await db.salary.findFirst({
+              where: {
+                userId: check?.userId,
+                year: startLeave.year,
+                month: startLeave.month,
+              },
+            });
+            if (!salary)
+              throw new Error(
+                `User salary for month ${startLeave.month} and year ${startLeave.year} not found`,
+              );
+            await db.salary.update({
+              where: { id: salary.id },
+              data: { absent: salary.absent! + 1 },
+            });
+          }
         } else {
+          let totalDays = 0;
           forEachDate(startLeave.date, endLeave.date, async (date) => {
             console.log("🚀 ~ forEachDate ~ date:", date);
             console.log("Date:", dayjs(date).format("YYYY-MM-DD")); // Will show 2024-11-04 and 2024-11-05
             let ndate = dayjs(date).format("YYYY-MM-DD");
             await addLeaveAttend(check?.userId!, ndate);
+            totalDays += 1;
           });
+          if (checkLeaveType) {
+            let salary = await db.salary.findFirst({
+              where: {
+                userId: check?.userId,
+                year: startLeave.year,
+                month: startLeave.month,
+              },
+            });
+            if (!salary)
+              throw new Error(
+                `User salary for month ${startLeave.month} and year ${startLeave.year} not found`,
+              );
+            await db.salary.update({
+              where: { id: salary.id },
+              data: { absent: salary.absent! + totalDays },
+            });
+          }
         }
       }
     }

@@ -15,3 +15,21 @@ export interface LeavesInterface {
     AttendBranch: { team: string; branch: string | null } | null;
   } | null;
 }
+
+export const leaveType = [
+  "Paid leave",
+  "Medical leave (MC)",
+  "Bereavement leave",
+  "Annual leave",
+];
+
+export const fullLeaveTypes = [
+  "Paid leave",
+  "Unpaid leave",
+  "Emergency leave",
+  "Bereavement leave",
+  "Medical leave (MC)",
+  "Annual leave",
+  "Forget clock",
+  "Delivery late",
+];

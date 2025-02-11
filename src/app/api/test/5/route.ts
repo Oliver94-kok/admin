@@ -1,4 +1,6 @@
 import { db } from "@/lib/db";
+import { leaveType } from "@/types/leave";
+import { NextRequest } from "next/server";
 
 const updateAttendsInDb = async (attendArray: any[]) => {
   return await db.$transaction(
@@ -12,23 +14,40 @@ const updateAttendsInDb = async (attendArray: any[]) => {
     }),
   );
 };
-const updateAttendsInDb2 = async (attendArray: any[]) => {
-  return await db.$transaction(
-    attendArray.map((attend, index) => {
-      return db.attends.update({
-        where: { id: attend.id },
-        data: {
-          fine: index === 0 ? 50 : 100,
+const countMatchingLeaves = async (
+  userId: string,
+  startDate: string,
+  endDate: string,
+) => {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    let leaves = await db.leave.findMany({
+      where: {
+        userId,
+        createdAt: {
+          gte: start,
+          lte: end,
         },
-      });
-    }),
-  );
+        status: "Approve",
+        type: {
+          in: leaveType, // Assuming leaveType is an array
+        },
+      },
+    });
+
+    return leaves.length;
+  } catch (error) {
+    console.log("🚀 ~ countMatchingLeaves ~ error:", error);
+    return null;
+  }
 };
 
 export const POST = async (req: Request) => {
   try {
+    const { team, startDate, endDate } = await req.json();
     const users = await db.user.findMany({
-      where: { role: "USER", AttendBranch: { team: "D" } },
+      where: { role: "USER", AttendBranch: { team } },
       select: { id: true },
     });
 
@@ -42,13 +61,13 @@ export const POST = async (req: Request) => {
         userBatch.map(async (user) => {
           try {
             return await db.$transaction(async (tx) => {
-              const [noClockInAttends, lateAttends, attends] =
+              const [noClockInAttends, lateAttends, attends, absent] =
                 await Promise.all([
                   tx.attends.findMany({
                     where: {
                       dates: {
-                        gte: new Date("2025-01-01"),
-                        lte: new Date("2025-01-31"),
+                        gte: new Date(startDate),
+                        lte: new Date(endDate),
                       },
                       userId: user.id,
                       status: "No_ClockIn_ClockOut",
@@ -57,8 +76,8 @@ export const POST = async (req: Request) => {
                   tx.attends.findMany({
                     where: {
                       dates: {
-                        gte: new Date("2025-01-01"),
-                        lte: new Date("2025-01-31"),
+                        gte: new Date(startDate),
+                        lte: new Date(endDate),
                       },
                       userId: user.id,
                       status: "Late",
@@ -67,13 +86,24 @@ export const POST = async (req: Request) => {
                   tx.attends.findMany({
                     where: {
                       dates: {
-                        gte: new Date("2025-01-01"),
-                        lte: new Date("2025-01-31"),
+                        gte: new Date(startDate),
+                        lte: new Date(endDate),
                       },
                       userId: user.id,
                       NOT: {
-                        status: "Absent",
+                        OR: [{ status: "Absent" }, { status: "Leave" }],
                       },
+                    },
+                  }),
+                  tx.attends.findMany({
+                    where: {
+                      dates: {
+                        gte: new Date(startDate),
+                        lte: new Date(endDate),
+                      },
+                      userId: user.id,
+
+                      status: "Absent",
                     },
                   }),
                 ]);
@@ -91,7 +121,12 @@ export const POST = async (req: Request) => {
                 (sum, _, index) => sum + (index === 0 ? 50 : 100),
                 0,
               );
-
+              let leave = await countMatchingLeaves(
+                user.id,
+                startDate,
+                endDate,
+              );
+              let totalDay = attends.length + leave!;
               const salary = await tx.salary.findFirst({
                 where: { userId: user.id, month: 1, year: 2025 },
               });
@@ -105,7 +140,8 @@ export const POST = async (req: Request) => {
                 data: {
                   fineNoClockIn: totalNoClockInFine,
                   fineLate: totalLateFine,
-                  workingDay: attends.length,
+                  workingDay: totalDay,
+                  absent: absent.length,
                 },
               });
 
@@ -163,35 +199,54 @@ export const POST = async (req: Request) => {
   }
 };
 
-export const GET = async (req: Request) => {
+export const GET = async (req: NextRequest) => {
   try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+    const startDate = searchParams.get("start");
+    const endDate = searchParams.get("end");
+    if (!userId || !startDate || !endDate) throw new Error("No user id");
+
     let noclockin = await db.attends.findMany({
       where: {
         dates: {
-          gte: new Date("2025-01-01"),
-          lte: new Date("2025-01-31"),
+          gte: new Date(startDate),
+          lte: new Date(endDate),
         },
-        userId: "cm5fndaox006vpnr1lcg8p5tv",
+        userId: userId,
         status: "No_ClockIn_ClockOut",
       },
     });
     let latedata = await db.attends.findMany({
       where: {
         dates: {
-          gte: new Date("2025-01-01"),
-          lte: new Date("2025-01-31"),
+          gte: new Date(startDate),
+          lte: new Date(endDate),
         },
-        userId: "cm5fndaox006vpnr1lcg8p5tv",
+        userId: userId,
         status: "Late",
       },
     });
     let attends = await db.attends.findMany({
       where: {
         dates: {
-          gte: new Date("2025-01-01"),
-          lte: new Date("2025-01-31"),
+          gte: new Date(startDate),
+          lte: new Date(endDate),
         },
-        userId: "cm5fndaox006vpnr1lcg8p5tv",
+        userId: userId,
+        NOT: {
+          OR: [{ status: "Absent" }, { status: "Leave" }],
+        },
+      },
+    });
+    let absents = await db.attends.findMany({
+      where: {
+        dates: {
+          gte: new Date(startDate),
+          lte: new Date(endDate),
+        },
+        userId: userId,
+        status: "Absent",
       },
     });
     const [updatedNoClockIn, updatedLate] = await Promise.all([
@@ -207,6 +262,9 @@ export const GET = async (req: Request) => {
       (sum, _, index) => sum + (index === 0 ? 50 : 100),
       0,
     );
+
+    let leave = await countMatchingLeaves(userId, startDate, endDate);
+    let totalDay = attends.length + leave!;
     const salary = await db.salary.findFirst({
       where: { userId: "cm5fndaox006vpnr1lcg8p5tv", month: 1, year: 2025 },
     });
@@ -220,7 +278,8 @@ export const GET = async (req: Request) => {
       data: {
         fineNoClockIn: totalNoClockInFine,
         fineLate: totalLateFine,
-        workingDay: attends.length,
+        workingDay: totalDay,
+        absent: absents.length,
       },
     });
     return Response.json({ updatedSalary }, { status: 200 });

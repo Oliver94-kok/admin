@@ -10,21 +10,41 @@ import { db } from "@/lib/db";
 import { checkWorkingHour, extractDateAndDay } from "@/lib/function";
 
 import { TimeUtils } from "@/lib/timeUtility";
+import { leaveType } from "@/types/leave";
 import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
 import { DateTime } from "luxon";
 
 export const GET = async (request: Request) => {
   try {
-    let salary = await db.salary.findMany({
+    const startDate = new Date("2025-02-01");
+    const endDate = new Date("2025-02-28");
+    let leaves = await db.leave.findMany({
       where: {
-        month: 2,
-        year: 2025,
-        users: { role: "USER", AttendBranch: { team: "A" } },
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: "Approve",
+        type: {
+          in: leaveType, // Assuming leaveType is an array
+        },
       },
     });
-    return Response.json(salary);
+    let x = 0;
+
+    // leaves.map((leave) => {
+    //   if (leave.status == "Approve") {
+    //     console.log("🚀 ~ leaves.map ~ leave:", leave);
+    //     if (leaveType.includes(leave.type)) {
+    //       x += 1;
+    //     }
+    //   }
+    // });
+
+    return Response.json({ length: leaves.length }, { status: 200 });
   } catch (error) {
+    console.log("🚀 ~ GET ~ error:", error);
     return Response.json(error);
   }
 };

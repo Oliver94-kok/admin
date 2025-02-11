@@ -17,6 +17,7 @@ export interface SalaryUser {
   m: number | null;
   total: number | null;
   perDay: number | null;
+  absent: number | null;
   users: {
     name: string;
     username: string;

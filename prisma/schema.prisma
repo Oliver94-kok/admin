@@ -73,6 +73,7 @@ model Salary {
   month          Int
   year           Int
   workingDay     Int?
+  absent         Int?
   workingHoour   Int?     @map("workingHour")
   fineLate       Int?
   fineNoClockIn  Int?
