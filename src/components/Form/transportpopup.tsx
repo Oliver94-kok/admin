@@ -12,9 +12,11 @@ interface TransportPopupProps {
     id: string;
     items: SelectedItem[]; // Add items prop
     type: typeComponentSalary
+    name: string;
+    branch: string;
 }
 
-const TransportPopup: React.FC<TransportPopupProps> = ({ isOpen, onClose, onAddItem, id, items, type }) => {
+const TransportPopup: React.FC<TransportPopupProps> = ({ isOpen, onClose, onAddItem, id, items, type, name, branch }) => {
     const [inputValue, setInputValue] = useState('');
     const [dict, setDict] = useState<any>(null); // State to hold the dictionary
 
@@ -47,7 +49,8 @@ const TransportPopup: React.FC<TransportPopupProps> = ({ isOpen, onClose, onAddI
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className={`popup ${isOpen ? 'open' : ''}`}>
                 <div className="p-4">
-                    <h2 className="text-lg font-semibold mb-4">{dict.salary.addtransport}</h2>
+                    <h2 className="text-lg font-semibold mb-2">{dict.salary.addtransport}</h2>
+                    <p className="text-lg text-green-600 mb-4">{name} ({branch})</p>
                     <div className="flex gap-2 mb-4">
                         <input
                             type="text"

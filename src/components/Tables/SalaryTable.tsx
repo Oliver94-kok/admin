@@ -94,6 +94,8 @@ const SalaryTable = ({
   const { ids, addId, addIds, removeId, clearIds } = useIdStore()
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [printLoading, setLoadingPrint] = useState<boolean>(false)
+  const [username, setusername] = useState("");
+  const [branch, setbranch] = useState("");
   useEffect(() => {
     if (data) {
       setDataSalary(data);
@@ -534,9 +536,11 @@ const SalaryTable = ({
     }
   };
 
-  const handleOpenForm = (popupType: string, id: string, salaryId: string) => {
-    console.log("🚀 ~ handleOpenForm ~ salaryId:", salaryId);
+  const handleOpenForm = (popupType: string, id: string, salaryId: string, name: string, branch: string) => {
+    console.log("🚀 ~ handleOpenForm ~ salaryId:", name);
     setid(id);
+    setusername(name);
+    setbranch(branch);
     setIdSalary(salaryId);
     setActivePopup(popupType); // Set the type of popup to open
     setIsFormOpen(true);
@@ -1270,7 +1274,7 @@ const SalaryTable = ({
             <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Bonus", id, salary.id)}
+              onClick={() => handleOpenForm("Bonus", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1294,7 +1298,7 @@ const SalaryTable = ({
             <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Allow", id, salary.id)}
+              onClick={() => handleOpenForm("Allow", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1318,7 +1322,7 @@ const SalaryTable = ({
             <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Advance", id, salary.id)}
+              onClick={() => handleOpenForm("Advance", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1342,7 +1346,7 @@ const SalaryTable = ({
             <button
               // disabled={salary.short != null ? true:false}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Short", id, salary.id)}
+              onClick={() => handleOpenForm("Short", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1372,7 +1376,7 @@ const SalaryTable = ({
             <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("OT", id, salary.id)}
+              onClick={() => handleOpenForm("OT", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1403,7 +1407,7 @@ const SalaryTable = ({
             <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Transport", id, salary.id)}
+              onClick={() => handleOpenForm("Transport", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1427,7 +1431,7 @@ const SalaryTable = ({
             <button
               // disabled={isDisabled}
               className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("M", id, salary.id)}
+              onClick={() => handleOpenForm("M", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
             >
               {dict.salary.add}{" "}
             </button>
@@ -1579,6 +1583,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.Bonus}
             />
           )}
@@ -1589,6 +1595,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.Allowance}
             />
           )}
@@ -1599,6 +1607,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.Advance}
             />
           )}
@@ -1609,6 +1619,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.Short}
             />
           )}
@@ -1619,6 +1631,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.OverTime}
             />
           )}
@@ -1629,6 +1643,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.Transport}
             />
           )}
@@ -1639,6 +1655,8 @@ const SalaryTable = ({
               onAddItem={handleAddComponentSalary} // Use the specific handler
               id={idSalary}
               items={selectedItems}
+              name={username}
+              branch={branch}
               type={typeComponentSalary.M}
             />
           )}
