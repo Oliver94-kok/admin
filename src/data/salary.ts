@@ -527,6 +527,7 @@ export const excelData = async (
         year,
         users: { role: "USER", AttendBranch: { team } },
       },
+      orderBy:{users:{AttendBranch:{branch:"asc"}}},
       select: {
         id: true,
         month: true,

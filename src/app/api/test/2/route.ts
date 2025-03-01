@@ -16,7 +16,14 @@ export const GET = async (request: Request) => {
       users.map(async (u) => {
         try {
           let salary = await db.salary.findMany({ where: { userId: u.id } });
-
+          if(salary.length >13){
+            return {
+              userId: u.id,
+              type: "lebih",
+              created: true,
+              length: salary.length,
+            };
+          }
           return {
             userId: u.id,
             type: "success",
@@ -51,9 +58,9 @@ export const GET = async (request: Request) => {
     const summary = {
       total: users.length,
       successful: processedResults.filter((r) => r.type === "success").length,
-      have: processedResults.filter((r) => r.type === "have").length,
+      have: processedResults.filter((r) => r.type === "lebih").length,
       failed: processedResults.filter((r) => r.type === "error").length,
-      details: processedResults,
+      details: processedResults.filter((r) => r.type === "lebih"),
     };
 
     return Response.json(summary, { status: 200 });

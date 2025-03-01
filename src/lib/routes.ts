@@ -30,6 +30,7 @@ export const apiAuthPrefix = [
   "/api/test/3",
   "/api/test/4",
   "/api/test/5",
+  "/api/test/6",
   "/api/token",
   "/api/location",
   "/api/leave",
