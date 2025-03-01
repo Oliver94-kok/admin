@@ -1,14 +1,10 @@
 "use client";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SalaryTable from "@/components/Tables/SalaryTable";
 import { db } from "@/lib/db";
 import { SalaryUser } from "@/types/salary";
-
-// export const metadata: Metadata = {
-//   title: "Salary Page",
-// };
 
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +20,25 @@ import { useSession, SessionProvider } from 'next-auth/react';
 const Salary = () => {
   const session = useSession();
   const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
-  const [year, setYear] = useState(DateTime.now().toFormat('yyyy'))
+  const [year, setYear] = useState(DateTime.now().toFormat('yyyy'));
+  useEffect(() => {
+    // Get current date
+    const currentDate = DateTime.now();
+    let targetMonth, targetYear;
+    
+    // If current date is before 6th of the month, use previous month
+    if (currentDate.day < 6) {
+      const previousMonth = currentDate.minus({ months: 1 });
+      targetMonth = previousMonth.toFormat('MM');
+      targetYear = previousMonth.toFormat('yyyy');
+    } else {
+      targetMonth = currentDate.toFormat('MM');
+      targetYear = currentDate.toFormat('yyyy');
+    }
+    
+    selectMonth(targetMonth);
+    setYear(targetYear);
+  }, []);
   const { data, error, isLoading } = useSWR(`/api/salary/dashboard?month=${month}&year=${year}`, fetcher);
   const refreshData = () => {
     mutate("/api/salary/dashboard"); // Re-fetch data from the server
