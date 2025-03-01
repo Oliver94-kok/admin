@@ -11,9 +11,9 @@ export const GET = async (req: NextRequest) => {
   let data = await db.salary.findMany({
     where: { month, year },
     include: {
-      users: { select: { name: true, username: true, userImg: true,AttendBranch:{select:{team:true}} } },
+      users: { select: { name: true, username: true, userImg: true,AttendBranch:{select:{team:true,branch:true}} } },
     },
-    orderBy: { users: { username: "asc" } },
+    orderBy: { users: { AttendBranch:{branch:'asc'} } },
   });
   return Response.json({ salary: data }, { status: 200 });
 };

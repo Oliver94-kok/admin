@@ -1242,7 +1242,7 @@ const SalaryTable = ({
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.users?.AttendBranch?.team}
+              {salary.users?.AttendBranch?.team} ({salary.users?.AttendBranch?.branch})
             </p>
           </div>
           <div className="col-span-1 flex items-center justify-center">

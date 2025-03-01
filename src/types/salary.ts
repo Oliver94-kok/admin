@@ -24,6 +24,7 @@ export interface SalaryUser {
     userImg: string | null;
     AttendBranch: {
       team: string;
+      branch: string;
     } | null;
   } | null;
 }
