@@ -1206,311 +1206,312 @@ const SalaryTable = ({
           {/* </div> */}
         </div>
       </main >
-      {currentData.map((salary, key) => (
-        <div
-          className={`grid grid-cols-[repeat(16,minmax(100px,1fr))] border-t border-stroke px-4 py-4.5 dark:border-dark-3 md:px-6 2xl:px-7.5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
-            }`}
-          key={key}
-        >
-          <div className="flex items-center gap-3.5">
-            <div
-              className="h-15 w-15 rounded-md"
-              style={{ position: "relative", paddingBottom: "20%" }}
-              onClick={() =>
-                setSelectedImage(
-                  salary.users?.userImg
-                    ? `http://image.ocean00.com${salary.users?.userImg}`
-                    : "/uploads/user/defaultUser.jpg",
-                )
-              }
-            >
-              <Image
-                src={
-                  salary.users?.userImg
-                    ? `http://image.ocean00.com${salary.users?.userImg}`
-                    : "/uploads/user/defaultUser.jpg"
+      <div className="h-[860px] overflow-x-auto">
+        {currentData.map((salary, key) => (
+          <div
+            className={`grid grid-cols-[repeat(16,minmax(100px,1fr))] border-t border-stroke px-4 py-4.5 dark:border-dark-3 md:px-6 2xl:px-7.5 ${key === currentData.length - 1 ? "" : "border-b border-stroke dark:border-dark-3"
+              }`}
+            key={key}
+          >
+            <div className="flex items-center gap-3.5">
+              <div
+                className="h-15 w-15 rounded-md"
+                style={{ position: "relative", paddingBottom: "20%" }}
+                onClick={() =>
+                  setSelectedImage(
+                    salary.users?.userImg
+                      ? `http://image.ocean00.com${salary.users?.userImg}`
+                      : "/uploads/user/defaultUser.jpg",
+                  )
                 }
-                width={50}
-                height={50}
-                alt="leave"
-              />
-            </div>
-            <div className="flex flex-col">
-              <p className="flex font-medium text-dark dark:text-white sm:block">
-                {salary.users?.name}
-              </p>
-              <p className="flex text-sm text-gray-500 sm:block">
-                {salary.users?.username}
-              </p>
-            </div>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.users?.AttendBranch?.team} ({salary.users?.AttendBranch?.branch})
-            </p>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.perDay}
-            </p>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {Math.round(salary.overTimeHour! / 60)}
-            </p>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.workingDay}
-            </p>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-              {salary.fineLate! + salary.fineNoClockIn! + (salary.perDay! * salary.absent! * 2)}
-            </p>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-            <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Bonus", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {salary.bonus && (
-                <>
-                  <ComponentSalary
-                    amount={salary.bonus}
-                    type={typeComponentSalary.Bonus}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-            <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Allow", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {salary.allowance && (
-                <>
-                  {" "}
-                  <ComponentSalary
-                    amount={salary.allowance.toString()}
-                    type={typeComponentSalary.Allowance}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />{" "}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-            <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Advance", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {salary.advances && (
-                <>
-                  {" "}
-                  <ComponentSalary
-                    amount={salary.advances.toString()}
-                    type={typeComponentSalary.Advance}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />{" "}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-            <button
-              // disabled={salary.short != null ? true:false}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Short", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {/* <MultiSelect
-                items={selectedItems}
-                onRemove={handleRemoveOverTime}
-                id={id}
-              /> */}
-              {salary.short && (
-                <>
-                  {" "}
-                  <ComponentSalary
-                    amount={salary.short}
-                    type={typeComponentSalary.Short}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />{" "}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-            <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("OT", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {/* <MultiSelect
-                items={selectedItems}
-                onRemove={handleRemoveOverTime}
-                id={id}
-              /> */}
-              {salary.overTime && (
-                <>
-                  {" "}
-                  <ComponentSalary
-                    amount={salary.overTime}
-                    type={typeComponentSalary.OverTime}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />{" "}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-
-            <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("Transport", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {salary.transport && (
-                <>
-                  <ComponentSalary
-                    amount={salary.transport}
-                    type={typeComponentSalary.Transport}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center">
-            {/* ButtonPopup component */}
-            <button
-              // disabled={isDisabled}
-              className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
-              onClick={() => handleOpenForm("M", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
-            >
-              {dict.salary.add}{" "}
-            </button>
-
-            {/* MultiSelect component */}
-            <div className="items-center justify-center px-5">
-              {salary.m && (
-                <>
-                  {" "}
-                  <ComponentSalary
-                    amount={salary.m}
-                    type={typeComponentSalary.M}
-                    id={salary.id}
-                    handleRemove={handleRemoveComponentSalary}
-                  />{" "}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <p className="text-body-sm font-medium text-dark dark:text-dark-6">
-              {salary.total}
-            </p>
-          </div>
-          <div className="col-span-1 flex items-center justify-center">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedItems.some((item) => item.id === salary.id)} // Check if item is selected
-                onChange={() => {
-                  if (!salary.perDay) {
-                    alert("No basic salary")
-                    return
-                  }
-                  const itemExists = selectedItems.some(
-                    (item) => item.id === salary.id,
-                  );
-                  if (itemExists) {
-                    // filterAndRemoveSalaryUsers({ id: salary.id });
-                    removeId(salary.id);
-                    setSelectedItems((prev) =>
-                      prev.filter((item) => item.id !== salary.id),
-                    );
-                  } else {
-                    // addSalaryUser(salary);
-                    addId(salary.id)
-                    setSelectedItems((prev) => [
-                      ...prev,
-                      {
-                        id: salary.id,
-                        item: salary.users?.name || "",
-                        idSalary: salary.id,
-                      },
-                    ]);
-                  }
-                }}
-                className="mr-2"
-              />
-            </label>
-          </div>
-
-          <div className="col-span-1 flex items-center justify-center space-x-3.5">
-            <button
-              onClick={() => handleConfirmOpen(salary.id)}
-              className="hover:text-primary"
-            >
-              <svg
-                className="fill-current"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
               >
-                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
-                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
-              </svg>
-            </button>
-            {/* <Link
+                <Image
+                  src={
+                    salary.users?.userImg
+                      ? `http://image.ocean00.com${salary.users?.userImg}`
+                      : "/uploads/user/defaultUser.jpg"
+                  }
+                  width={50}
+                  height={50}
+                  alt="leave"
+                />
+              </div>
+              <div className="flex flex-col">
+                <p className="flex font-medium text-dark dark:text-white sm:block">
+                  {salary.users?.name}
+                </p>
+                <p className="flex text-sm text-gray-500 sm:block">
+                  {salary.users?.username}
+                </p>
+              </div>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+                {salary.users?.AttendBranch?.team} ({salary.users?.AttendBranch?.branch})
+              </p>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+                {salary.perDay}
+              </p>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+                {Math.round(salary.overTimeHour! / 60)}
+              </p>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+                {salary.workingDay}
+              </p>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
+                {salary.fineLate! + salary.fineNoClockIn! + (salary.perDay! * salary.absent! * 2)}
+              </p>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+              <button
+                // disabled={isDisabled}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("Bonus", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {salary.bonus && (
+                  <>
+                    <ComponentSalary
+                      amount={salary.bonus}
+                      type={typeComponentSalary.Bonus}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+              <button
+                // disabled={isDisabled}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("Allow", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {salary.allowance && (
+                  <>
+                    {" "}
+                    <ComponentSalary
+                      amount={salary.allowance.toString()}
+                      type={typeComponentSalary.Allowance}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />{" "}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+              <button
+                // disabled={isDisabled}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("Advance", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {salary.advances && (
+                  <>
+                    {" "}
+                    <ComponentSalary
+                      amount={salary.advances.toString()}
+                      type={typeComponentSalary.Advance}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />{" "}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+              <button
+                // disabled={salary.short != null ? true:false}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("Short", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {/* <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveOverTime}
+                id={id}
+              /> */}
+                {salary.short && (
+                  <>
+                    {" "}
+                    <ComponentSalary
+                      amount={salary.short}
+                      type={typeComponentSalary.Short}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />{" "}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+              <button
+                // disabled={isDisabled}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("OT", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {/* <MultiSelect
+                items={selectedItems}
+                onRemove={handleRemoveOverTime}
+                id={id}
+              /> */}
+                {salary.overTime && (
+                  <>
+                    {" "}
+                    <ComponentSalary
+                      amount={salary.overTime}
+                      type={typeComponentSalary.OverTime}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />{" "}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+
+              <button
+                // disabled={isDisabled}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("Transport", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {salary.transport && (
+                  <>
+                    <ComponentSalary
+                      amount={salary.transport}
+                      type={typeComponentSalary.Transport}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex flex-col items-center justify-center">
+              {/* ButtonPopup component */}
+              <button
+                // disabled={isDisabled}
+                className="mb-4 rounded-full border border-primary px-4 text-primary sm:px-6 md:px-8 lg:px-10 xl:px-5"
+                onClick={() => handleOpenForm("M", id, salary.id, salary.users?.name!, salary.users?.AttendBranch?.branch!)}
+              >
+                {dict.salary.add}{" "}
+              </button>
+
+              {/* MultiSelect component */}
+              <div className="items-center justify-center px-5">
+                {salary.m && (
+                  <>
+                    {" "}
+                    <ComponentSalary
+                      amount={salary.m}
+                      type={typeComponentSalary.M}
+                      id={salary.id}
+                      handleRemove={handleRemoveComponentSalary}
+                    />{" "}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <p className="text-body-sm font-medium text-dark dark:text-dark-6">
+                {salary.total}
+              </p>
+            </div>
+            <div className="col-span-1 flex items-center justify-center">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedItems.some((item) => item.id === salary.id)} // Check if item is selected
+                  onChange={() => {
+                    if (!salary.perDay) {
+                      alert("No basic salary")
+                      return
+                    }
+                    const itemExists = selectedItems.some(
+                      (item) => item.id === salary.id,
+                    );
+                    if (itemExists) {
+                      // filterAndRemoveSalaryUsers({ id: salary.id });
+                      removeId(salary.id);
+                      setSelectedItems((prev) =>
+                        prev.filter((item) => item.id !== salary.id),
+                      );
+                    } else {
+                      // addSalaryUser(salary);
+                      addId(salary.id)
+                      setSelectedItems((prev) => [
+                        ...prev,
+                        {
+                          id: salary.id,
+                          item: salary.users?.name || "",
+                          idSalary: salary.id,
+                        },
+                      ]);
+                    }
+                  }}
+                  className="mr-2"
+                />
+              </label>
+            </div>
+
+            <div className="col-span-1 flex items-center justify-center space-x-3.5">
+              <button
+                onClick={() => handleConfirmOpen(salary.id)}
+                className="hover:text-primary"
+              >
+                <svg
+                  className="fill-current"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                </svg>
+              </button>
+              {/* <Link
               href={`/invoice/${salary.id}`} // Update to your desired route
               className="flex items-center justify-center hover:text-primary"
             >
@@ -1526,9 +1527,9 @@ const SalaryTable = ({
                 <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1" />
               </svg>
             </Link> */}
+            </div>
           </div>
-        </div>
-      ))}
+        ))} </div>
 
       {/* Pagination */}
       <div className="flex justify-between px-7.5 py-7">
