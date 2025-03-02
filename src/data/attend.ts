@@ -156,9 +156,9 @@ export const calculateWorkingHours = async (
 };
 export const isOffDay = async (
   offDays: string[],
-  type: string,
+  type: "TODAY"|"YESTERDAY",
 ): Promise<boolean> => {
-  if (type == "today") {
+  if (type == "TODAY") {
     var currentDayName = dayjs().format("dddd");
   } else {
     var currentDayName = dayjs().subtract(1, "day").format("dddd");
@@ -254,7 +254,7 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
 export const cronAttend = async (date: string) => {
   let dates = new Date(date);
   let resutl = await db.attends.findMany({
-    where: { dates },
+    where: { dates,users:{role:"USER"} },
   });
   return resutl;
 };
@@ -311,7 +311,7 @@ export async function getLastThreeMonthsData(userId: string) {
               lte: endOfMonth,
             },
             status: {
-              in: ["Full_Attend", "Absent", "Leave"],
+              in: ["Full_Attend", "Absent", "Late"],
             },
           },
           _count: true,
@@ -325,7 +325,7 @@ export async function getLastThreeMonthsData(userId: string) {
           fullAttend:
             counts.find((c) => c.status === "Full_Attend")?._count ?? 0,
           absent: counts.find((c) => c.status === "Absent")?._count ?? 0,
-          leave: counts.find((c) => c.status === "Leave")?._count ?? 0,
+          Late: counts.find((c) => c.status === "Late")?._count ?? 0,
         },
       };
     }),

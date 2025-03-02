@@ -33,6 +33,7 @@ export const POST = async (req: Request) => {
     data: {
       id: user.id,
       name: user.name,
+      role:user.role,
       username,
       token,
       userImg: user.userImg,

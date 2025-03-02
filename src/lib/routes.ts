@@ -12,6 +12,7 @@ export const apiAuthPrefix = [
   "/api/user",
   "/api/user/signin",
   "/api/user/upload",
+  "/api/user/location",
   "/api/attend",
   "/api/attend/dashboard",
   "/api/attend/all",

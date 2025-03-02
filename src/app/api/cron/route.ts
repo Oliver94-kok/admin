@@ -48,7 +48,7 @@ export const POST = async (req: Request) => {
           }
           if (shift.offDay) {
             let day = shift.offDay.split(",");
-            let resultOffDay = await isOffDay(day, "today");
+            let resultOffDay = await isOffDay(day, "TODAY");
             if (resultOffDay) {
               let data = {
                 userId: absentUser.id,

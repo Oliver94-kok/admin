@@ -61,7 +61,7 @@ export const POST = async (req: Request) => {
         userBatch.map(async (user) => {
           try {
             return await db.$transaction(async (tx) => {
-              const [noClockInAttends, lateAttends, attends, absent] =
+              const [noClockInAttends, lateAttends, attends, full] =
                 await Promise.all([
                   tx.attends.findMany({
                     where: {
@@ -103,24 +103,24 @@ export const POST = async (req: Request) => {
                       },
                       userId: user.id,
 
-                      status: "Absent",
+                      status: "Full_Attend",
                     },
                   }),
                 ]);
 
-              const [updatedNoClockIn, updatedLate] = await Promise.all([
-                updateAttendsInDb(noClockInAttends),
-                updateAttendsInDb(lateAttends),
-              ]);
+              // const [updatedNoClockIn, updatedLate] = await Promise.all([
+              //   updateAttendsInDb(noClockInAttends),
+              //   updateAttendsInDb(lateAttends),
+              // ]);
 
-              const totalNoClockInFine = updatedNoClockIn.reduce(
-                (sum, _, index) => sum + (index === 0 ? 50 : 100),
-                0,
-              );
-              const totalLateFine = updatedLate.reduce(
-                (sum, _, index) => sum + (index === 0 ? 50 : 100),
-                0,
-              );
+              // const totalNoClockInFine = updatedNoClockIn.reduce(
+              //   (sum, _, index) => sum + (index === 0 ? 50 : 100),
+              //   0,
+              // );
+              // const totalLateFine = updatedLate.reduce(
+              //   (sum, _, index) => sum + (index === 0 ? 50 : 100),
+              //   0,
+              // );
               let leave = await countMatchingLeaves(
                 user.id,
                 startDate,
@@ -135,23 +135,23 @@ export const POST = async (req: Request) => {
                 throw new Error(`No salary record found for user ${user.id}`);
               }
 
-              const updatedSalary = await tx.salary.update({
-                where: { id: salary.id },
-                data: {
-                  fineNoClockIn: totalNoClockInFine,
-                  fineLate: totalLateFine,
-                  workingDay: totalDay,
-                  absent: absent.length,
-                },
-              });
+              // const updatedSalary = await tx.salary.update({
+              //   where: { id: salary.id },
+              //   data: {
+              //     fineNoClockIn: totalNoClockInFine,
+              //     fineLate: totalLateFine,
+              //     workingDay: totalDay,
+              //     absent: absent.length,
+              //   },
+              // });
 
               return {
                 userId: user.id,
-                noClockInRecords: updatedNoClockIn.length,
-                lateRecords: updatedLate.length,
-                totalNoClockInFine,
-                totalLateFine,
-                workingDay: attends.length,
+                noClockInRecords: noClockInAttends.length,
+                lateRecords: lateAttends.length,
+                // totalNoClockInFine,
+                // totalLateFine,
+                workingDay: full.length,
                 success: true,
               };
             });
