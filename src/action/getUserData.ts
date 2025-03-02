@@ -96,10 +96,10 @@ export const getDataUser = async (
               ...attend,
               // Convert to local timezone
               clockIn: attend.clockIn
-                ? dayjs.utc(attend.clockIn).local().format("h:mm A")
+                ? dayjs.utc(attend.clockIn).local().format("HH:mm")
                 : null,
               clockOut: attend.clockOut
-                ? dayjs.utc(attend.clockOut).local().format("h:mm A")
+                ? dayjs.utc(attend.clockOut).local().format("HH:mm")
                 : null,
               dates: dayjs(attend.dates).format("YYYY-MM-DD"),
               // img: imageBuffer, // Replace the image URL with the buffer

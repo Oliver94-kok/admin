@@ -89,7 +89,7 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
   );
   const displayTime = (clock: any) => {
     const dateTime = DateTime.fromISO(clock);
-    return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
+    return dateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
   };
 
   return (
