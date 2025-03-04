@@ -40,7 +40,6 @@ export const apiAuthPrefix = [
   "/api/leave/dashboard",
   "/api/notify",
   "/api/userattendant",
-  "/api/managerLocation"
 ];
 
 export const Default_login_Redirect = "/dashboard";
