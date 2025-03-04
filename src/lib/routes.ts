@@ -17,6 +17,7 @@ export const apiAuthPrefix = [
   "/api/attend/dashboard",
   "/api/attend/all",
   "/api/attend/clockIn",
+  "/api/attend/clockIn2",
   "/api/attend/clockOut",
   "/api/branch",
   "/api/branch/dashboard",
@@ -39,6 +40,7 @@ export const apiAuthPrefix = [
   "/api/leave/dashboard",
   "/api/notify",
   "/api/userattendant",
+  "/api/managerLocation"
 ];
 
 export const Default_login_Redirect = "/dashboard";

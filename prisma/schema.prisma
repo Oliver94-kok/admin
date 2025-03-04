@@ -152,6 +152,7 @@ model ManagerLocation {
   userId    String
   location  String
   branch    String
+  type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User?    @relation(fields: [userId], references: [id])
