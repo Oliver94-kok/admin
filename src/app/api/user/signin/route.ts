@@ -10,20 +10,15 @@ export const GET = async () => {
 };
 
 export const POST = async (req: Request) => {
+ try {
   const { username, password } = await req.json();
   let user = await getUserByUsernameWithAttend(username);
-  if (!user) return Response.json({ Error: "User not exist" }, { status: 400 });
+  if (!user) throw new Error("User not exist");
   let pass = await checkPassword(password, user.password);
   if (!pass)
-    return Response.json(
-      { Error: "Username or password not match" },
-      { status: 400 },
-    );
+    throw new Error("Username or password not match")
   if (user.isLogin)
-    return Response.json(
-      { error: "User has sign in another device" },
-      { status: 400 },
-    );
+    throw new Error("User has sign in another device")
   let token = await createSession(user.id);
   await db.user.update({ where: { id: user.id }, data: { token } });
   let branch = await db.branch.findMany({
@@ -41,4 +36,9 @@ export const POST = async (req: Request) => {
     },
     branch,
   });
+ } catch (error) {
+  return Response.json({ 
+    Error: error instanceof Error ? error.message : "An unknown error occurred" 
+  },{status:400})
+ }
 };

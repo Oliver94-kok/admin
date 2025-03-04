@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 import { decrypt, encrypt } from "@/lib/session";
 
 export const POST = async (req: Request) => {
-  const { token } = await req.json();
+  try {
+    const { token } = await req.json();
   const user = await db.user.findFirst({ where: { token } });
-  if (!user) return Response.json({ Error: "User not exist" }, { status: 400 });
+  if (!user)  throw new Error("User not exist")
   let detail = await decrypt(token);
   if (!detail) {
     let t = await encrypt({ userId: user.id });
@@ -23,4 +24,10 @@ export const POST = async (req: Request) => {
     where: { team: data?.AttendBranch?.team },
   });
   return Response.json({ data, branch }, { status: 200 });
+  } catch (error) {
+    console.log("🚀 ~ POST ~ error:", error)
+    return Response.json({ 
+      Error: error instanceof Error ? error.message : "An unknown error occurred" 
+    },{status:400})
+  }
 };
