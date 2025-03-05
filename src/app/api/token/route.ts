@@ -20,10 +20,23 @@ export const POST = async (req: Request) => {
   }
 
   let data = await getUserByUsernameWithAttend(user.username);
+  let usersRole = ['user77','user78','user79','user135 ','user136','user137','user187','user274']
+  let roles = usersRole.find((e)=>e === user.username);
+  
   let branch = await db.branch.findMany({
     where: { team: data?.AttendBranch?.team },
   });
-  return Response.json({ data, branch }, { status: 200 });
+  return Response.json({  data: {
+    id: data?.id,
+    name:data?.name,
+    username: data?.username,
+    token:data?.token,
+    userImg: data?.userImg,
+
+    isLogin: data?.isLogin,
+    role: roles ? "Tracker":data?.role,
+    AttendBranch: data?.AttendBranch
+  }, branch }, { status: 200 });
   } catch (error) {
     console.log("🚀 ~ POST ~ error:", error)
     return Response.json({ 

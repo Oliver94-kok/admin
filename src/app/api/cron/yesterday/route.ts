@@ -18,6 +18,7 @@ export const POST = async (req: Request) => {
     const today = dayjs().subtract(1, "day");
     // const t = new Date(today);
     let attendTody = await cronAttend(today.format("YYYY-MM-DD"));
+    console.log("start cron yesterday",today);
     console.log("🚀 ~ POST ~ attendTody:", attendTody);
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),

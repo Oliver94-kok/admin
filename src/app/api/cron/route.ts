@@ -17,6 +17,7 @@ export const POST = async (req: Request) => {
   try {
     const today = dayjs.utc().startOf("day");
     let attendTody = await cronAttend(today.toString());
+    console.log("start cron ",today);
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),
     );

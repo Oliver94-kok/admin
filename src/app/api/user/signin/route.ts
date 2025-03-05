@@ -24,11 +24,14 @@ export const POST = async (req: Request) => {
   let branch = await db.branch.findMany({
     where: { team: user.AttendBranch?.team },
   });
+  let usersRole = ['user77','user78','user79','user135 ','user136','user137','user187','user274']
+  let roles = usersRole.find((e)=>e === user.username);
+
   return Response.json({
     data: {
       id: user.id,
       name: user.name,
-      role:user.role,
+      role:roles ? "Tracker":user.role,
       username,
       token,
       userImg: user.userImg,
