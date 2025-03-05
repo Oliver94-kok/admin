@@ -5,7 +5,7 @@
 
 */
 -- DropForeignKey
-ALTER TABLE `Managerlocation` DROP FOREIGN KEY `ManagerLocation_userId_fkey`;
+ALTER TABLE `ManagerLocation` DROP FOREIGN KEY `ManagerLocation_userId_fkey`;
 
 -- DropTable
-DROP TABLE `Managerlocation`;
+DROP TABLE `ManagerLocation`;
