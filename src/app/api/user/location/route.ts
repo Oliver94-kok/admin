@@ -1,5 +1,16 @@
 import { db } from "@/lib/db"
 
+
+export const GET = async()=>{
+    try {
+        let result =await db.locatioUsers.findMany()
+        return Response.json(result,{status:200})
+    } catch (error) {
+        return Response.json(error,{status:400})
+    }
+}
+
+
 export const POST = async (req: Request) => {
     try {
         const {userId,address,branch,type} = await req.json()
@@ -8,11 +19,11 @@ export const POST = async (req: Request) => {
         // if(user.role == "USER") throw new Error("Error user role");
         let data ={
             userId,
-            location:address,
+            address,
             branch,
             type
         }
-        await db.managerLocation.create({data})
+        await db.locatioUsers.create({data})
         return Response.json({status:"Success"},{status:200})
     } catch (error) {
         console.log("🚀 ~ POST ~ error:", error)

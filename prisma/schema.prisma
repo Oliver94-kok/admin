@@ -48,6 +48,7 @@ model User {
   Leave            Leave[]
   AttendBranch     AttendBranch?
   NotificationUser NotificationUser?
+  LocatioUsers     LocatioUsers[]
 }
 
 model Attends {
@@ -141,6 +142,17 @@ model NotificationUser {
   leave     Json?
   clock     Json?
   userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User?    @relation(fields: [userId], references: [id])
+}
+
+model LocatioUsers {
+  id        String   @id @default(cuid())
+  address   String
+  userId    String
+  branch    String
+  type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User?    @relation(fields: [userId], references: [id])
