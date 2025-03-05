@@ -25,7 +25,7 @@ export const POST = async (req: Request) => {
     where: { team: user.AttendBranch?.team },
   });
   let usersRole = ['user77','user78','user79','user135 ','user136','user137','user187','user274']
-  let roles = usersRole.find((e)=>e === user.username);
+  let roles = usersRole.find((e)=>e === user?.username!);
 
   return Response.json({
     data: {
