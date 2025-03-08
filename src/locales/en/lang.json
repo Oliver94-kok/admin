@@ -108,7 +108,8 @@
     "usersalary": "User Salary",
     "userleave": "User Leave",
     "userdata": "User Data",
-    "mainmenu": "MAIN MENU"
+    "mainmenu": "MAIN MENU",
+    "location": "Location"
   },
     "noti": {
     "notification": "Notifications",

@@ -5,9 +5,9 @@ import { AttendStatus } from "@prisma/client"
 export const POST =async(req:Request)=>{
   try {
       let data ={
-        userId:"cm7sy21x500chgur22mbj8zzi",
-        dates: new Date("2025-03-04"),
-        status:AttendStatus.Active
+        userId:"cm7wnmlcx00dsgu01acq60d1w",
+        dates: new Date("2025-03-05"),
+        status:AttendStatus.Full_Attend
       }
       await db.attends.create({data})
       return Response.json({"status":"okay"},{status:200})

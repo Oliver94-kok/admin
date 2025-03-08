@@ -108,7 +108,8 @@
     "usersalary": "用户工资",
     "userleave": "用户请假",
      "userdata": "用户数据",
-    "mainmenu": "主菜单"
+    "mainmenu": "主菜单",
+    "location": "定位"
   },
   "noti": {
   "notification": "通知",
