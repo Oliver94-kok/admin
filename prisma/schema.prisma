@@ -32,6 +32,11 @@ enum AttendStatus {
   OffDay
 }
 
+enum LocationUserStatus {
+  Active
+  COMPLETE
+}
+
 model User {
   id               String            @id @default(cuid())
   name             String
@@ -148,12 +153,16 @@ model NotificationUser {
 }
 
 model LocatioUsers {
-  id        String   @id @default(cuid())
-  address   String
-  userId    String
-  branch    String
-  type      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User?    @relation(fields: [userId], references: [id])
+  id         String             @id @default(cuid())
+  addressIn  String
+  addressOut String?
+  userId     String
+  branch     String
+  type       String
+  timeIn     DateTime
+  timeOut    DateTime?
+  status     LocationUserStatus @default(Active)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  users      User?              @relation(fields: [userId], references: [id])
 }

@@ -1,6 +1,7 @@
 import { calculateOvertimeHours, calculateWorkingHours } from "@/data/attend";
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
+import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
 export const dynamic = "force-dynamic";
 export const GET = async () => {
@@ -56,44 +57,59 @@ export const GET = async () => {
   return Response.json({ users }, { status: 200 });
 };
 export const POST = async (req: Request) => {
-  let users = await db.attends.findMany();
-  if (users) {
-    const processResults = await Promise.allSettled(
-      users.map(async (user) => {
-        try {
-          let shift = await db.attendBranch.findFirst({
-            where: { userId: user.userId },
-          });
-          if (!shift?.clockIn || !shift?.clockOut) {
-            throw new Error(`No shift found for user ${user.userId}`);
-          }
-          let inTime = dayjs(user.clockIn);
-          let outTime = dayjs(user.clockOut);
-          const shiftOut = TimeUtils.createDateFromTimeString(
-            outTime.toDate(),
-            shift.clockOut,
-            "out",
-          );
-          let overtime = 0;
-          let workingHour = 0;
-          if (user.clockIn && user.clockOut) {
-            workingHour = await calculateWorkingHours(
-              user.clockIn,
-              user.clockOut,
-            );
-            console.log("🚀 ~ users.map ~ workingHour:", workingHour);
-          }
-          if (user.clockOut) {
-            overtime = await calculateOvertimeHours(shiftOut, outTime);
-            console.log("🚀 ~ users.map ~ overtime:", overtime);
-          }
-          await db.attends.update({
-            where: { id: user.id },
-            data: { overtime, workingHour },
-          });
-        } catch (error) {}
-      }),
+  try {
+    const users = await db.user.findMany({where:{role:"USER"}})
+    let today = dayjs().subtract(1,'days');
+    let attends =await db.attends.findMany({where:{dates:new Date(today.format('YYYY-MM-DD'))}})
+    const attendedUserIds = new Set(
+      attends.map((attend: { userId: any }) => attend?.userId),
     );
-    return Response.json({ users }, { status: 200 });
+    const absentUsers = users.filter((user) => !attendedUserIds.has(user.id));
+    const processResults = await Promise.allSettled(
+      absentUsers.map(async(u)=>{
+        try {
+          let data ={
+            dates:new Date(today.format('YYYY-MM-DD')),
+            userId:u.id,
+            status:AttendStatus.Absent
+          }
+          await db.attends.create({data})
+          return {
+            userId: u.id,
+            type: "success",
+            created: true,
+          };
+        } catch (error) {
+          return {
+            userId: u.id,
+            type: "error",
+            error: error instanceof Error ? error.message : "Unknown error",
+            created: false,
+          };
+        }
+      })
+    )
+    const processedResults = processResults.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
+    });
+    const summary = {
+      total: users.length,
+      successful: processedResults.filter((r) => r.type === "success").length,
+      failed: processedResults.filter((r) => r.type === "error").length,
+      details: processedResults.filter((r) => r.type === "success"),
+    };
+
+    return Response.json(summary, { status: 200 });
+  } catch (error) {
+    return Response.json({error},{status:400})
   }
 };
