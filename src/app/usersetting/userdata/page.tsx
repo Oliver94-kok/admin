@@ -72,60 +72,42 @@ const FormLayout = () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('UserData');
 
-        const addFormattedRows = (rowData: any[], options: {
-            bold?: boolean,
-            alignment?: Partial<ExcelJS.Alignment>,
-            noBorder?: boolean
-        } = {}) => {
+        const addFormattedRows = (rowData: any[], options: { bold?: boolean, alignment?: Partial<ExcelJS.Alignment>, noBorder?: boolean } = {}) => {
             const row = worksheet.addRow(rowData);
-
             row.eachCell((cell) => {
                 if (!options.noBorder) {
-                    cell.border = {
-                        top: { style: 'thin' },
-                        left: { style: 'thin' },
-                        bottom: { style: 'thin' },
-                        right: { style: 'thin' }
-                    };
+                    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
                 } else {
                     cell.border = {};
                 }
-                if (options.bold) {
-                    cell.font = { bold: true };
-                }
-
-                cell.alignment = options.alignment || {
-                    vertical: 'middle',
-                    horizontal: 'center',
-                    wrapText: true
-                };
+                if (options.bold) cell.font = { bold: true };
+                cell.alignment = options.alignment || { vertical: 'middle', horizontal: 'center', wrapText: true };
             });
-
             return row;
         };
 
-        // Add photos to the worksheet
+        const imageCache = new Map<string, ArrayBuffer>();
+
         const addImageFromUrl = async (url: string, rowIndex: number, colIndex: number) => {
             try {
-                const response = await fetch(url);
-                const arrayBuffer = await response.arrayBuffer();
+                let arrayBuffer;
+                if (imageCache.has(url)) {
+                    arrayBuffer = imageCache.get(url)!;
+                } else {
+                    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+                    arrayBuffer = await response.arrayBuffer();
+                    imageCache.set(url, arrayBuffer);
+                }
 
-                // Directly use the ArrayBuffer for image
-                const imageId = workbook.addImage({
-                    buffer: arrayBuffer,  // Use arrayBuffer directly
-                    extension: 'jpeg', // Adjust extension if needed
-                });
-
-                worksheet.addImage(imageId, {
-                    tl: { col: colIndex - 1, row: rowIndex - 1 },
-                    ext: { width: 50, height: 50 }, // Adjust size as needed
-                });
+                const imageId = workbook.addImage({ buffer: arrayBuffer, extension: 'jpeg' });
+                worksheet.addImage(imageId, { tl: { col: colIndex - 1, row: rowIndex - 2 }, ext: { width: 50, height: 50 } });
             } catch (error) {
                 console.error(`Failed to fetch image from ${url}:`, error);
             }
         };
 
         let currentRow = 1;
+        const imagePromises: Promise<void>[] = [];
 
         for (const item of data) {
             const { name, branch, attend } = item;
@@ -137,9 +119,8 @@ const FormLayout = () => {
                 addFormattedRows([`${a.dates}`, "in", `${a.clockIn}`, "out", `${a.clockOut}`]);
                 currentRow++;
 
-                // Add photo to the worksheet for this attendance row
                 if (a.img) {
-                    await addImageFromUrl(`https://image.ocean00.com${a.img}`, currentRow, 6);
+                    imagePromises.push(addImageFromUrl(`https://image.ocean00.com${a.img}`, currentRow, 6));
                 }
             }
 
@@ -147,17 +128,13 @@ const FormLayout = () => {
             currentRow++;
         }
 
+        await Promise.all(imagePromises);
+
         worksheet.properties.defaultRowHeight = 40;
-        worksheet.eachRow((row) => {
-            row.height = 40;
-        });
-
+        worksheet.eachRow((row) => row.height = 40);
         const totalColumns = worksheet.columnCount;
-        for (let i = 1; i <= totalColumns; i++) {
-            worksheet.getColumn(i).width = 12;
-        }
+        for (let i = 1; i <= totalColumns; i++) worksheet.getColumn(i).width = 12;
 
-        // Save workbook
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const link = document.createElement('a');
