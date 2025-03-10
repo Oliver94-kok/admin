@@ -45,7 +45,7 @@ const countMatchingLeaves = async (
 
 export const POST = async (req: Request) => {
   try {
-    const { team, startDate, endDate } = await req.json();
+    const { team, startDate, endDate, month } = await req.json();
     const users = await db.user.findMany({
       where: { role: "USER", AttendBranch: { team } },
       select: { id: true },
@@ -61,7 +61,7 @@ export const POST = async (req: Request) => {
         userBatch.map(async (user) => {
           try {
             return await db.$transaction(async (tx) => {
-              const [noClockInAttends, lateAttends, attends, full] =
+              const [noClockInAttends, lateAttends, attends, absent] =
                 await Promise.all([
                   tx.attends.findMany({
                     where: {
@@ -91,7 +91,7 @@ export const POST = async (req: Request) => {
                       },
                       userId: user.id,
                       NOT: {
-                        OR: [{ status: "Absent" }, { status: "Leave" }],
+                        OR: [{ status: "Absent" }, { status: "Leave" }, { status: "Active" }],
                       },
                     },
                   }),
@@ -103,24 +103,24 @@ export const POST = async (req: Request) => {
                       },
                       userId: user.id,
 
-                      status: "Full_Attend",
+                      status: "Absent",
                     },
                   }),
                 ]);
 
-              // const [updatedNoClockIn, updatedLate] = await Promise.all([
-              //   updateAttendsInDb(noClockInAttends),
-              //   updateAttendsInDb(lateAttends),
-              // ]);
+              const [updatedNoClockIn, updatedLate] = await Promise.all([
+                updateAttendsInDb(noClockInAttends),
+                updateAttendsInDb(lateAttends),
+              ]);
 
-              // const totalNoClockInFine = updatedNoClockIn.reduce(
-              //   (sum, _, index) => sum + (index === 0 ? 50 : 100),
-              //   0,
-              // );
-              // const totalLateFine = updatedLate.reduce(
-              //   (sum, _, index) => sum + (index === 0 ? 50 : 100),
-              //   0,
-              // );
+              const totalNoClockInFine = updatedNoClockIn.reduce(
+                (sum, _, index) => sum + (index === 0 ? 50 : 100),
+                0,
+              );
+              const totalLateFine = updatedLate.reduce(
+                (sum, _, index) => sum + (index === 0 ? 50 : 100),
+                0,
+              );
               let leave = await countMatchingLeaves(
                 user.id,
                 startDate,
@@ -128,30 +128,31 @@ export const POST = async (req: Request) => {
               );
               let totalDay = attends.length + leave!;
               const salary = await tx.salary.findFirst({
-                where: { userId: user.id, month: 1, year: 2025 },
+                where: { userId: user.id, month, year: 2025 },
               });
 
               if (!salary) {
                 throw new Error(`No salary record found for user ${user.id}`);
               }
-
-              // const updatedSalary = await tx.salary.update({
-              //   where: { id: salary.id },
-              //   data: {
-              //     fineNoClockIn: totalNoClockInFine,
-              //     fineLate: totalLateFine,
-              //     workingDay: totalDay,
-              //     absent: absent.length,
-              //   },
-              // });
+              let total = totalDay * salary.perDay! - totalLateFine - totalNoClockInFine - (absent.length * 2 * salary.perDay!)
+              const updatedSalary = await tx.salary.update({
+                where: { id: salary.id },
+                data: {
+                  total,
+                  fineNoClockIn: totalNoClockInFine,
+                  fineLate: totalLateFine,
+                  workingDay: totalDay,
+                  absent: absent.length,
+                },
+              });
 
               return {
                 userId: user.id,
                 noClockInRecords: noClockInAttends.length,
                 lateRecords: lateAttends.length,
-                // totalNoClockInFine,
-                // totalLateFine,
-                workingDay: full.length,
+                totalNoClockInFine,
+                totalLateFine,
+                absent: absent.length,
                 success: true,
               };
             });

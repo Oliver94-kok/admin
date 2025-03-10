@@ -15,16 +15,16 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const Location = () => {
     const session = useSession();
-
     const [selectedDate, setSelectedDate] = useState(DateTime.now().toFormat('yyyy-MM-dd'));
     const { data, error, isLoading } = useSWR(
-        `/api/attend/dashboard?date=${selectedDate}&role=${session.data?.user.role}`,
+        `/api/location?date=${selectedDate}`,
         fetcher,
         {
             refreshInterval: 5000,
             revalidateOnMount: true,
         }
     );
+    console.log("🚀 ~ Location ~ data:", data)
 
     const [dictionary, setDictionary] = useState<any | null>(null); // Renamed `dict` to `dictionary`
 

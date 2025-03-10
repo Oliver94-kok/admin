@@ -8,9 +8,10 @@ import { AttendsInterface } from "@/types/attendents";
 import dayjs from "dayjs";
 import { getDataByDate } from "@/data/attend";
 import { DateTime } from "luxon";
+import { location } from "@/types/location";
 
 interface LocationTableProps {
-  data: AttendsInterface[];
+  data: location[];
   onDateChange: (date: string) => void;
   currentDate: string;
   dict: Record<string, any>; // Pass dictionary as props
@@ -18,7 +19,7 @@ interface LocationTableProps {
 
 const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableProps) => {
   const [tableDate, setTableData] = useState(data);
-  console.log("🚀 ~ LocationTable ~ tableDate:", tableDate);
+  console.log("🚀 ~ LocationTable ~ tableDate:", data);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Add sort order state
@@ -55,8 +56,8 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
   const sortedData = [...tableDate].sort((a, b) => {
     if (!sortColumn) return 0;
 
-    const aValue = a[sortColumn as keyof AttendsInterface];
-    const bValue = b[sortColumn as keyof AttendsInterface];
+    const aValue = a[sortColumn as keyof location];
+    const bValue = b[sortColumn as keyof location];
 
     if (typeof aValue === "string" && typeof bValue === "string") {
       return sortOrder === "asc"
@@ -226,21 +227,21 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
               </div>
               <div className="flex items-center justify-center px-2 py-4">
                 <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
-                  <i>{brand.users.AttendBranch.team} </i>
+                  <i>{brand.branch} </i>
                 </p>
               </div>
 
               <div className="flex items-center justify-center px-2 py-4">
                 <p className="font-medium text-dark dark:text-white">
                   {/* {brand.clockIn?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                  {brand.clockIn ? displayTime(brand.clockIn) : dict.dashboard.noclockin}
+                  {brand.timeIn ? displayTime(brand.timeIn) : dict.dashboard.noclockin}
                 </p>
               </div>
 
               <div className="flex items-center justify-center px-2 py-4">
                 <p className="font-medium text-green-light-1">
                   {/* {brand.clockin?.toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' })} */}
-                  {brand.clockOut ? displayTime(brand.clockOut) : dict.dashboard.noclockout}
+                  {brand.timeOut ? displayTime(brand.timeOut) : dict.dashboard.noclockout}
                 </p>
               </div>
               {/* 
@@ -269,11 +270,11 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
                 <p className="flex flex-col text-body-sm font-medium text-dark dark:text-dark-6">
                   <i>
                     <span className="text-green-500">in:</span>{" "}
-                    {brand.locationIn}
+                    {brand.addressIn}
                   </i>
                   <i>
                     <span className="text-orange-500">Out:</span>
-                    {brand.locationOut}
+                    {brand.addressOut}
                   </i>
                 </p>
               </div>

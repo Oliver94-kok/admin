@@ -17,32 +17,64 @@ import { DateTime } from "luxon";
 
 export const GET = async (request: Request) => {
   try {
-    const startDate = new Date("2025-02-01");
-    const endDate = new Date("2025-02-28");
-    let leaves = await db.leave.findMany({
-      where: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
-        status: "Approve",
-        type: {
-          in: leaveType, // Assuming leaveType is an array
-        },
-      },
+    let today = dayjs()
+    let t = new Date("2025-03-08");
+    const users = await db.attends.findMany({ where: { dates: t, status: "Active" } })
+    const results = await Promise.allSettled(
+      users.map(async (u) => {
+        try {
+          let shift = await db.attendBranch.findFirst({
+            where: { userId: u.userId, clockIn: "19:00" },
+            select: { clockOut: true, userId: true },
+          });
+          if (!shift?.clockOut) {
+            throw new Error(`No shift fousnd for user ${shift?.userId}`);
+          }
+          const shiftOut = TimeUtils.createDateFromTimeString(
+            t,
+            shift.clockOut,
+            "out",
+          );
+          await db.attends.update({ where: { id: u.id }, data: { clockOut: shiftOut, status: "Full_Attend" } })
+          return {
+            userId: u.userId,
+            type: "success",
+            created: true,
+            shiftOut,
+            count: shift,
+          };
+        } catch (error) {
+          return {
+            userId: u.userId,
+            type: "error",
+            error: error instanceof Error ? error.message : "Unknown error",
+            created: false,
+          };
+        }
+      }),
+    );
+    const processedResults = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
     });
-    let x = 0;
 
-    // leaves.map((leave) => {
-    //   if (leave.status == "Approve") {
-    //     console.log("🚀 ~ leaves.map ~ leave:", leave);
-    //     if (leaveType.includes(leave.type)) {
-    //       x += 1;
-    //     }
-    //   }
-    // });
+    const summary = {
+      total: users.length,
+      successful: processedResults.filter((r) => r.type === "success").length,
+      have: processedResults.filter((r) => r.type === "have").length,
+      failed: processedResults.filter((r) => r.type === "error").length,
+      details: processedResults.filter((r) => r.type === "error"),
+    };
 
-    return Response.json({ length: leaves.length }, { status: 200 });
+    return Response.json(summary, { status: 200 });
   } catch (error) {
     console.log("🚀 ~ GET ~ error:", error);
     return Response.json(error);
@@ -50,156 +82,29 @@ export const GET = async (request: Request) => {
 };
 
 export const POST = async (req: Request) => {
-  const { data } = await req.json();
-  const jsonArray = data;
-  let full = 0;
-  let clockInNoOut = 0;
-  let NoclockInHaveOut = 0;
-  let absent = 0;
-  let leave = 0;
-  for (const d of jsonArray) {
-    if (d.clockIn && d.clockOut) {
-      console.log("test masuk dua ada", d);
+  try {
 
-      if (d.late == 1) {
-        var userlate = await getAttendLate(
-          d.userId,
-          new Date().getMonth() + 1,
-          new Date().getFullYear(),
-        );
-      }
-      let overtime = await calOverTime2(d.userId, d.clockOut);
-      // let workingHour = await checkWorkingHour(d.clockIn as Date, d.clockOut);
-      const today = dayjs.utc(d.clockIn);
-      let data = {
-        userId: d.userId,
-        dates: today.toDate(),
-        clockIn: d.clockIn,
-        clockOut: d.clockOut,
-        // img: attendImg,
-        fine: userlate!,
-        locationIn: d.location,
-        overtime: Number(overtime),
-        // workingHour,
-        status: d.late == 1 ? AttendStatus.Late : AttendStatus.Full_Attend,
-      };
-      await db.attends.create({ data });
-      await CheckSalarys({
-        userId: d.userId,
-        fineLate: d.late == 1 ? userlate! : null,
-        fineNoClockIn: null,
-        fineNoClockOut: null,
-        overtime: Number(overtime!),
-        workingHour: null,
-      });
-      full = full + 1;
-    } else if (d.clockIn && !d.clockOut) {
-      console.log("test masuk in ada out x ada", d);
-      if (d.late == 1) {
-        var userlate = await getAttendLate(
-          d.userId,
-          new Date().getMonth() + 1,
-          new Date().getFullYear(),
-        );
-      }
-      // let overtime = await calOverTime2(d.userId, d.clockOut);
-      // let workingHour = await checkWorkingHour(d.clockIn as Date, d.clockOut);
-      let fine = await getNoClockOut(
-        d.userId,
-        new Date().getMonth() + 1,
-        new Date().getFullYear(),
-      );
-      const today = dayjs.utc(d.clockIn);
-      let data = {
-        userId: d.userId,
-        dates: today.toDate(),
-        clockIn: d.clockIn,
-        clockOut: d.clockOut,
-        // img: attendImg,
-        fine: fine!,
-        locationIn: d.location,
-        // overtime:Number(overtime),
-        // workingHour,
-        status: AttendStatus.No_ClockIn_ClockOut,
-      };
-      await db.attends.create({ data });
-      await CheckSalarys({
-        userId: d.userId,
-        fineLate: null,
-        fineNoClockIn: null,
-        fineNoClockOut: fine,
-        overtime: null,
-        workingHour: null,
-      });
-      clockInNoOut = clockInNoOut + 1;
-    } else if (!d.clockIn && d.clockOut) {
-      console.log("test masuk out ada in x ada", d);
-      let fine2 = await getNoClockIn(
-        d.userId,
-        new Date().getMonth() + 1,
-        new Date().getFullYear(),
-      );
-      let overtime = await calOverTime2(d.userId, d.clockOut);
-      const formattedTimestamp = d.clockOut.replace(" ", "T");
-      var start = DateTime.fromISO(formattedTimestamp);
-      console.log("🚀 ~ POST ~ start:", start);
-      let checkDate = TimeUtils.checkMorning(d.clockOut);
-      const today = dayjs.utc(d.clockOut);
+    let today = dayjs()
+    let t = new Date("2025-03-08");
 
-      let data = {
-        userId: d.userId,
-        dates: checkDate ? today.subtract(1, "day").toDate() : today.toDate(),
-        clockOut: start.toISO(),
-        fine: fine2!,
-        locationOut: d.location,
-        overtime: Number(overtime!),
-        status: AttendStatus.No_ClockIn_ClockOut,
-      };
-      console.log("🚀 ~ POST ~ data:", data);
-      let t = await db.attends.create({ data });
-      // await checkSalary(t.userId, t.fine!, t.fine2!, day, Number(overtime));
-      await CheckSalarys({
-        userId: d.userId,
-        fineLate: null,
-        fineNoClockIn: fine2,
-        fineNoClockOut: null,
-        overtime: Number(overtime!),
-        workingHour: null,
-      });
-      NoclockInHaveOut = NoclockInHaveOut + 1;
-    } else {
-      console.log("test masuk dua x ada", d);
-      console.log("status", d.status);
-      if (d.status == "Absent") {
-        let dates = new Date(d.dd);
-        let data = {
-          userId: d.userId,
-          dates,
-          status: AttendStatus.Absent,
-        };
-        await db.attends.create({ data });
-        absent = absent + 1;
-      } else if (d.status == "Leave") {
-        let dates = new Date(d.dd);
-        let data = {
-          userId: d.userId,
-          dates,
-          status: AttendStatus.Leave,
-        };
-        await db.attends.create({ data });
-        leave = leave + 1;
+    // Get all attendance records for the date
+    const attends = await db.attends.findMany({
+      where: { dates: t }
+    });
+
+    // Create a set of user IDs who have attended
+    const attendedUserIds = new Set(attends.map(attend => attend.userId));
+
+    // Get all users with role "USER" who have not attended
+    const usersNotAttended = await db.user.findMany({
+      where: {
+        role: "USER",
+        id: { notIn: Array.from(attendedUserIds) }
       }
-    }
+    });
+
+    return Response.json({ length: usersNotAttended.length, usersNotAttended }, { status: 200 });
+  } catch (error) {
+    return Response.json(error, { status: 400 })
   }
-  return Response.json(
-    {
-      full,
-      clockInNoOut,
-      NoclockInHaveOut,
-      absent,
-      leave,
-      leangt: jsonArray.length,
-    },
-    { status: 200 },
-  );
 };

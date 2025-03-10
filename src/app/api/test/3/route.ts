@@ -1,4 +1,4 @@
-import { calculateOvertimeHours, calculateWorkingHours } from "@/data/attend";
+import { calculateOvertimeHours, calculateWorkingHours, getDataByDate } from "@/data/attend";
 import { CheckSalarys } from "@/data/salary";
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
@@ -100,54 +100,66 @@ export const GET = async (request: Request) => {
 
 export const POST = async (req: Request) => {
   try {
-    let today = dayjs().subtract(1, "days");
-    console.log("🚀 ~ POST ~ today:", today.toDate());
-    let t = new Date("2025-02-04");
-    console.log("🚀 ~ POST ~ t:", t);
-    const users = await db.attends.findMany({
-      where: { dates: t, status: "Active" },
-    });
+    let today = dayjs()
+
+    let t = new Date("2025-03-09");
+
+    // const users = await db.attends.findMany({
+    //   where: { dates: t, status: "Active" },
+    // });
+    const users = await db.user.findMany({ where: { role: "USER", AttendBranch: { clockIn: "08:00" } } })
     const results = await Promise.allSettled(
       users.map(async (u) => {
         try {
           let shift = await db.attendBranch.findFirst({
-            where: { userId: u.userId },
-            select: { clockOut: true },
+            where: { userId: u.id },
+            select: { clockIn: true },
           });
-          if (!shift?.clockOut) {
+          if (!shift?.clockIn) {
             throw new Error(`No shift found for user ${u.id}`);
+          }
+          let attend = await db.attends.findFirst({ where: { userId: u.id, dates: t } })
+          if (attend) {
+            throw new Error(`user has clock in ${u.id}`);
           }
           const shiftOut = TimeUtils.createDateFromTimeString(
             t,
-            shift.clockOut,
-            "out",
+            shift.clockIn,
+            "in",
           );
-          let workingHour = await calculateWorkingHours(u.clockIn, shiftOut);
-          let overtime = await calculateOvertimeHours(shiftOut, shiftOut);
-          const created = await db.attends.update({
-            where: { id: u.id },
-            data: {
-              clockOut: shiftOut,
-              status: "Full_Attend",
-              workingHour,
-              locationOut: u.locationIn,
-            },
-          });
-          await CheckSalarys({
-            userId: u.userId,
-            fineLate: u.status == "Late" ? u.fine : null,
-            fineNoClockIn: null,
-            fineNoClockOut: null,
-            overtime: Number(overtime!),
-            workingHour: workingHour,
-          });
+          let data = {
+            userId: u.id,
+            dates: t,
+            clockIn: shiftOut,
+            status: AttendStatus.Active
+          }
+          await db.attends.create({ data })
+          // let workingHour = await calculateWorkingHours(u.clockIn, shiftOut);
+          // let overtime = await calculateOvertimeHours(shiftOut, shiftOut);
+          // const created = await db.attends.update({
+          //   where: { id: u.id },
+          //   data: {
+          //     clockOut: shiftOut,
+          //     status: "Full_Attend",
+          //     workingHour,
+          //     locationOut: u.locationIn,
+          //   },
+          // });
+          // await CheckSalarys({
+          //   userId: u.userId,
+          //   fineLate: u.status == "Late" ? u.fine : null,
+          //   fineNoClockIn: null,
+          //   fineNoClockOut: null,
+          //   overtime: Number(overtime!),
+          //   workingHour: workingHour,
+          // });
 
           return {
             userId: u.id,
             type: "success",
             created: true,
             shiftOut,
-            count: created,
+            count: data,
           };
         } catch (error) {
           return {

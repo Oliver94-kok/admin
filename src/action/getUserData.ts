@@ -44,12 +44,12 @@ export const getDataUser = async (
     const users =
       team === "All"
         ? await db.attendBranch.findMany({
-            select: { userId: true },
-          })
+          select: { userId: true },
+        })
         : await db.attendBranch.findMany({
-            where: { team },
-            select: { userId: true },
-          });
+          where: { team },
+          select: { userId: true },
+        });
 
     let result = await Promise.all(
       users.map(async (u) => {
@@ -62,6 +62,7 @@ export const getDataUser = async (
             userId: u.userId,
             dates: { gte: firstDay.toDate(), lte: lastDay.toDate() },
           },
+          orderBy: { dates: "asc" },
           select: {
             img: true,
             clockIn: true,
