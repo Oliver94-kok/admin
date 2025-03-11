@@ -1,7 +1,8 @@
 import { calculateOvertimeHours, calculateWorkingHours } from "@/data/attend";
+import { CheckSalarys, getNoClockOut } from "@/data/salary";
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
-import { AttendStatus } from "@prisma/client";
+import { Attends, AttendStatus, User } from "@prisma/client";
 import dayjs from "dayjs";
 export const dynamic = "force-dynamic";
 export const GET = async () => {
@@ -56,60 +57,189 @@ export const GET = async () => {
 
   return Response.json({ users }, { status: 200 });
 };
+
+
+interface ProcessResult {
+  userId: string;
+  type: 'success' | 'error';
+  error?: string;
+  created: boolean;
+}
+
+interface SalaryUpdateData {
+  userId: string;
+  fineLate: number | null;
+  fineNoClockIn: number | null;
+  fineNoClockOut: number | null;
+  overtime: number | null;
+  workingHour: number | null;
+}
+
+interface Summary {
+  total: number;
+  total2: number;
+  successful: number;
+  success2: number;
+  failed: number;
+  fail2: number;
+  details: ProcessResult[];
+}
+
 export const POST = async (req: Request) => {
   try {
-    const users = await db.user.findMany({where:{role:"USER"}})
-    let today = dayjs().subtract(1,'days');
-    let attends =await db.attends.findMany({where:{dates:new Date(today.format('YYYY-MM-DD'))}})
+    const today = dayjs().subtract(1, 'days');
+    const formattedDate = today.format('YYYY-MM-DD');
+    const todayDate = new Date(formattedDate);
+
+    // Get all users and attendances in parallel to save time
+    const [users, allAttendances, activeAttendances] = await Promise.all([
+      db.user.findMany({ where: { role: "USER" } }) as Promise<User[]>,
+      db.attends.findMany({ where: { dates: todayDate } }) as Promise<Attends[]>,
+      db.attends.findMany({ where: { dates: todayDate, status: "Active" } }) as Promise<Attends[]>
+    ]);
+
+    // Create a Set of user IDs who already have attendance records
     const attendedUserIds = new Set(
-      attends.map((attend: { userId: any }) => attend?.userId),
+      allAttendances.map(attend => attend.userId)
     );
-    const absentUsers = users.filter((user) => !attendedUserIds.has(user.id));
-    const processResults = await Promise.allSettled(
-      absentUsers.map(async(u)=>{
-        try {
-          let data ={
-            dates:new Date(today.format('YYYY-MM-DD')),
-            userId:u.id,
-            status:AttendStatus.Absent
-          }
-          await db.attends.create({data})
-          return {
-            userId: u.id,
-            type: "success",
-            created: true,
-          };
-        } catch (error) {
-          return {
-            userId: u.id,
-            type: "error",
-            error: error instanceof Error ? error.message : "Unknown error",
-            created: false,
-          };
-        }
-      })
-    )
-    const processedResults = processResults.map((result) => {
-      if (result.status === "fulfilled") {
-        return result.value;
-      } else {
-        return {
-          userId: "unknown",
-          type: "error",
-          error: result.reason,
-          created: false,
-        };
-      }
-    });
-    const summary = {
-      total: users.length,
-      successful: processedResults.filter((r) => r.type === "success").length,
-      failed: processedResults.filter((r) => r.type === "error").length,
-      details: processedResults.filter((r) => r.type === "success"),
-    };
+
+    // Filter users who don't have attendance records
+    const absentUsers = users.filter(user => !attendedUserIds.has(user.id));
+
+    // Process absent users
+    const absentProcessResults = await processAbsentUsers(absentUsers, todayDate);
+
+    // Process active users who didn't clock out
+    const activeProcessResults = await processActiveAttendances(activeAttendances);
+
+    // Generate summary
+    const summary = generateSummary(users.length, activeAttendances.length, absentProcessResults, activeProcessResults);
 
     return Response.json(summary, { status: 200 });
   } catch (error) {
-    return Response.json({error},{status:400})
+    console.error("Attendance processing error:", error);
+    return Response.json({ error: "Failed to process attendance" }, { status: 500 });
   }
 };
+
+/**
+ * Process users who were absent and create attendance records for them
+ */
+async function processAbsentUsers(absentUsers: User[], todayDate: Date): Promise<PromiseSettledResult<ProcessResult>[]> {
+  return Promise.allSettled(
+    absentUsers.map(async (user) => {
+      try {
+        await db.attends.create({
+          data: {
+            dates: todayDate,
+            userId: user.id,
+            status: AttendStatus.Absent
+          }
+        });
+
+        return {
+          userId: user.id,
+          type: 'success' as const,
+          created: true,
+        };
+      } catch (error) {
+        return {
+          userId: user.id,
+          type: 'error' as const,
+          error: error instanceof Error ? error.message : "Unknown error",
+          created: false,
+        };
+      }
+    })
+  );
+}
+
+/**
+ * Process active attendances that need to be updated
+ */
+async function processActiveAttendances(activeAttendances: Attends[]): Promise<PromiseSettledResult<ProcessResult>[]> {
+  return Promise.allSettled(
+    activeAttendances.map(async (attend) => {
+      try {
+        const currentMonth = new Date().getMonth() + 1;
+        const currentYear = new Date().getFullYear();
+
+        const fine = await getNoClockOut(
+          attend.userId,
+          currentMonth,
+          currentYear
+        );
+
+        // Update the attendance record
+        await db.attends.update({
+          where: { id: attend.id },
+          data: { status: "No_ClockIn_ClockOut", fine }
+        });
+
+        // Update salary information
+        await CheckSalarys({
+          userId: attend.userId,
+          fineLate: null,
+          fineNoClockIn: fine,
+          fineNoClockOut: null,
+          overtime: null,
+          workingHour: null,
+        } as SalaryUpdateData);
+
+        return {
+          userId: attend.userId,
+          type: 'success' as const,
+          created: true,
+        };
+      } catch (error) {
+        return {
+          userId: attend.userId,
+          type: 'error' as const,
+          error: error instanceof Error ? error.message : "Unknown error",
+          created: false,
+        };
+      }
+    })
+  );
+}
+
+/**
+ * Process results from Promise.allSettled
+ */
+function processResults(results: PromiseSettledResult<ProcessResult>[]): ProcessResult[] {
+  return results.map(result => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    } else {
+      return {
+        userId: "unknown",
+        type: 'error' as const,
+        error: String(result.reason),
+        created: false,
+      };
+    }
+  });
+}
+
+/**
+ * Generate summary of processing results
+ */
+function generateSummary(
+  totalUsers: number,
+  totalActiveAttendances: number,
+  absentResults: PromiseSettledResult<ProcessResult>[],
+  activeResults: PromiseSettledResult<ProcessResult>[]
+): Summary {
+  const processedAbsentResults = processResults(absentResults);
+  const processedActiveResults = processResults(activeResults);
+
+  return {
+    total: totalUsers,
+    total2: totalActiveAttendances,
+    successful: processedAbsentResults.filter(r => r.type === "success").length,
+    success2: processedActiveResults.filter(r => r.type === "success").length,
+    failed: processedAbsentResults.filter(r => r.type === "error").length,
+    fail2: processedActiveResults.filter(r => r.type === "error").length,
+    details: processedAbsentResults.filter(r => r.type === "success"),
+  };
+}

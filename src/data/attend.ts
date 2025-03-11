@@ -422,3 +422,12 @@ const addAttendByDate = async () => {
     return Response.json(error, { status: 400 });
   }
 };
+export const getShiftIn = async () => {
+  try {
+    const shift = await db.attendBranch.groupBy({ by: ['clockIn'], orderBy: { clockIn: 'asc' } })
+    return shift;
+  } catch (error) {
+    console.log("🚀 ~ getShiftIn ~ error:", error)
+    return null
+  }
+}

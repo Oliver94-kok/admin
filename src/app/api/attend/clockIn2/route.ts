@@ -6,11 +6,26 @@ import { TimeUtils } from "@/lib/timeUtility";
 import { AttendsInterface } from "@/types/attendents";
 import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+function getToday() {
+  const now = dayjs();
+  const hour = now.hour();
+
+  // If time is between 12am and 5:59am (0-5 hours)
+  if (hour >= 0 && hour < 6) {
+    return dayjs().utc();
+  } else {
+    // 6am onwards
+    return dayjs();
+  }
+}
+
 
 export const POST = async (req: Request) => {
   try {
     const { userId } = await req.json();
-    const today = dayjs().utc();
+    const today = getToday();
     console.log("🚀 ~ POST ~ today:", today)
     const t = new Date(today.format("YYYY-MM-DD"));
     const attendanceService = new AttendanceService({
