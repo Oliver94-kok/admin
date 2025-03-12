@@ -1,17 +1,72 @@
 import { db } from "@/lib/db"
+import { TimeUtils } from "@/lib/timeUtility"
 import { AttendStatus } from "@prisma/client"
 import dayjs from "dayjs"
 
 
 export const POST = async (req: Request) => {
   try {
-    let data = {
-      userId: "cm7wnmlcx00dsgu01acq60d1w",
-      dates: new Date("2025-03-05"),
-      status: AttendStatus.Full_Attend
+    const users = await db.user.findMany({ where: { role: "USER", AttendBranch: { clockIn: "08:00" } } })
+    const attends = await db.attends.findMany({ where: { dates: new Date("2025-03-11") } });
+    const attendedUserIds = new Set(
+      attends.map((attend: { userId: any }) => attend?.userId),
+    );
+    const absentUsers = users.filter((user) => !attendedUserIds.has(user.id));
+    const BATCH_SIZE = 5;
+    const results = [];
+    for (let i = 0; i < users.length; i += BATCH_SIZE) {
+      const userBatch = users.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.allSettled(
+        userBatch.map(async (user) => {
+          try {
+            const shiftInTime = TimeUtils.createDateFromTimeString(
+              new Date("2025-03-11"),
+              "08:00",
+              "in"
+            );
+            let data = {
+              userId: user.id,
+              dates: new Date("2025-03-11"),
+              clockIn: shiftInTime,
+              status: AttendStatus.Active
+            }
+            await db.attends.create({ data })
+            return {
+              userId: user.id,
+              success: true,
+            };
+
+          } catch (err) {
+            const error = err as Error;
+            console.error(`Error processing user ${user.id}:`, error);
+            return {
+              userId: user.id,
+              error: error.message || "Unknown error occurred",
+              success: false,
+            };
+          }
+        }))
+
+      results.push(...batchResults);
+
+      if (i + BATCH_SIZE < users.length) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
     }
-    await db.attends.create({ data })
-    return Response.json({ "status": "okay" }, { status: 200 })
+    const summary = {
+      totalProcessed: results.length,
+      successful: results.filter(
+        (r) => r.status === "fulfilled" && r.value?.success,
+      ).length,
+      failed: results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success))
+        .length,
+      details: results.map((r) =>
+        r.status === "fulfilled" ? r.value : { error: r.reason },
+      ),
+    };
+
+    return Response.json(summary, { status: 200 });
+    return Response.json({ total: absentUsers.length, absentUsers }, { status: 200 })
   } catch (error) {
     return Response.json(error, { status: 400 })
   }

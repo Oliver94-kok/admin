@@ -25,3 +25,11 @@ export const getDataBranch = async (team: string) => {
     }
   }
 };
+export const getBranchData = async () => {
+  try {
+    let data = await db.branch.findMany()
+    return data;
+  } catch (error) {
+    return null
+  }
+}

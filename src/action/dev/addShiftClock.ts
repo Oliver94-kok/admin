@@ -55,7 +55,8 @@ export const addClockByShift = async ({ shift, date }: AddClockByShiftProps) => 
                             dates: attendDate,
                             status: AttendStatus.Active
                         }
-
+                        let attends = await db.attends.findFirst({ where: { dates: attendDate, userId: user.id } })
+                        if (attends) throw new Error("User already has an attendance record for this date")
                         await db.attends.create({ data })
 
                         return {

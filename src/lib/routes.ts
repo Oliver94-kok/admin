@@ -6,6 +6,7 @@ export const protectedRoutes = [
   "usersetting/salary",
   "usersetting/branchs",
   "location",
+  "userconfig",
 ];
 
 export const apiAuthPrefix = [
