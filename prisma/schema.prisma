@@ -47,6 +47,7 @@ model User {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   isLogin          Boolean
+  isDelete         Boolean           @default(false)
   role             UserRole          @default(USER)
   Attends          Attends[]
   Salary           Salary[]
@@ -54,6 +55,7 @@ model User {
   AttendBranch     AttendBranch?
   NotificationUser NotificationUser?
   LocatioUsers     LocatioUsers[]
+  Log              Log[]
 }
 
 model Attends {
@@ -165,4 +167,13 @@ model LocatioUsers {
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
   users      User?              @relation(fields: [userId], references: [id])
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  action    String // Description of the action (e.g., "User created")
+  details   String? // Additional details about the action
+  userId    String // ID of the admin who performed the action
+  users     User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

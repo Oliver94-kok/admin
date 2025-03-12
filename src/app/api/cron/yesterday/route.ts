@@ -18,7 +18,7 @@ export const POST = async (req: Request) => {
     const today = dayjs().subtract(1, "day");
     // const t = new Date(today);
     let attendTody = await cronAttend(today.format("YYYY-MM-DD"));
-    console.log("start cron yesterday",today);
+    console.log("start cron yesterday", today);
     console.log("🚀 ~ POST ~ attendTody:", attendTody);
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),
@@ -92,6 +92,8 @@ export const POST = async (req: Request) => {
             shiftResult.result === "absent" ||
             shiftResult.result === "shift_ended"
           ) {
+            let attend = await db.attends.findFirst({ where: { userId: absentUser.id, dates: today.toDate() } })
+            if (attend) throw new Error("Existing Data")
             const attendanceData = {
               userId: absentUser.id,
               dates: today.toDate(),

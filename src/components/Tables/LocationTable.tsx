@@ -31,7 +31,10 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
   );
   useEffect(() => {
     if (data) {
+      console.log("🚀 ~ useEffect ~ data:", data)
       setTableData(data);
+    } else {
+      setTableData([])
     }
   }, [data]);
   // Generate the last three days' options including today

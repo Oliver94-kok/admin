@@ -25,6 +25,7 @@ const Location = () => {
         }
     );
     console.log("🚀 ~ Location ~ data:", data)
+    console.log("🚀 ~ Location ~ data:", data)
 
     const [dictionary, setDictionary] = useState<any | null>(null); // Renamed `dict` to `dictionary`
 
@@ -43,6 +44,7 @@ const Location = () => {
         const formattedDate = `${year}-${month}-${day}`;
         setSelectedDate(formattedDate);
     };
+    const tableData = data ? (Array.isArray(data) ? data : data.data || []) : [];
 
     return (
         <DefaultLayout>
@@ -50,7 +52,7 @@ const Location = () => {
                 <Loader />
             ) : (
                 <LocationTable
-                    data={data?.data || []}
+                    data={tableData}
                     onDateChange={handleDateChange}
                     currentDate={selectedDate}
                     dict={dictionary} // Pass `dictionary` to `DashTable`
@@ -58,6 +60,7 @@ const Location = () => {
             )}
         </DefaultLayout>
     );
+
 };
 
 export default Location;

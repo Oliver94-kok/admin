@@ -129,6 +129,8 @@ async function processAbsentUsers(absentUsers: User[], todayDate: Date): Promise
   return Promise.allSettled(
     absentUsers.map(async (user) => {
       try {
+        let attend = await db.attends.findFirst({ where: { userId: user.id, dates: todayDate } })
+        if (attend) throw new Error("existing data")
         await db.attends.create({
           data: {
             dates: todayDate,

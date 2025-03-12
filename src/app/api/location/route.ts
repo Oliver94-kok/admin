@@ -7,7 +7,10 @@ export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     const date = searchParams.get("date");
+    console.log("🚀 ~ GET ~ date:", date)
     let t = dayjs(date)
+    console.log("🚀 ~ GET ~ t:start", t.startOf('day').toDate())
+    console.log("🚀 ~ GET ~ t:end", t.endOf('day').toDate())
     let today = new Date(t.format("YYYY-MM-DD"))
     let location = await db.locatioUsers.findMany({
       where: {
@@ -35,6 +38,7 @@ export const GET = async (request: NextRequest) => {
         }
       }
     })
+    console.log("🚀 ~ GET ~ location:", location)
 
     return Response.json(location, { status: 200 })
   } catch (error) {

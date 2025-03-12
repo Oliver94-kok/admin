@@ -32,8 +32,8 @@ import { notificationClock } from "@/data/notification";
 import { TimeUtils } from "@/lib/timeUtility";
 
 export const GET = async (req: Request) => {
-  // let result = await db.attends.findMany({ where: { dates: t } });
-  let user = await db.attends.findMany();
+  const today = dayjs.utc().startOf("day");
+  let user = await db.attends.findFirst({ where: { userId: "cm7mqrsfs06qegu7e1m4yc8xq", dates: today.toDate() } });
   return Response.json({ user }, { status: 200 });
 };
 
