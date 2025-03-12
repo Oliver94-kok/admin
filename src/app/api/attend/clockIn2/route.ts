@@ -33,7 +33,16 @@ export const POST = async (req: Request) => {
       maxOvertimeHours: 4,
       timezone: "UTC",
     });
-    let attend = await db.attends.findFirst({ where: { userId, dates: t } })
+    let attend = await db.attends.findFirst({
+      where: {
+        userId, OR: [
+          { status: "Active" },
+          {
+            dates: t,
+          },
+        ],
+      }
+    })
     console.log("🚀 ~ POST ~ attend:", attend)
     if (attend) {
       if (attend.status == "Active") return Response.json({ id: attend.id, status: "Active", shiftIn: attend.clockIn, locationIn: attend.locationIn }, { status: 200 });
