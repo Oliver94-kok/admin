@@ -2,6 +2,7 @@
 import Link from "next/link";
 import React from "react";
 import SigninWithPassword from "../SigninWithPassword";
+import Image from "next/image";
 
 export default function Signin() {
   return (
@@ -9,7 +10,7 @@ export default function Signin() {
       <div className="w-full max-w-md bg-white dark:bg-gray-dark rounded-lg shadow-lg p-8">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img
+          <Image
             src={"/images/logo/icon.png"}
             alt="Logo"
             width={176}

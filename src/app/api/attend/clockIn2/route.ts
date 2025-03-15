@@ -1,4 +1,5 @@
 import { isOffDay } from "@/data/attend";
+import { Logging } from "@/data/log";
 import { getNoClockIn } from "@/data/salary";
 import { AttendanceService } from "@/lib/attendService";
 import { db } from "@/lib/db";
@@ -23,8 +24,10 @@ function getToday() {
 }
 
 export const POST = async (req: Request) => {
+  let userid;
   try {
     const { userId } = await req.json();
+    userid = userId;
     const today = getToday();
     console.log("🚀 ~ POST ~ today:", today);
     const t = new Date(today.format("YYYY-MM-DD"));
@@ -40,40 +43,43 @@ export const POST = async (req: Request) => {
       where: {
         userId,
         dates: t, // Ensure the date matches today
-        status: "Active", // Only consider "Active" status for today
       },
     });
 
-    console.log("🚀 ~ POST ~ attend:", attend);
+
 
     if (attend) {
       // If an active attendance record is found for today
+
       return Response.json(
         {
           id: attend.id,
-          status: "Active",
-          shiftIn: attend.clockIn,
+          status: attend.status,
+          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? attend.dates : attend.clockIn,
+          shiftOut: attend.clockOut,
           locationIn: attend.locationIn,
+          locationOut: attend.locationOut,
         },
         { status: 200 }
       );
     }
 
-    // If no active attendance record is found for today, check for other statuses
+    // If no  attendance record is found for today, check for other statuses
     attend = await db.attends.findFirst({
       where: {
         userId,
-        dates: t, // Ensure the date matches today
+        status: "Active", // Ensure the status active
       },
     });
 
     if (attend) {
-      // If an attendance record is found for today but not active
+      // If an attendance record is found for active
       return Response.json(
         {
           id: attend.id,
+          date: attend.dates,
           status: attend.status,
-          shiftIn: attend.clockIn,
+          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? attend.dates : attend.clockIn,
           shiftOut: attend.clockOut,
           locationIn: attend.locationIn,
           locationOut: attend.locationOut,
@@ -98,6 +104,8 @@ export const POST = async (req: Request) => {
     // If no attendance record is found and it's not an off day
     return Response.json({ status: "Not_Start_shift" }, { status: 200 });
   } catch (error) {
+    let err = error instanceof Error ? error.message : "An unknown error occurred"
+    await Logging(userid, "Clock in 2", err)
     return Response.json(error, { status: 400 });
   }
 };

@@ -30,6 +30,7 @@ import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
 import { notificationClock } from "@/data/notification";
 import { TimeUtils } from "@/lib/timeUtility";
+import { Logging } from "@/data/log";
 
 export const GET = async (req: Request) => {
   const today = dayjs.utc().startOf("day");
@@ -137,32 +138,51 @@ export const POST = async (req: Request) => {
     await SentNoti("Clock", "You have clock out", "", user?.username);
     return Response.json({ id: t.id }, { status: 201 });
   } catch (error) {
+    let err = error instanceof Error ? error.message : "An unknown error occurred"
+    await Logging(userId, "Patch clock", err)
     return Response.json({ error }, { status: 400 });
   }
 };
 
 export const PATCH = async (req: Request) => {
-  const { userId, clockOut, id, location, notify } = await req.json();
-  console.log("🚀 ~ PATCH ~ clockOut:", clockOut);
-  let attend = await checkClockIn(userId);
-  console.log("🚀 ~ PATCH ~ attend:", attend);
-  if (attend?.status == "Full_Attend")
-    return Response.json({ error: "you have clock out" }, { status: 400 });
-  if (!attend) return Response.json({ error: "No data" }, { status: 400 });
+  let userid;
   try {
+
+    const { userId, clockOut, id, location, notify } = await req.json();
+    userid = userId
+    let attend = await checkClockIn(userId);
+    if (!attend) throw new Error("No data")
+    if (attend?.status == "Full_Attend") throw new Error("You have clock out");
     const today = dayjs();
     let shift = await db.attendBranch.findFirst({ where: { userId } });
     if (!shift?.clockOut) {
-      return Response.json(
-        { error: `No shift found for user ${userId}` },
-        { status: 400 },
-      );
+      throw new Error(`No shift found for user ${userId}`)
     }
     const shiftOut = TimeUtils.createDateFromTimeString(
       today.toDate(),
       shift.clockOut,
       "out",
     );
+    console.log("attend.clockIn ", attend.clockIn)
+    if (attend.clockIn == null) {
+
+      const result = await db.attends.update({
+        where: { id: attend.id }, data: {
+          clockOut: today.toISOString(),
+          status: AttendStatus.No_ClockIn_ClockOut,
+          locationOut: location
+        }
+      })
+      await CheckSalarys({
+        userId,
+        fineLate: null,
+        fineNoClockIn: attend.fine,
+        fineNoClockOut: null,
+        overtime: null,
+        workingHour: null,
+      });
+      return Response.json({ timeOut: result.clockOut }, { status: 200 });
+    }
     let overtime = await calculateOvertimeHours(shiftOut, today);
     let workingHour = await calculateWorkingHours(attend.clockIn, today);
     // let workingHour = await checkWorkingHour(attend?.clockIn as Date, clockOut);
@@ -193,7 +213,12 @@ export const PATCH = async (req: Request) => {
     await notificationClock(userId, notify);
     await SentNoti("Clock", "You have clock out", "", user?.username);
     return Response.json({ timeOut: update.clockOut }, { status: 200 });
+
   } catch (error) {
-    return Response.json({ error }, { status: 400 });
+    let err = error instanceof Error ? error.message : "An unknown error occurred"
+    await Logging(userid, "Patch clock", err)
+    return Response.json({
+      Error: error instanceof Error ? error.message : "An unknown error occurred"
+    }, { status: 400 })
   }
 };

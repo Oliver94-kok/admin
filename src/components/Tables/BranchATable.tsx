@@ -181,6 +181,9 @@ export const BranchATable = ({
         return;
       }
       if (data.success) {
+        toast.success("success update data", {
+          position: "top-center",
+        });
         setIsDeleteOpen(false);
         fetchData();
         refresh();

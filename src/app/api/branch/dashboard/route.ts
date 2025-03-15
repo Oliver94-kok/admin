@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 export const GET = async (req: Request) => {
   let data = await db.attendBranch.findMany({
+    where: { users: { role: "USER", isDelete: false } },
     include: {
       users: { select: { name: true, username: true, userImg: true } },
     },

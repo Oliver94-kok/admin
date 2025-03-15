@@ -2,6 +2,7 @@
 
 import { deliveryClockAttend, leaveForgetClockAttend } from "@/data/attend";
 import { addLeaveAttend, forEachDate } from "@/data/leave";
+import { Logging } from "@/data/log";
 import { db } from "@/lib/db";
 import {
   countDaysBetween,
@@ -12,9 +13,13 @@ import { leaveType } from "@/types/leave";
 import dayjs from "dayjs";
 const { DateTime } = require("luxon");
 import { v7 as uuidv7 } from "uuid";
+import { auth } from "../../auth";
 export const ApproveLeave = async (status: string, id: string) => {
+  const session = await auth()
+  let userId
   try {
     let check = await db.leave.findFirst({ where: { id } });
+    userId = check?.id
     if (check?.type == "Forget clock") {
       let clockdate = check.startDate.split(" ")[0];
       if (status == "Approve") {
@@ -116,8 +121,10 @@ export const ApproveLeave = async (status: string, id: string) => {
       where: { id: noti?.id },
       data: { leave: updatedArray },
     });
+    await Logging(session?.user.id, "Success user leave", `success user leave ${userId} ${status}`)
     return { success: "success", leaveId: a.id, username: user?.username };
   } catch (error) {
+    await Logging(session?.user.id, "Error user leave", `Error user leave ${userId}`)
     return { error: "error " };
   }
 };

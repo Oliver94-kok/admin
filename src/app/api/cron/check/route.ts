@@ -6,7 +6,7 @@ import { Attends, AttendStatus, User } from "@prisma/client";
 import dayjs from "dayjs";
 export const dynamic = "force-dynamic";
 export const GET = async () => {
-  let users = await db.user.findMany({ where: { role: "USER" } });
+  let users = await db.user.findMany({ where: { role: "USER", isDelete: false } });
   let today = dayjs().startOf("month");
   console.log("🚀 ~ GET ~ today:", today);
   let yesterday = dayjs().subtract(1, "day");

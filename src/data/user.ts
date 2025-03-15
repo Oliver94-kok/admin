@@ -67,7 +67,7 @@ export const tokenCheck = async (token: string) => {
 export const getAllUser = async () => {
   let user = await db.user.findMany({
     select: { id: true },
-    where: { role: "USER" },
+    where: { role: "USER", isDelete: false },
   });
   return user;
 };

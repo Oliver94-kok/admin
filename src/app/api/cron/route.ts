@@ -1,4 +1,5 @@
 import { cronAttend, cronAttendCheckShift, isOffDay } from "@/data/attend";
+import { getNoClockIn } from "@/data/salary";
 import { getAllUser } from "@/data/user";
 import {
   AttendanceSchema,
@@ -106,7 +107,30 @@ export const POST = async (req: Request) => {
               message: shiftResult.message,
             } as ProcessingResult;
           }
-
+          if (shiftResult.result === "can_clock_out") {
+            let attend = await db.attends.findFirst({ where: { userId: absentUser.id, dates: today.toDate() } })
+            if (attend) {
+              return {
+                userId: absentUser.id,
+                status: "within_shift_hours",
+                timestamp: new Date(),
+                shiftResult: shiftResult.result,
+                message: shiftResult.message,
+              } as ProcessingResult;
+            }
+            let fine2 = await getNoClockIn(
+              absentUser.id,
+              new Date().getMonth() + 1,
+              new Date().getFullYear(),
+            );
+            let data = {
+              userId: absentUser.id,
+              dates: today.toDate(),
+              status: AttendStatus.Active,
+              fine: fine2
+            }
+            await db.attends.create({ data })
+          }
           return {
             userId: absentUser.id,
             status: "within_shift_hours",

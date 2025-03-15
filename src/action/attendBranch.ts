@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { slideDate } from "@/lib/function";
 import { DateTime } from "luxon";
 import { AttendStatus } from "@prisma/client";
+import { Logging } from "@/data/log";
+import { auth } from "../../auth";
 export const UpdateUserBranch = async (
   id: string,
   branch?: string | null,
@@ -13,6 +15,7 @@ export const UpdateUserBranch = async (
   offDay?: string,
   startOn?: string,
 ) => {
+  const session = await auth()
   let data = {
     clockIn: timeIn,
     clockOut: timeOut,
@@ -24,17 +27,10 @@ export const UpdateUserBranch = async (
   console.log("🚀 ~ data:", data);
   try {
     await db.attendBranch.update({ data, where: { id } });
-    // if (offDay) {
-    //   const today = dayjs(offDay).format("YYYY-MM-DD");
-    //   let attendData = {
-    //     userId: id,
-    //     dates: new Date(today),
-    //     status: AttendStatus.Leave,
-    //   };
-    //   await db.attends.create({ data: attendData });
-    // }
+    await Logging(session?.user.id, "success update user branch", `success user  ${id}`)
     return { success: "data update" };
   } catch (error) {
+    await Logging(session?.user.id, "Error update user branch", `Error user  ${id}`)
     return { error: "error" };
   }
 };
