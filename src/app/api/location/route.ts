@@ -19,6 +19,7 @@ export const GET = async (request: NextRequest) => {
           lte: t.endOf('day').toDate()
         }
       },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         addressIn: true,
