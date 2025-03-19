@@ -2,8 +2,8 @@
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
 import { DateTime } from "luxon";
-import { createSalary, getSalaryByUserId } from "./salary";
-import { AttendStatus } from "@prisma/client";
+import { calculateTotalSalaryUser, CheckSalarys, createSalary, getAttendLate, getNoClockIn, getSalaryByUserId } from "./salary";
+import { Attends, AttendStatus } from "@prisma/client";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -12,6 +12,9 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
 import { TimeUtils } from "@/lib/timeUtility";
+import { postImage, SentNoti } from "@/lib/function";
+import { notificationClock } from "./notification";
+import { Logging } from "./log";
 
 // Enable required dayjs plugins
 dayjs.extend(utc);
@@ -429,5 +432,290 @@ export const getShiftIn = async () => {
   } catch (error) {
     console.log("🚀 ~ getShiftIn ~ error:", error)
     return null
+  }
+}
+export async function handleClockIn(
+  userId: string,
+  imgClockIn?: string,
+  location?: string,
+  notify?: boolean,
+  username?: string
+): Promise<Response> {
+  const today = dayjs();
+
+  // Get shift information
+  const shift = await db.attendBranch.findFirst({ where: { userId } });
+  if (!shift?.clockIn) {
+    throw new Error(`No shift found for user ${userId}`);
+  }
+
+  // Check if user is late
+  const shiftIn = TimeUtils.createDateFromTimeString(today.toDate(), shift.clockIn, "in");
+  const lateThreshold = dayjs(shiftIn).add(659, "second");
+  const isLate = today.isAfter(lateThreshold);
+  const lateOneHour = dayjs(shiftIn).add(1, 'hour')
+  const isToLate = today.isAfter(lateOneHour);
+  if (isToLate) {
+    return Response.json({ error: "To late clock in" }, { status: 400 });
+  }
+  let fine: number | null = null;
+  if (isLate) {
+    fine = await getAttendLate(userId, today.month() + 1, today.year());
+  }
+
+  // Upload clock-in image
+  if (!imgClockIn || !username) {
+    return Response.json({ error: "Image or username is missing" }, { status: 400 });
+  }
+
+  const imageResult = await postImage(imgClockIn, username, "clock");
+  if (imageResult?.error) {
+    return Response.json({ error: "Error uploading image" }, { status: 400 });
+  }
+
+  // Determine correct date (before 8AM case)
+  const isBeforeEightAM = today.isBefore(
+    dayjs().tz().hour(8).minute(0).second(0).millisecond(0)
+  );
+  const attendDate = isBeforeEightAM ? today.add(1, "day").toDate() : today.toDate();
+
+  // Create attendance record
+  const attendance = await db.attends.create({
+    data: {
+      userId,
+      dates: attendDate,
+      clockIn: today.toISOString(),
+      img: imageResult?.success,
+      fine: fine,
+      locationIn: location || null
+    }
+  });
+
+  // Send notifications
+  await Promise.all([
+    notify ? notificationClock(userId, notify) : Promise.resolve(),
+    username ? SentNoti("Clock", "You have clocked in", "", username) : Promise.resolve()
+  ]);
+
+  return Response.json({ id: attendance.id, timeIn: attendance.clockIn }, { status: 201 });
+}
+
+interface AttendanceSalaryData {
+  userId: string;
+  fineLate: number | null;
+  fineNoClockIn: number | null;
+  fineNoClockOut: number | null;
+  overtime: number;
+  workingHour: number | null;
+}
+
+export async function handleClockOut(
+  userId: string,
+  location?: string,
+  notify?: boolean,
+  username?: string
+): Promise<Response> {
+  const today = dayjs();
+
+  // Get necessary data
+  const [fine, shift] = await Promise.all([
+    getNoClockIn(userId, today.month() + 1, today.year()),
+    db.attendBranch.findFirst({ where: { userId } })
+  ]);
+
+  if (!shift?.clockOut) {
+    return Response.json(
+      { error: `No shift found for user ${userId}` },
+      { status: 400 }
+    );
+  }
+
+  // Calculate overtime
+  const shiftOut = TimeUtils.createDateFromTimeString(today.toDate(), shift.clockOut, "out");
+  const overtime = await calculateOvertimeHours(shiftOut, today);
+  const overtimeValue = overtime !== null ? Number(overtime) : 0;
+
+  const checkDate = TimeUtils.checkMorning(today.toISOString());
+  const attendDate = checkDate ? today.subtract(1, "day").toDate() : today.toDate();
+
+  try {
+    // Create attendance record within a transaction
+    const attendance = await db.$transaction(async (tx) => {
+      const attend = await tx.attends.create({
+        data: {
+          userId,
+          dates: attendDate,
+          clockOut: today.toISOString(),
+          fine: fine,
+          locationOut: location || null,
+          overtime: overtimeValue,
+          status: AttendStatus.No_ClockIn_ClockOut
+        }
+      });
+
+      const salaryData: AttendanceSalaryData = {
+        userId,
+        fineLate: null,
+        fineNoClockIn: fine,
+        fineNoClockOut: null,
+        overtime: overtimeValue,
+        workingHour: null
+      };
+
+      await CheckSalarys(salaryData);
+      await calculateTotalSalaryUser(userId);
+
+      return attend;
+    });
+
+    // Send notifications
+    if (notify) await notificationClock(userId, notify);
+    if (username) await SentNoti("Clock", "You have clocked out", "", username);
+
+    return Response.json({ id: attendance.id, timeOut: attendance.clockOut }, { status: 201 });
+  } catch (error) {
+    console.log("🚀 ~ error:", error)
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    await Logging(userId, "Clock out", errorMessage);
+    throw error; // Re-throw to be caught by the main try-catch
+  }
+}
+
+interface NotifyData {
+  id: string;
+  date: string;
+  time: string;
+  type: string;
+  shiftTime: string;
+  smallDate: string;
+  clockInLocation?: string;
+}
+
+export async function processClockOut(
+  userId: string,
+  attendance: Attends,
+  location?: string,
+  notify?: NotifyData
+): Promise<Response> {
+  const today = dayjs();
+
+  // Get shift information
+  const shift = await db.attendBranch.findFirst({ where: { userId } });
+  if (!shift?.clockOut) {
+    throw new Error(`No shift found for user ${userId}`);
+  }
+
+  const shiftOut = TimeUtils.createDateFromTimeString(
+    today.toDate(),
+    shift.clockOut,
+    "out"
+  );
+
+  // Handle clock out for No_ClockIn case
+  if (attendance.clockIn === null) {
+    return await handleNoClockInCase(userId, attendance, location, today);
+  }
+
+  // Handle normal clock out case
+  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today);
+}
+
+async function handleNoClockInCase(
+  userId: string,
+  attendance: Attends,
+  location: string | undefined,
+  today: dayjs.Dayjs
+): Promise<Response> {
+  // Update attendance record
+  const result = await db.attends.update({
+    where: { id: attendance.id },
+    data: {
+      clockOut: today.toISOString(),
+      status: AttendStatus.No_ClockIn_ClockOut,
+      locationOut: location || null
+    }
+  });
+
+  // Update salary calculations
+  const salaryData: AttendanceSalaryData = {
+    userId,
+    fineLate: null,
+    fineNoClockIn: attendance.fine,
+    fineNoClockOut: null,
+    overtime: 0,
+    workingHour: null
+  };
+
+  await CheckSalarys(salaryData);
+
+  return Response.json({ timeOut: result.clockOut }, { status: 200 });
+}
+
+async function handleNormalClockOut(
+  userId: string,
+  attendance: Attends,
+  location: string | undefined,
+  notify: NotifyData,
+  shiftOut: Date,
+  today: dayjs.Dayjs
+): Promise<Response> {
+  if (!attendance.clockIn) {
+    throw new Error("Clock-in time is missing");
+  }
+
+  // Calculate hours and overtime
+  const [overtime, workingHour] = await Promise.all([
+    calculateOvertimeHours(shiftOut, today),
+    calculateWorkingHours(attendance.clockIn, today.toISOString())
+  ]);
+
+  const overtimeValue = overtime !== null ? Number(overtime) : 0;
+
+  try {
+    // Use a transaction for related operations
+    const result = await db.$transaction(async (tx) => {
+      // Update attendance record
+      const updatedAttendance = await tx.attends.update({
+        where: { id: attendance.id },
+        data: {
+          clockOut: today.toISOString(),
+          workingHour: workingHour,
+          overtime: overtimeValue,
+          locationOut: location || null,
+          status: attendance.fine ? AttendStatus.Late : AttendStatus.Full_Attend
+        }
+      });
+
+      // Update salary calculations
+      const salaryData: AttendanceSalaryData = {
+        userId,
+        fineLate: attendance.status === "Late" ? attendance.fine : null,
+        fineNoClockIn: null,
+        fineNoClockOut: null,
+        overtime: overtimeValue,
+        workingHour: workingHour
+      };
+
+      await CheckSalarys(salaryData);
+      await calculateTotalSalaryUser(userId);
+
+      return updatedAttendance;
+    });
+
+    // Send notifications
+    const user = await db.user.findFirst({
+      where: { id: userId },
+      select: { username: true }
+    });
+
+    if (notify) await notificationClock(userId, notify);
+    if (user?.username) await SentNoti("Clock", "You have clocked out", "", user.username);
+
+    return Response.json({ timeOut: result.clockOut }, { status: 200 });
+  } catch (error) {
+    // Log specific clock-out errors
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    await Logging(userId, "Clock out transaction", errorMessage);
+    throw error; // Re-throw to be caught by the main try-catch
   }
 }
