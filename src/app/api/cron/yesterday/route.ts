@@ -14,12 +14,31 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
+export const GET = async () => {
+  try {
+    const attendYesterday = await cronAttend("2025-03-22");
+    const attendedUserIds = new Set(
+      attendYesterday.map((attend) => attend.userId)
+    );
+
+    // Get all users
+    const users = await getAllUser();
+    const absentUsers = users.filter((user) => !attendedUserIds.has(user.id));
+    return Response.json({ length: absentUsers.length }, { status: 200 })
+  } catch (error) {
+    return Response.json(error, { status: 400 })
+  }
+}
+
+
 export const POST = async (req: Request) => {
   try {
     // Calculate yesterday's date
     const yesterday = dayjs().subtract(1, "day");
     const yesterdayFormatted = yesterday.format("YYYY-MM-DD");
+    console.log("🚀 ~ POST ~ yesterdayFormatted:", yesterdayFormatted)
     const yesterdayDate = yesterday.toDate();
+    console.log("🚀 ~ POST ~ yesterdayDate:", yesterdayDate)
 
     // Get all attendance records for yesterday
     const attendYesterday = await cronAttend(yesterdayFormatted);
@@ -81,7 +100,7 @@ async function processAbsentUser(
   try {
     // Check if user already has an attendance record for this date
     const existingAttendance = await db.attends.findFirst({
-      where: { userId: user.id, dates: dateObject }
+      where: { userId: user.id, dates: new Date(dateFormatted) }
     });
 
     if (existingAttendance) {
@@ -163,27 +182,39 @@ async function processAbsentUser(
     }
 
     if (shiftResult.result === "can_clock_out") {
-      const fine = await getNoClockIn(
-        user.id,
-        dateObject.getMonth() + 1,
-        dateObject.getFullYear()
-      );
+      const shiftInTime = dayjs(shiftIn);
+      const currentTime = dayjs();
+      if (currentTime.isAfter(shiftInTime.add(1, 'hour'))) {
+        const fine = await getNoClockIn(
+          user.id,
+          dateObject.getMonth() + 1,
+          dateObject.getFullYear()
+        );
 
-      await db.attends.create({
-        data: {
+        await db.attends.create({
+          data: {
+            userId: user.id,
+            dates: new Date(dateFormatted),
+            status: AttendStatus.Active,
+            fine: fine
+          }
+        });
+        return {
           userId: user.id,
-          dates: dateObject,
-          status: AttendStatus.Active,
-          fine: fine
-        }
-      });
+          status: "marked_active_with_fine",
+          timestamp: new Date(),
+          message: "User marked as active with fine for no clock-in (1+ hour after shift start)",
+        };
+      } else {
+        return {
+          userId: user.id,
+          status: "within_shift_hours",
+          timestamp: new Date(),
+          message: "User marked as active with no clock-in",
+        };
+      }
 
-      return {
-        userId: user.id,
-        status: "within_shift_hours",
-        timestamp: new Date(),
-        message: "User marked as active with no clock-in",
-      };
+
     }
 
     // Default case: within shift hours

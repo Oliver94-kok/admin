@@ -18,15 +18,11 @@ export const POST = async (req: Request) => {
   try {
     const today = dayjs.utc().startOf("day");
     let attendTody = await cronAttend(today.toString());
-    console.log("start cron ", today);
     const attendedUserIds = new Set(
       attendTody.map((attend: { userId: any }) => attend?.userId),
     );
     let user = await getAllUser();
-    const absentUsers = user.filter((users) => !attendedUserIds.has(users.id));
-
-    // const today = dayjs.utc().startOf("day");
-    console.log("🚀 ~ POST ~ today:", today);
+    const absentUsers = user.filter((users) => !attendedUserIds.has(users.id));;
     const attendanceService = new AttendanceService({
       gracePeriodMinutes: 15,
       maxOvertimeHours: 4,

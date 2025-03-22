@@ -48,7 +48,7 @@ export interface ShiftConfig {
 
 export interface ProcessingResult {
   userId: string;
-  status: "marked_absent" | "within_shift_hours" | "marked_offday";
+  status: "marked_absent" | "within_shift_hours" | "marked_offday" | "marked_active_with_fine";
   timestamp: Date;
   shiftResult?: ShiftStatus;
   message?: string;

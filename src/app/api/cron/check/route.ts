@@ -93,7 +93,7 @@ export const POST = async (req: Request) => {
 
     // Get all users and attendances in parallel to save time
     const [users, allAttendances, activeAttendances] = await Promise.all([
-      db.user.findMany({ where: { role: "USER" } }) as Promise<User[]>,
+      db.user.findMany({ where: { role: "USER", isDelete: false } }) as Promise<User[]>,
       db.attends.findMany({ where: { dates: todayDate } }) as Promise<Attends[]>,
       db.attends.findMany({ where: { dates: todayDate, status: "Active" } }) as Promise<Attends[]>
     ]);
