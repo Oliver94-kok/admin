@@ -39,7 +39,7 @@ const BranchTable = ({ A, B, C, D, E, refreshData }: BranchTableInterface) => {
       'B': { data: B, team: "Team B", page: 2 },
       'C': { data: C, team: "Team C", page: 3 },
       'D': { data: D, team: "Team D", page: 4 },
-      'E': { data: E, team: "Team E", page: 4 }
+      'E': { data: E, team: "Team E", page: 5 }
     };
 
     switch (userRole) {
@@ -58,7 +58,7 @@ const BranchTable = ({ A, B, C, D, E, refreshData }: BranchTableInterface) => {
       default:
         return [];
     }
-  }, [session, A, B, C, D]);
+  }, [session, A, B, C, D, E]);
 
   // Initialize current page with the first accessible team's page
   const [currentPage, setCurrentPage] = useState(() =>
@@ -74,6 +74,8 @@ const BranchTable = ({ A, B, C, D, E, refreshData }: BranchTableInterface) => {
         return "C";
       case "Team D":
         return "D";
+      case "Team E":
+        return "E";
       default:
         return "A"
     }
