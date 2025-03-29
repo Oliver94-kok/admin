@@ -16,6 +16,7 @@ interface BranchTableInterface {
   B: BranchsUser[];
   C: BranchsUser[];
   D: BranchsUser[];
+  E: BranchsUser[];
   refreshData: () => void;
 }
 
@@ -25,7 +26,7 @@ interface TeamData {
   page: number;
 }
 
-const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
+const BranchTable = ({ A, B, C, D, E, refreshData }: BranchTableInterface) => {
   const { data: session } = useSession();
   const [dict, setDict] = useState<any>(null);
   const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
@@ -37,7 +38,8 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
       'A': { data: A, team: "Team A", page: 1 },
       'B': { data: B, team: "Team B", page: 2 },
       'C': { data: C, team: "Team C", page: 3 },
-      'D': { data: D, team: "Team D", page: 4 }
+      'D': { data: D, team: "Team D", page: 4 },
+      'E': { data: E, team: "Team E", page: 4 }
     };
 
     switch (userRole) {
@@ -51,6 +53,8 @@ const BranchTable = ({ A, B, C, D, refreshData }: BranchTableInterface) => {
         return [allTeams['C']];
       case 'manager_d':
         return [allTeams['D']];
+      case 'manager_e':
+        return [allTeams['E']];
       default:
         return [];
     }

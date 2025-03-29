@@ -20,6 +20,7 @@ enum UserRole {
   MANAGER_B
   MANAGER_C
   MANAGER_D
+  MANAGER_E
 }
 
 enum AttendStatus {

@@ -103,6 +103,8 @@ const getRole = (role: string) => {
       return UserRole.MANAGER_C;
     case "MANAGER_D":
       return UserRole.MANAGER_D;
+    case "MANAGER_E":
+      return UserRole.MANAGER_E;
     default:
       break;
   }
@@ -315,6 +317,8 @@ export const roleAdmin = async (role: string) => {
       return "C";
     case "manager_d":
       return "D";
+    case "manager_e":
+      return "E";
     default:
       return "A";
   }

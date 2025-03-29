@@ -44,6 +44,7 @@ const Branches = () => {
             B={data.teamB}
             C={data.teamC}
             D={data.teamD}
+            E={data.teamE}
             refreshData={refreshData}
           />
         )}
