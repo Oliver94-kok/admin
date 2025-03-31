@@ -66,6 +66,39 @@ const FormLayout = () => {
         setIsLoading(false)
         return
     };
+
+    const fetchWithRetry = async (
+        url: string,
+        retries = 3,
+        timeout = 10000
+    ): Promise<ArrayBuffer | null> => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), timeout);
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timer);
+                if (!response.ok)
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.arrayBuffer();
+            } catch (error) {
+                console.warn(
+                    `Attempt ${attempt} for ${url} failed:`,
+                    (error as Error).message
+                );
+                if (attempt < retries) {
+                    // 等待一段时间后重试
+                    await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+                } else {
+                    console.error(`All ${retries} attempts failed for ${url}`);
+                    return null;
+                }
+            }
+        }
+        return null;
+    };
+
+
     const saveAsExcel = async (data: userExcel[]) => {
         if (!data.length) return;
 
@@ -88,19 +121,32 @@ const FormLayout = () => {
 
         const imageCache = new Map<string, ArrayBuffer>();
 
-        const addImageFromUrl = async (url: string, rowIndex: number, colIndex: number) => {
+        const addImageFromUrl = async (
+            url: string,
+            rowIndex: number,
+            colIndex: number
+        ) => {
             try {
                 let arrayBuffer;
                 if (imageCache.has(url)) {
                     arrayBuffer = imageCache.get(url)!;
                 } else {
-                    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
-                    arrayBuffer = await response.arrayBuffer();
+                    arrayBuffer = await fetchWithRetry(url, 3, 10000);
+                    if (!arrayBuffer) {
+                        console.warn(`Skipping image due to repeated failures: ${url}`);
+                        return;
+                    }
                     imageCache.set(url, arrayBuffer);
                 }
 
-                const imageId = workbook.addImage({ buffer: arrayBuffer, extension: 'jpeg' });
-                worksheet.addImage(imageId, { tl: { col: colIndex - 1, row: rowIndex - 2 }, ext: { width: 50, height: 50 } });
+                const imageId = workbook.addImage({
+                    buffer: arrayBuffer,
+                    extension: "jpeg",
+                });
+                worksheet.addImage(imageId, {
+                    tl: { col: colIndex - 1, row: rowIndex - 2 },
+                    ext: { width: 50, height: 50 },
+                });
             } catch (error) {
                 console.error(`Failed to fetch image from ${url}:`, error);
             }
