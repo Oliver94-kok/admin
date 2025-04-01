@@ -572,7 +572,7 @@ const SalaryTable = ({
               ? { ...user, bonus: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard"), { revalidate: true };
+            await mutate("/api/salary/dashboard"), undefined, { revalidate: true };
             toast.success("Success add Bonus ", {
               position: "top-center",
             });
@@ -594,7 +594,7 @@ const SalaryTable = ({
               ? { ...user, allowance: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success add Allowance", {
               position: "top-center",
             });
@@ -617,7 +617,7 @@ const SalaryTable = ({
               ? { ...user, advances: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success add Advance", {
               position: "top-center",
             });
@@ -640,7 +640,7 @@ const SalaryTable = ({
               ? { ...user, short: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success add Short", {
               position: "top-center",
             });
@@ -663,7 +663,7 @@ const SalaryTable = ({
               ? { ...user, overTime: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success add Overtime", {
               position: "top-center",
             });
@@ -686,7 +686,7 @@ const SalaryTable = ({
               ? { ...user, transport: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success add Transport", {
               position: "top-center",
             });
@@ -709,7 +709,7 @@ const SalaryTable = ({
               ? { ...user, m: Number(item), total: data.total }
               : user
             )]);
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success add M", {
               position: "top-center",
             });
@@ -755,7 +755,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove Bonus", {
               position: "top-center",
             });
@@ -780,7 +780,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove Allowance", {
               position: "top-center",
             });
@@ -806,7 +806,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove Advance", {
               position: "top-center",
             });
@@ -831,7 +831,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove Short", {
               position: "top-center",
             });
@@ -856,7 +856,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove Overtime", {
               position: "top-center",
             });
@@ -881,7 +881,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove Transport", {
               position: "top-center",
             });
@@ -906,7 +906,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            await mutate("/api/salary/dashboard", { revalidate: true });
+            await mutate("/api/salary/dashboard", undefined, { revalidate: true });
             toast.success("Success remove M", {
               position: "top-center",
             });
