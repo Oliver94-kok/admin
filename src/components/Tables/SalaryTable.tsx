@@ -559,7 +559,7 @@ const SalaryTable = ({
     console.log("🚀 ~ type:", type)
     switch (type) {
       case typeComponentSalary.Bonus:
-        AddBonus(id, Number(item)).then((data) => {
+        AddBonus(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -568,14 +568,11 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? { ...user, ...{ bonus: Number(item), total: data.total } }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, bonus: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add Bonus ", {
               position: "top-center",
             });
@@ -584,7 +581,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Allowance:
-        AddAllow(id, Number(item)).then((data) => {
+        AddAllow(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -593,17 +590,11 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? {
-                    ...user,
-                    ...{ allowance: Number(item), total: data.total },
-                  }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, allowance: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add Allowance", {
               position: "top-center",
             });
@@ -612,7 +603,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Advance:
-        AddAdvance(id, Number(item)).then((data) => {
+        AddAdvance(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -622,17 +613,11 @@ const SalaryTable = ({
           }
           if (data.success) {
             console.log("🚀 ~ AddAdvance ~ data:", data)
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? {
-                    ...user,
-                    ...{ advances: Number(item), total: data.total },
-                  }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, advances: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add Advance", {
               position: "top-center",
             });
@@ -642,7 +627,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Short:
-        AddShort(id, Number(item)).then((data) => {
+        AddShort(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -651,17 +636,11 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? {
-                    ...user,
-                    ...{ short: Number(item), total: data.total },
-                  }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, short: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add Short", {
               position: "top-center",
             });
@@ -671,7 +650,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.OverTime:
-        AddOverTime(id, Number(item)).then((data) => {
+        AddOverTime(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -680,17 +659,11 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? {
-                    ...user,
-                    ...{ overTime: Number(item), total: data.total },
-                  }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, overTime: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add Overtime", {
               position: "top-center",
             });
@@ -700,7 +673,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Transport:
-        AddTransport(id, Number(item)).then((data) => {
+        AddTransport(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -709,17 +682,11 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? {
-                    ...user,
-                    ...{ transport: Number(item), total: data.total },
-                  }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, transport: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add Transport", {
               position: "top-center",
             });
@@ -729,7 +696,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.M:
-        AddM(id, Number(item)).then((data) => {
+        AddM(id, Number(item)).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -738,14 +705,11 @@ const SalaryTable = ({
             return;
           }
           if (data.success) {
-            setDataSalary((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === id
-                  ? { ...user, ...{ m: Number(item), total: data.total } }
-                  : user,
-              ),
-            );
-            mutate("/api/salary/dashboard");
+            setDataSalary((prevUsers) => [...prevUsers.map((user) => user.id === id
+              ? { ...user, m: Number(item), total: data.total }
+              : user
+            )]);
+            await mutate("/api/salary/dashboard");
             toast.success("Success add M", {
               position: "top-center",
             });
@@ -775,7 +739,7 @@ const SalaryTable = ({
     console.log("🚀 ~ handleRemoveComponentSalary ~ id:", id);
     switch (type) {
       case typeComponentSalary.Bonus:
-        delBonus(id).then((data) => {
+        delBonus(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -791,7 +755,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove Bonus", {
               position: "top-center",
             });
@@ -800,7 +764,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Allowance:
-        delAllow(id).then((data) => {
+        delAllow(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -816,7 +780,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove Allowance", {
               position: "top-center",
             });
@@ -825,7 +789,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Advance:
-        delAdvance(id).then((data) => {
+        delAdvance(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -842,7 +806,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove Advance", {
               position: "top-center",
             });
@@ -851,7 +815,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Short:
-        delShort(id).then((data) => {
+        delShort(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -867,7 +831,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove Short", {
               position: "top-center",
             });
@@ -876,7 +840,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.OverTime:
-        delOvetime(id).then((data) => {
+        delOvetime(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -892,7 +856,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove Overtime", {
               position: "top-center",
             });
@@ -901,7 +865,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.Transport:
-        delTransport(id).then((data) => {
+        delTransport(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -917,7 +881,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove Transport", {
               position: "top-center",
             });
@@ -926,7 +890,7 @@ const SalaryTable = ({
         });
         break;
       case typeComponentSalary.M:
-        delM(id).then((data) => {
+        delM(id).then(async (data) => {
           if (data.error) {
             console.error(data.error);
             toast.error(data.error, {
@@ -942,7 +906,7 @@ const SalaryTable = ({
                   : user,
               ),
             );
-            mutate("/api/salary/dashboard");
+            await mutate("/api/salary/dashboard");
             toast.success("Success remove M", {
               position: "top-center",
             });
