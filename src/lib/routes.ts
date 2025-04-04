@@ -2,11 +2,13 @@ export const PublicRoute = ["/"];
 
 export const protectedRoutes = [
   "/dashboard",
-  "usersetting/adduser",
-  "usersetting/salary",
-  "usersetting/branchs",
-  "location",
-  "userconfig",
+  "/usersetting/adduser",
+  "/usersetting/salary",
+  "/usersetting/branches",
+  "/usersetting/userdata",
+  "/usersetting/leave",
+  "/location",
+  "/userconfig",
 ];
 
 export const apiAuthPrefix = [

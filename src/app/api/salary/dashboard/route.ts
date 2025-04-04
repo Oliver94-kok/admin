@@ -9,11 +9,11 @@ export const GET = async (req: NextRequest) => {
   let month = parseInt(m!);
   let year = parseInt(y!);
   let data = await db.salary.findMany({
-    where: { month, year },
+    where: { month, year, users: { isDelete: false } },
     include: {
-      users: { select: { name: true, username: true, userImg: true,AttendBranch:{select:{team:true,branch:true}} } },
+      users: { select: { name: true, username: true, userImg: true, AttendBranch: { select: { team: true, branch: true } } } },
     },
-    orderBy: { users: { AttendBranch:{branch:'asc'} } },
+    orderBy: { users: { AttendBranch: { branch: 'asc' } } },
   });
   return Response.json({ salary: data }, { status: 200 });
 };
