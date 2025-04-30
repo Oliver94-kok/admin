@@ -9,9 +9,68 @@ import { date } from "zod";
 export const GET = async (request: Request) => {
   try {
     const today = new Date("2025-03-17");
+    const result = await db.user.findMany({ where: { role: "USER" }, select: { id: true } })
+    const BATCH_SIZE = 5;
+    const results = [];
+    for (let i = 0; i < result.length; i += BATCH_SIZE) {
+      const userBatch = result.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.allSettled(
+        userBatch.map(async (user) => {
+          try {
+            let salary = await db.salary.findMany({ where: { userId: user.id } })
+            if (salary.length < 9) {
+              return {
+                userId: user.id,
+                type: "not",
+                lenghth: salary.length,
+              };
+            }
+            return {
+              userId: user.id,
+              type: "success",
+              created: true,
+              // shiftOut,
+              count: user
+            };
+          } catch (error) {
+            return {
+              userId: user.id,
+              type: "error",
+              error: error instanceof Error ? error.message : "Unknown error",
+              created: false,
+            };
+          }
+        }))
+      results.push(...batchResults);
+
+      if (i + BATCH_SIZE < result.length) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
 
 
-    return Response.json({ "status": "OKay" }, { status: 200 });
+    const processedResults = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return {
+          userId: "unknown",
+          type: "error",
+          error: result.reason,
+          created: false,
+        };
+      }
+    });
+
+    const summary = {
+      total: result.length,
+      successful: processedResults.filter((r) => r.type === "success").length,
+      have: processedResults.filter((r) => r.type === "not").length,
+      failed: processedResults.filter((r) => r.type === "error").length,
+      details: processedResults.filter((r) => r.type === "not"),
+    };
+
+    return Response.json(summary, { status: 200 });
   } catch (error) {
     console.log(error);
     return Response.json(error, { status: 400 });

@@ -4,106 +4,130 @@ import { getAttendLate } from "@/data/salary";
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
 import dayjs from "dayjs";
+import { NextResponse } from "next/server";
+interface User { id: string; /* other fields */ }
+interface Salary { id: string; userId: string; month: number; perDay: number | null; /* other fields */ }
+interface UserUpdateInfo { userId: string; newPerDay: number; }
+interface ProcessResult { userId: string; status: 'updated' | 'condition_not_met' | 'no_month3_perDay' | 'error'; message?: string; }
 
 export const GET = async (request: Request) => {
-  try {
-    // Extract query parameters if needed
-    const url = new URL(request.url);
-    const minSalaryEntries = parseInt(url.searchParams.get('minEntries') || '10');
-    const batchSize = parseInt(url.searchParams.get('batchSize') || '3');
-    const delayMs = parseInt(url.searchParams.get('delay') || '1000');
+  const BATCH_SIZE_UPDATES = 10; // Batch size specifically for update operations
+  const DELAY_BETWEEN_UPDATE_BATCHES = 500; // Delay for updates
+  const processingResults: ProcessResult[] = [];
+  let usersToUpdate: UserUpdateInfo[] = [];
 
-    // Get active users with role "USER"
+  try {
+    // 1. Fetch Users
     const users = await db.user.findMany({
-      where: {
-        role: "USER",
-        isDelete: false
-      },
-      select: {
-        id: true,
-        name: true,  // Optional: include name for better identification
-      },
+      where: { role: 'USER', isDelete: false },
+      select: { id: true },
     });
 
     if (users.length === 0) {
-      return Response.json({
-        message: "No active users found",
-        totalProcessed: 0
-      }, { status: 200 });
+      return NextResponse.json({ message: 'No users found matching criteria.', /* ... other summary fields ... */ }, { status: 200 });
+    }
+    const userIds = users.map(u => u.id);
+
+    // 2. Fetch Salary Data Bulk (Months 3 to 11)
+    const relevantSalaries = await db.salary.findMany({
+      where: {
+        userId: { in: userIds },
+        month: { gte: 3, lte: 12 }, // Months 3 through 11
+        year: 2025
+      },
+      select: { id: true, userId: true, month: true, perDay: true }, // Select only needed fields
+    });
+
+    // 3. Process In Memory - Group data and identify updates needed
+    const salariesByUser = new Map<string, Salary[]>();
+    for (const salary of relevantSalaries) {
+      if (!salariesByUser.has(salary.userId)) {
+        salariesByUser.set(salary.userId, []);
+      }
+      salariesByUser.get(salary.userId)!.push(salary);
     }
 
-    const results = [];
+    for (const user of users) {
+      const userSalaries = salariesByUser.get(user.id) || [];
+      const salary4 = userSalaries.find(s => s.month === 4);
+      const salary3 = userSalaries.find(s => s.month === 3);
 
-    // Process in batches
-    for (let i = 0; i < users.length; i += batchSize) {
-      const userBatch = users.slice(i, i + batchSize);
-
-      // Process batch in parallel
-      const batchResults = await Promise.allSettled(
-        userBatch.map(async (user) => {
-          try {
-            // Use count instead of findMany for better performance when we only need the count
-            const salaryCount = await db.salary.count({
-              where: { userId: user.id }
-            });
-
-            // Check if user has fewer salary entries than required
-            const hasSufficientEntries = salaryCount >= minSalaryEntries;
-
-            return {
-              userId: user.id,
-              name: user.name,  // Optional: include if selected above
-              salaryEntries: salaryCount,
-              sufficient: hasSufficientEntries,
-              success: true
-            };
-          } catch (err) {
-            const error = err as Error;
-            console.error(`Error checking salary entries for user ${user.id}:`, error);
-            return {
-              userId: user.id,
-              name: user.name,  // Optional: include if selected above
-              error: error.message || "Unknown error occurred",
-              success: false,
-            };
-          }
-        })
-      );
-
-      results.push(...batchResults);
-
-      // Add delay between batches to prevent rate limiting
-      if (i + batchSize < users.length) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      if (salary4 && salary4.perDay === null) {
+        if (salary3 && salary3.perDay !== null) {
+          // Condition met, Month 3 perDay exists - Mark for update
+          usersToUpdate.push({ userId: user.id, newPerDay: salary3.perDay });
+        } else {
+          // Condition met, but Month 3 or its perDay is missing
+          processingResults.push({ userId: user.id, status: 'no_month3_perDay', message: `Month 4 perDay is null, but valid Month 3 perDay not found.` });
+        }
+      } else {
+        // Initial condition (Month 4 perDay null) not met
+        processingResults.push({ userId: user.id, status: 'condition_not_met' });
       }
     }
 
-    // Generate summary with improved typing
-    const insufficientEntryUsers = results
-      .filter(r => r.status === "fulfilled" && r.value.success && !r.value.sufficient)
-      .map(r => (r as PromiseFulfilledResult<any>).value);
+    // 4. Perform Bulk Updates (Batched)
+    for (let i = 0; i < usersToUpdate.length; i += BATCH_SIZE_UPDATES) {
+      const updateBatch = usersToUpdate.slice(i, i + BATCH_SIZE_UPDATES);
 
+      const updatePromises = updateBatch.map(async (updateInfo) => {
+        try {
+          await db.salary.updateMany({
+            where: {
+              userId: updateInfo.userId,
+              month: { gte: 4, lte: 12 }, // Update months 4 to 11
+              year: 2025,
+            },
+            data: {
+              perDay: updateInfo.newPerDay,
+            },
+          });
+          return { userId: updateInfo.userId, status: 'updated' as const };
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          console.error(`Error updating salaries for user ${updateInfo.userId}:`, error);
+          return { userId: updateInfo.userId, status: 'error' as const, message: error.message };
+        }
+      });
+
+      const batchUpdateResults = await Promise.allSettled(updatePromises);
+
+      // Add results from this update batch to the main results list
+      batchUpdateResults.forEach(res => {
+        if (res.status === 'fulfilled') {
+          processingResults.push(res.value);
+        } else {
+          // This should ideally not happen if the inner try/catch works, but handle just in case
+          console.error("Unhandled promise rejection during update:", res.reason);
+          // Find which userId failed if possible, or add a generic error marker
+        }
+      });
+
+
+      // Add delay between update batches
+      if (i + BATCH_SIZE_UPDATES < usersToUpdate.length) {
+        await new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_UPDATE_BATCHES));
+      }
+    }
+
+    // 5. Summarize
     const summary = {
-      totalProcessed: results.length,
-      usersWithInsufficientEntries: insufficientEntryUsers.length,
-      usersWithSufficientEntries: results.filter(
-        r => r.status === "fulfilled" && r.value.success && r.value.sufficient
-      ).length,
-      processingErrors: results.filter(
-        r => r.status === "rejected" || (r.status === "fulfilled" && !r.value.success)
-      ).length,
-      insufficientEntryUsers,
-      processingErrorDetails: results
-        .filter(r => r.status === "rejected" || (r.status === "fulfilled" && !r.value.success))
-        .map(r => r.status === "fulfilled" ? r.value : { error: r.reason instanceof Error ? r.reason.message : String(r.reason) })
+      totalUsersChecked: users.length,
+      usersAttemptedUpdate: usersToUpdate.length,
+      successfulUpdates: processingResults.filter(r => r.status === 'updated').length,
+      failedUpdates: processingResults.filter(r => r.status === 'error').length,
+      conditionNotMet: processingResults.filter(r => r.status === 'condition_not_met').length,
+      missingMonth3PerDay: processingResults.filter(r => r.status === 'no_month3_perDay').length,
+      details: processingResults,
     };
 
-    return Response.json(summary, { status: 200 });
-  } catch (error) {
-    console.error("Salary check operation failed:", error);
+    return NextResponse.json(summary, { status: 200 });
+
+  } catch (error) { // Use unknown for better type safety
+    console.error("Salary update operation failed:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown server error";
-    return Response.json({
-      error: errorMessage,
+    return NextResponse.json({
+      error: `Salary update operation failed: ${errorMessage}`,
       status: "failed"
     }, { status: 500 });
   }
@@ -148,7 +172,7 @@ export const POST = async (req: Request) => {
             // Prepare data in a more concise way
             const data = Array.from({ length: 10 }, (_, index) => ({
               userId,
-              month: index + 3, // Months 3-12
+              month: index + 4, // Months 3-12
               year: 2025
             }));
 

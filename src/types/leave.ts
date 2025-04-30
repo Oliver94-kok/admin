@@ -21,6 +21,7 @@ export const leaveType = [
   "Medical leave (MC)",
   "Bereavement leave",
   "Annual leave",
+  "Delivery late",
 ];
 
 export const fullLeaveTypes = [
@@ -31,5 +32,5 @@ export const fullLeaveTypes = [
   "Medical leave (MC)",
   "Annual leave",
   "Forget clock",
-  "Delivery late",
+
 ];

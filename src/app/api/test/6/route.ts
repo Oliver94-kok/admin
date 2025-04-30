@@ -10,15 +10,15 @@ export const GET = async () => {
     const attends = await db.attends.findMany({
       where: {
         dates: {
-          gte: new Date("2025-03-01"),
-          lte: new Date("2025-03-31"),
+          gte: new Date("2025-04-01"),
+          lte: new Date("2025-04-30"),
         },
         status: "No_ClockIn_ClockOut",
         clockIn: null,
         clockOut: null
       }
     })
-    const BATCH_SIZE = 3;
+    const BATCH_SIZE = 5;
     const results = [];
     for (let i = 0; i < attends.length; i += BATCH_SIZE) {
       const userBatch = attends.slice(i, i + BATCH_SIZE);
