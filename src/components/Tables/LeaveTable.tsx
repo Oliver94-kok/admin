@@ -4,12 +4,14 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Leave } from "@/types/product";
 import Modal from "../modal";
-import { LeavesInterface } from "@/types/leave";
+import { fullLeaveTypes, LeavesInterface } from "@/types/leave";
 import { ApproveLeave } from "@/action/approveLeave";
 import { SentNoti } from "@/lib/function";
 import { DateTime } from "luxon";
 import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 interface LeaveTableInterface {
   data: LeavesInterface[];
 }
@@ -30,6 +32,12 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const itemsPerPage = 10;
   const [dataLeave, setDataLeave] = useState(data);
   const [leaveId, setLeaveId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [leaveType, setLeaveType] = useState('');
+  const [reason, setReason] = useState('');
   useEffect(() => {
     if (data) {
       setDataLeave(data);
@@ -121,6 +129,26 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     setCurrentAction(null);
   };
 
+  const handleSubmit = async () => {
+    if (!selectedUser || !startDate || !endDate || !leaveType) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const newLeave = {
+      userId: selectedUser,
+      startDate,
+      endDate,
+      leaveType,
+      reason,
+    };
+
+    // Send newLeave to backend here...
+    console.log("Submitting leave:", newLeave);
+
+    setIsModalOpen(false);
+  };
+
   const handleConfirm = async () => {
     ApproveLeave(currentAction!, leaveId).then(async (data) => {
       if (data.error) {
@@ -148,17 +176,41 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     handleConfirmClose();
   };
 
+  const getLeaveDuration = () => {
+    if (!startDate || !endDate) return null;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffMs = end.getTime() - start.getTime();
+
+    if (diffMs <= 0) return 0;
+
+    const diffHours = diffMs / (1000 * 60 * 60);
+    const diffDays = diffHours / 24;
+
+    return diffDays.toFixed(2);
+  };
+
   return (
     <div
       className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
            px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10"
     >
       {/* Search Input */}
-      <div className="mb-5 flex justify-between">
-        <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
-          {dict.leave.userleave}
-        </h4>
-        <div className="relative mb-5 w-full max-w-[414px]">
+      <div className="mb-5 flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-4">
+          <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
+            {dict.leave.userleave}
+          </h4>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-dark transition"
+          >
+            {dict.leave.addleave}
+          </button>
+        </div>
+
+        <div className="relative w-full max-w-[414px]">
           <input
             className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
             placeholder={dict.dashboard.search}
@@ -179,20 +231,124 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 fillRule="evenodd"
                 clipRule="evenodd"
                 d="M8.25 3C5.3505 3 3 5.3505 3 8.25C3 11.1495 5.3505 13.5 8.25 13.5C11.1495 13.5 13.5 11.1495 13.5 8.25C13.5 5.3505 11.1495 3 8.25 3ZM1.5 8.25C1.5 4.52208 4.52208 1.5 8.25 1.5C11.9779 1.5 15 4.52208 15 8.25C15 11.9779 11.9779 15 8.25 15C4.52208 15 1.5 11.9779 1.5 8.25Z"
-                fill=""
               />
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
                 d="M11.958 11.957C12.2508 11.6641 12.7257 11.6641 13.0186 11.957L16.2811 15.2195C16.574 15.5124 16.574 15.9872 16.2811 16.2801C15.9882 16.573 15.5133 16.573 15.2205 16.2801L11.958 13.0176C11.6651 12.7247 11.6651 12.2499 11.958 11.957Z"
-                fill=""
               />
             </svg>
           </button>
         </div>
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+            <h2 className="mb-4 text-xl font-semibold text-dark dark:text-white">{dict.leave.addleave}</h2>
 
-      <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
+            <div className="space-y-4">
+              {/* Username Select */}
+              <div>
+                <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.username}</label>
+                <select
+                  className="w-full rounded border border-stroke bg-white px-4 py-2 dark:bg-dark-1 dark:text-white"
+                  value={selectedUser}
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                >
+                  <option value="">{dict.leave.selectuser}</option>
+                  {dataLeave.map((leave) => (
+                    <div key={leave.id}>
+                      Username: {leave.users?.username ?? 'No user'}
+                    </div>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Start Date */}
+            <div>
+              <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.startdate}</label>
+              <DatePicker
+                selected={startDate as Date | null}
+                onChange={(date) => setStartDate(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm"
+                className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
+              />
+            </div>
+
+
+            {/* End Date */}
+            <div>
+              <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.enddate}</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm"
+                className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
+              />
+            </div>
+
+            {/* Total Leave Days */}
+            {startDate && endDate && (
+              <div className="mt-2 text-sm text-gray-700 dark:text-white">
+                {dict.leave.totalleaveday}: {getLeaveDuration()} day(s)
+              </div>
+            )}
+
+            {/* Leave Type */}
+            <div>
+              <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.leavetype}</label>
+              <select
+                className="w-full rounded border border-stroke bg-white px-4 py-2 pr-10 dark:bg-dark-1 dark:text-white"
+                value={leaveType}
+                onChange={(e) => setLeaveType(e.target.value)}
+              >
+                <option value="">{dict.leave.selecttype}</option>
+                {fullLeaveTypes.map((type, idx) => (
+                  <option key={idx} value={type}>{type}</option>
+                ))}
+              </select>
+
+              {/* Reason */}
+              <div>
+                <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.reason}</label>
+                <textarea
+                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  rows={3}
+                  placeholder="E.g., Sick, Personal, etc."
+                />
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="rounded bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 dark:bg-dark-3 dark:text-white"
+              >
+                {dict.leave.cancel}
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="rounded bg-primary px-4 py-2 text-white hover:bg-primary-dark"
+              >
+                {dict.leave.confirm}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      <div className="grid grid-cols-7 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-7 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center px-2 pb-3.5">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.leave.username}
@@ -252,7 +408,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
 
       {currentData.map((leave, key) => (
         <div
-          className="grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5"
+          className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-7 md:px-6 2xl:px-7.5"
           key={key}
         >
           <div className="flex items-center gap-3.5 ">

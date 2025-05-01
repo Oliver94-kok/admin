@@ -97,7 +97,21 @@
     "reqreject": "This request has been rejected.",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "addleave": "Add Leave",
+    "startdate": "Start Date",
+    "enddate": "End Date",
+    "reason": "Reason",
+    "selectuser": "Select User",
+    "selecttype": "Select Type",
+    "totalleaveday": "Total Leave Days",
+    "paidleave": "Paid Leave",
+    "unpaidleave": "Unpaid Leave",
+    "emergencyleave": "Emergency Leave",
+    "bereavementleave": "Bereavement Leave",
+    "medicalleave": "Medical Leave (MC)",
+    "annualleave": "Annual Leave",
+    "forgetclock": "Forgot to Clock In/Out"
   },
   "title": {
     "titledashboard": "Dashboard",

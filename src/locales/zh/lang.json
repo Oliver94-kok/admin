@@ -97,7 +97,21 @@
     "reqreject": "该请求已被拒绝。",
     "confirm": "确定",
     "cancel": "取消",
-    "delete": "删除"
+    "delete": "删除",
+    "addleave": "添加请假",
+    "startdate": "开始日期",
+    "enddate": "结束日期",
+    "reason": "原因",
+    "selectuser": "选择用户",
+    "selecttype": "选择类型",
+    "totalleaveday": "总请假天数",
+    "paidleave": "带薪假",
+    "unpaidleave": "无薪假",
+    "emergencyleave": "紧急假",
+    "bereavementleave": "丧假",
+    "medicalleave": "病假",
+    "annualleave": "年假",
+    "forgetclock": "忘记打卡"
   },
   "title": {
     "titledashboard": "主页",
