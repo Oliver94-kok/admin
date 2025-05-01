@@ -102,6 +102,25 @@ const FormLayout = () => {
     const saveAsExcel = async (data: userExcel[]) => {
         if (!data.length) return;
 
+        data.sort((a, b) => {
+            // Ensure branch is not null or undefined
+            if (!a.branch || !b.branch) {
+                return 0; // You can modify this based on how you want to handle null/undefined values
+            }
+
+            const letterA = a.branch[0]; // Extract the letter part (e.g., "B")
+            const letterB = b.branch[0]; // Extract the letter part (e.g., "B")
+
+            const numberA = parseInt(a.branch.slice(1), 10); // Extract the number part (e.g., "80")
+            const numberB = parseInt(b.branch.slice(1), 10); // Extract the number part (e.g., "230")
+
+            if (letterA !== letterB) {
+                return letterA.localeCompare(letterB); // Sort by letter first
+            } else {
+                return numberA - numberB; // Then sort by the number part as an integer
+            }
+        });
+
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('UserData');
 
