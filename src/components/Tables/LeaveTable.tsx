@@ -204,9 +204,22 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
           </h4>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-dark transition"
+            className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 p-2 text-white hover:from-blue-600 hover:to-blue-800 transition transform hover:scale-105 shadow-lg flex items-center justify-center"
           >
-            {dict.leave.addleave}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
           </button>
         </div>
 
@@ -332,13 +345,13 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="rounded bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 dark:bg-dark-3 dark:text-white"
+                className="font-medium text-black underline hover:text-black"
               >
                 {dict.leave.cancel}
               </button>
               <button
                 onClick={handleSubmit}
-                className="rounded bg-primary px-4 py-2 text-white hover:bg-primary-dark"
+                className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-green-600"
               >
                 {dict.leave.confirm}
               </button>

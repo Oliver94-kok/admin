@@ -67,6 +67,7 @@ export const BranchATable = ({
   const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
   const [selectBranchs, setSelectBranchs] = useState<{ id: string; code: string, team: string }[] | null>(null);
   const [teamSelect, setTeamSelect] = useState<string | null>()
+  const [isEditnameOpen, setIsEditnameOpen] = useState(false);
   // Paginate the data
   const filteredData = data.filter((teamA) =>
     teamA.users?.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -453,6 +454,31 @@ export const BranchATable = ({
                 setName(teamA.users?.name!);
                 setUsername(teamA.users?.username!);
                 setUserTeam(teamA.team);
+                setIsEditnameOpen(true);
+              }}
+              className="hover:text-primary"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current"
+                width="20"
+                height="20"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => {
+                setIdBranch(teamA.id);
+                setName(teamA.users?.name!);
+                setUsername(teamA.users?.username!);
+                setUserTeam(teamA.team);
                 setIsResetOpen(true);
               }}
               className="hover:text-primary"
@@ -552,6 +578,39 @@ export const BranchATable = ({
         </p>
       </div> */}
       {/* Render the image modal */}
+      <Modal isOpen={isEditnameOpen} onClose={() => setIsEditnameOpen(false)}>
+        <div className="p-5">
+          <h2 className="text-center text-1xl font-semibold text-gray-800 dark:text-gray-100 mb-6">
+            Edit Name
+          </h2>
+
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-lg px-5 py-3 text-base text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition duration-200"
+            placeholder="Enter your new name"
+          />
+
+          {/* Buttons aligned bottom right */}
+          <div className="mt-6 flex items-center justify-end space-x-10">
+            <button
+              onClick={() => setIsEditnameOpen(false)}
+              className="font-medium text-gray-700 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-gray-100 transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                setIsEditnameOpen(false);
+                // Here you could add the name update logic
+              }}
+              className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-green-600"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </Modal>
       <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)}>
         <Image
           src={selectedImage || ""}
