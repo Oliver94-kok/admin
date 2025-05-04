@@ -20,6 +20,8 @@ import { roleAdmin } from "@/lib/function";
 import { getDataBranch } from "@/data/branch";
 import { useSession } from "next-auth/react";
 import BranchsSelectGroup from "../Form/FormElements/MultiSelect/branchsSelect";
+import { editName } from "@/action/editname";
+import { set } from "zod";
 interface BranchTableAInterfface {
   data: BranchsUser[];
   team: string;
@@ -58,6 +60,7 @@ export const BranchATable = ({
   const [startOn, setStartOn] = useState<string>();
   const [idBranch, setIdBranch] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [iduser, setIdUser] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [userTeam, setUserTeam] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -216,7 +219,6 @@ export const BranchATable = ({
       setSelectBranchs(data || [])
       console.log("🚀 ~ getBranch ~ data:", data)
     } else {
-
       let data = await getDataBranch(team);
       setBranch(data)
       setSelectBranchs(data)
@@ -450,10 +452,8 @@ export const BranchATable = ({
           <div className="col-span-1 flex items-center justify-center space-x-3.5">
             <button
               onClick={() => {
-                setIdBranch(teamA.id);
+                setIdUser(teamA.userId);
                 setName(teamA.users?.name!);
-                setUsername(teamA.users?.username!);
-                setUserTeam(teamA.team);
                 setIsEditnameOpen(true);
               }}
               className="hover:text-primary"
@@ -600,8 +600,18 @@ export const BranchATable = ({
               Cancel
             </button>
             <button
-              onClick={() => {
-                setIsEditnameOpen(false);
+              onClick={async () => {
+                let result = await editName(iduser, name);
+                if (result.error) {
+                  setErrorMsg(result.error);
+                  toast.error(result.error)
+                  return;
+                }
+                if (result.success) {
+                  refresh();
+                  toast.success("Success update name")
+                  setIsEditnameOpen(false);
+                }
                 // Here you could add the name update logic
               }}
               className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-green-600"
