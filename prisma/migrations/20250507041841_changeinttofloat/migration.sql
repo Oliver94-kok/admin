@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE `salary` MODIFY `workingDay` DOUBLE NULL;
+ALTER TABLE `Salary` MODIFY `workingDay` DOUBLE NULL;
