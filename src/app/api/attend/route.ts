@@ -82,14 +82,14 @@ export const PATCH = async (req: Request): Promise<Response> => {
     userId = validatedUserId;
 
     const attendance = await checkClockIn(userId);
-    if (!attendance) {
-      throw new Error("No clock-in record found");
-    }
+    // if (!attendance) {
+    //   throw new Error("No clock-in record found");
+    // }
 
-    if (attendance.status === AttendStatus.Full_Attend || attendance.status === AttendStatus.Late || attendance.status === AttendStatus.No_ClockIn_ClockOut) {
+    if (attendance?.status === AttendStatus.Full_Attend) {
       throw new Error("You have already clocked out");
     }
-    return await processClockOut(userId, attendance, location, notify);
+    return await processClockOut(userId, attendance!, location, notify);
   } catch (error) {
     let err = error instanceof Error ? error.message : "An unknown error occurred"
     await Logging(userId!, "Patch clock", err)

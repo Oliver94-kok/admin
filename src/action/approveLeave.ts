@@ -5,6 +5,7 @@ import { addLeaveAttend, forEachDate } from "@/data/leave";
 import { Logging } from "@/data/log";
 import { db } from "@/lib/db";
 import {
+  calculateTimeDifference,
   countDaysBetween,
   extractDateAndDay,
   formatDateTime,
@@ -41,9 +42,13 @@ export const ApproveLeave = async (status: string, id: string) => {
         let checkLeaveType = leaveType.filter((e) => e == check?.type);
 
         if (startLeave == endLeave) {
+          const { hours, isHalfDay } = await calculateTimeDifference(check?.startDate!, check?.endDate!);
+          console.log("🚀 ~ ApproveLeave ~ isHalfDay:", isHalfDay)
+          const formattedDate = `${startLeave.year}-${startLeave.month}-${startLeave.day}`;
           await addLeaveAttend(
             check?.userId!,
             `${startLeave.year}-${startLeave.month}-${startLeave.day}`,
+            isHalfDay
           );
           if (checkLeaveType) {
             let salary = await db.salary.findFirst({

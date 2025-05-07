@@ -153,7 +153,6 @@ export const calculateTotalSalaryUser = async (userId: string) => {
       },
     });
     if (!salary) throw new Error("Not found user salary");
-    let totalAbsent = salary.absent! * salary.perDay! * 2;
     let totalWorkingDay = salary.workingDay! * salary.perDay!;
     let totalFine = salary.fineLate! + salary.fineNoClockIn!;
     let totalSide =
@@ -165,7 +164,7 @@ export const calculateTotalSalaryUser = async (userId: string) => {
       salary.transport! +
       salary.cover! +
       salary.overTime!;
-    let total = totalWorkingDay + totalSide - totalAbsent - totalFine;
+    let total = totalWorkingDay + totalSide - totalFine;
     let result = await db.salary.update({
       where: { id: salary.id },
       data: { total },
@@ -356,7 +355,7 @@ export const getNoClockOut = async (
 //   let dataAbsent = result.filter((e) => e.status == "Absent");
 //   return { dataAbsent, No_ClockIn_ClockOut, dataLate };
 // };
-const checkLate = async () => {};
+const checkLate = async () => { };
 export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
   try {
     const users = await db.user.findMany({ where: { AttendBranch: { team } } });
@@ -527,7 +526,7 @@ export const excelData = async (
         year,
         users: { role: "USER", AttendBranch: { team } },
       },
-      orderBy:{users:{AttendBranch:{branch:"asc"}}},
+      orderBy: { users: { AttendBranch: { branch: "asc" } } },
       select: {
         id: true,
         month: true,
@@ -586,16 +585,16 @@ export const excelData = async (
               ...salary,
               users: salary.users
                 ? {
-                    name: salary.users.name,
-                    AttendBranch: salary.users.AttendBranch
-                      ? {
-                          team: salary.users.AttendBranch.team,
-                          branch: salary.users.AttendBranch.branch,
-                          clockIn: salary.users.AttendBranch.clockIn,
-                          clockOut: salary.users.AttendBranch.clockOut,
-                        }
-                      : null,
-                  }
+                  name: salary.users.name,
+                  AttendBranch: salary.users.AttendBranch
+                    ? {
+                      team: salary.users.AttendBranch.team,
+                      branch: salary.users.AttendBranch.branch,
+                      clockIn: salary.users.AttendBranch.clockIn,
+                      clockOut: salary.users.AttendBranch.clockOut,
+                    }
+                    : null,
+                }
                 : null,
             };
 

@@ -1,3 +1,4 @@
+"use server"
 import { db } from "@/lib/db";
 import { createSession, encrypt } from "@/lib/session";
 import { User } from "@prisma/client";
@@ -71,3 +72,36 @@ export const getAllUser = async () => {
   });
   return user;
 };
+
+export const getUserLeave = async (role: string) => {
+  try {
+    if (role == "ADMIN") {
+      const users = await db.user.findMany({
+        where: { isDelete: false, role: "USER", }, select: {
+          id: true, username: true, AttendBranch: { select: { clockIn: true, clockOut: true } }
+        }
+      });
+      const data = users.map((r) => ({
+        value: r.id,
+        label: r.username
+      }));
+
+
+      return { data, users }
+    }
+    const users = await db.user.findMany({
+      where: { isDelete: false, role: "USER", AttendBranch: { team: role } }, select: {
+        id: true, username: true, AttendBranch: { select: { clockIn: true, clockOut: true } }
+      }
+    });
+    const data = users.map((r) => ({
+      value: r.id,
+      label: r.username
+    }));
+
+    return { data, users }
+  } catch (error) {
+    console.log("🚀 ~ getUserLeave ~ error:", error)
+    return null
+  }
+}

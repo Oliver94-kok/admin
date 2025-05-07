@@ -27,10 +27,12 @@ enum AttendStatus {
   Active
   Full_Attend
   No_ClockIn_ClockOut
+  No_clockIn_ClockOut_Late
   Absent
   Leave
   Late
   OffDay
+  Half_Day
 }
 
 enum LocationUserStatus {
@@ -70,6 +72,7 @@ model Attends {
   locationOut String?
   overtime    Float?
   fine        Float?
+  fine2       Float?
   userId      String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -81,7 +84,7 @@ model Salary {
   id             String   @id @default(cuid())
   month          Int
   year           Int
-  workingDay     Int?
+  workingDay     Float?
   absent         Int?
   workingHoour   Int?     @map("workingHour")
   fineLate       Int?
@@ -139,6 +142,7 @@ model Leave {
   startDate String
   endDate   String
   status    String
+  duration  Float?
   img       String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

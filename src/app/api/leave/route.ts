@@ -26,8 +26,10 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const POST = async (req: Request) => {
-  const { userId, reason, type, startDate, endDate, status, imgs, notify } =
+  // const requestBody = await req.json();
+  const { userId, reason, type, startDate, endDate, status, imgs, totalDay, notify, } =
     await req.json();
+
   try {
     const users = await getUserById(userId);
     let imgname = "";
@@ -37,6 +39,7 @@ export const POST = async (req: Request) => {
         throw new Error("Error upload image")
       imgname = result?.success;
     }
+    console.log("🚀 ~ POST ~ data.totalDay:", totalDay)
     let data = {
       userId,
       reason,
@@ -45,7 +48,9 @@ export const POST = async (req: Request) => {
       endDate,
       status,
       img: imgname,
+      duration: totalDay
     };
+
     let user = await db.leave.create({ data });
     let noti = await db.notificationUser.findFirst({
       where: { userId },

@@ -6,12 +6,18 @@ import { Leave } from "@/types/product";
 import Modal from "../modal";
 import { fullLeaveTypes, LeavesInterface } from "@/types/leave";
 import { ApproveLeave } from "@/action/approveLeave";
-import { SentNoti } from "@/lib/function";
+import { roleAdmin, SentNoti } from "@/lib/function";
 import { DateTime } from "luxon";
 import { mutate } from "swr";
 import { toast, ToastContainer } from "react-toastify";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ApproveLeaveV2 } from "@/action/approveLeave_v2";
+import { useSession } from "next-auth/react";
+import { getUserLeave } from "@/data/user";
+import Select from 'react-select'
+import { AddLeaveUser, AddUserLeave } from "@/action/addLeave";
+import dayjs from "dayjs";
 interface LeaveTableInterface {
   data: LeavesInterface[];
 }
@@ -20,10 +26,24 @@ const dictionaries = {
   zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
 };
 
+interface UserLeave {
+  value: string;
+  label: string;
+}
+interface Users {
+  id: string;
+  username: string;
+  AttendBranch: {
+    clockIn: string | null;
+    clockOut: string | null;
+  } | null;
+}
+
 const LeaveTable = ({ data }: LeaveTableInterface) => {
+  const session = useSession();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [currentAction, setCurrentAction] = useState<string | null>(null);
+  const [currentAction, setCurrentAction] = useState<"Approve" | "Reject" | null>("Approve");
   const [searchQuery, setSearchQuery] = useState("");
   const [dict, setDict] = useState<any>(null); // State to hold the dictionary
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,12 +58,46 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [leaveType, setLeaveType] = useState('');
   const [reason, setReason] = useState('');
+  const [userLeaveData, setUserLeaveData] = useState<UserLeave[]>([]);
+  const [users, setUsers] = useState<Users[]>([])
+  const [shiftTimeIn, setShiftTimein] = useState("")
+  const [shiftTimeOut, setShiftTimeOut] = useState("")
+  const [totaldays, setTotaldays] = useState(0);
   useEffect(() => {
     if (data) {
       setDataLeave(data);
+      getUser()
     }
   }, [data]);
+  useEffect(() => {
+    if (startDate && endDate) {
+      const days = calculateShiftLeaveDuration2(
+        startDate,
+        endDate,
 
+      );
+      setTotaldays(days);
+    }
+  }, [startDate, endDate]);
+  const getUser = async () => {
+    try {
+      let admin_role = session.data?.user.role!;
+      console.log("🚀 ~ getUser ~ admin_role:", admin_role)
+      let role;
+      if (admin_role != "ADMIN") {
+        role = await roleAdmin(admin_role);
+      } else {
+        role = "ADMIN";
+      }
+
+      const result = await getUserLeave(role);;
+      console.log("🚀 ~ getUser ~ data:", data)
+      setUserLeaveData(result?.data || [])
+      setUsers(result?.users || [])
+    } catch (error) {
+      console.log(error)
+    }
+  }
   // Function to handle sorting
   const handleSort = (column: string) => {
     const newSortOrder =
@@ -103,21 +157,9 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     currentPage * itemsPerPage,
   );
 
-  const fetchData = async () => {
-    try {
-      // Replace this with your actual data-fetching logic
-      console.log("Fetching new data...");
 
-      // Simulate a delay or an API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Handle your data (e.g., update state, store response)
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const handleConfirmOpen = (action: string, id: string) => {
+  const handleConfirmOpen = (action: "Approve" | "Reject", id: string) => {
     setLeaveId(id);
     setCurrentAction(action);
     setIsConfirmOpen(true);
@@ -135,22 +177,35 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       return;
     }
 
-    const newLeave = {
+
+    const newLeave: AddUserLeave = {
       userId: selectedUser,
       startDate,
       endDate,
+      duration: totaldays,
       leaveType,
       reason,
     };
+    const result = await AddLeaveUser(newLeave)
+    if (result.error) {
+      toast.error(result.error, { position: "top-center" })
+    }
+    if (result.Success) {
+      toast.success('Success add leave', { position: "top-center" })
+      setStartDate(null);
+      setEndDate(null);
+      setTotaldays(0);
+      setReason('');
+      setLeaveType('')
 
-    // Send newLeave to backend here...
-    console.log("Submitting leave:", newLeave);
+      setIsModalOpen(false);
+    }
 
-    setIsModalOpen(false);
+
   };
 
   const handleConfirm = async () => {
-    ApproveLeave(currentAction!, leaveId).then(async (data) => {
+    ApproveLeaveV2(currentAction == "Approve" ? "Approve" : "Reject", leaveId).then(async (data) => {
       if (data.error) {
         toast.error(data.error, {
           position: "top-center",
@@ -158,38 +213,68 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         return;
       }
       if (data.success) {
-        let d = await SentNoti(
-          "Leave",
-          `Your leave has been ${currentAction}`,
-          data.leaveId,
-          data.username,
-        );
-        console.log(d);
-        mutate("/api/leave/dashboard");
         toast.success("Success add status", {
           position: "top-center",
         });
-        // window.location.reload();
       }
-    });
+
+    })
+
+
     console.log(`Action: ${currentAction}, Leave ID: ${leaveId}`);
     handleConfirmClose();
   };
+  function calculateShiftLeaveDuration2(
+    leaveStart: Date,
+    leaveEnd: Date,
 
-  const getLeaveDuration = () => {
-    if (!startDate || !endDate) return null;
+  ): number {
+    // 1. Parse shift times
+    const [shiftStartH, shiftStartM] = shiftTimeIn.split(':').map(Number);
+    const [shiftEndH, shiftEndM] = shiftTimeOut.split(':').map(Number);
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffMs = end.getTime() - start.getTime();
+    // 2. Calculate shift duration in hours
+    let shiftDuration = (shiftEndH - shiftStartH) + (shiftEndM - shiftStartM) / 60;
+    if (shiftDuration <= 0) shiftDuration += 24; // Handle overnight shifts
+    const halfShift = shiftDuration / 2;
 
-    if (diffMs <= 0) return 0;
+    // 3. Initialize counters
+    let totalDays = 0;
+    const currentDay = new Date(leaveStart);
+    currentDay.setHours(0, 0, 0, 0);
 
-    const diffHours = diffMs / (1000 * 60 * 60);
-    const diffDays = diffHours / 24;
+    // 4. Process each day
+    while (currentDay <= leaveEnd) {
+      // Calculate shift start/end for current day
+      const dayStart = new Date(currentDay);
+      dayStart.setHours(shiftStartH, shiftStartM, 0, 0);
 
-    return diffDays.toFixed(2);
-  };
+      const dayEnd = new Date(currentDay);
+      dayEnd.setHours(shiftEndH, shiftEndM, 0, 0);
+      if (shiftEndH < shiftStartH) dayEnd.setDate(dayEnd.getDate() + 1); // Overnight
+
+      // Adjust for leave boundaries
+      const actualStart = new Date(Math.max(leaveStart.getTime(), dayStart.getTime()));
+      const actualEnd = new Date(Math.min(leaveEnd.getTime(), dayEnd.getTime()));
+
+      // Calculate hours covered
+      const hoursCovered = (actualEnd.getTime() - actualStart.getTime()) / (1000 * 60 * 60);
+
+      // Count days
+      if (hoursCovered >= shiftDuration * 0.9) { // 90% threshold for full day
+        totalDays += 1;
+      } else if (hoursCovered >= halfShift) {
+        totalDays += 0.5;
+      }
+
+      // Move to next day
+      currentDay.setDate(currentDay.getDate() + 1);
+    }
+
+    return totalDays;
+  }
+
+
 
   return (
     <div
@@ -263,18 +348,12 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               {/* Username Select */}
               <div>
                 <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.username}</label>
-                <select
-                  className="w-full rounded border border-stroke bg-white px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={selectedUser}
-                  onChange={(e) => setSelectedUser(e.target.value)}
-                >
-                  <option value="">{dict.leave.selectuser}</option>
-                  {dataLeave.map((leave) => (
-                    <div key={leave.id}>
-                      Username: {leave.users?.username ?? 'No user'}
-                    </div>
-                  ))}
-                </select>
+                <Select options={userLeaveData} onChange={(e) => {
+                  setSelectedUser(e?.value!);
+                  let u = users.find((user) => user.id === e?.value)
+                  setShiftTimein(u?.AttendBranch?.clockIn!)
+                  setShiftTimeOut(u?.AttendBranch?.clockOut!)
+                }} />
               </div>
             </div>
 
@@ -286,10 +365,11 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 onChange={(date) => setStartDate(date)}
                 showTimeSelect
                 timeFormat="HH:mm"
-                timeIntervals={15}
+                timeIntervals={30}
                 dateFormat="yyyy-MM-dd HH:mm"
                 className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
               />
+              shift in: {shiftTimeIn}
             </div>
 
 
@@ -298,19 +378,21 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               <label className="mt-3 block text-sm font-medium text-gray-700 dark:text-white">{dict.leave.enddate}</label>
               <DatePicker
                 selected={endDate}
-                onChange={(date) => setEndDate(date)}
+                onChange={(date) => { setEndDate(date); }}
                 showTimeSelect
                 timeFormat="HH:mm"
-                timeIntervals={15}
+                timeIntervals={30}
                 dateFormat="yyyy-MM-dd HH:mm"
                 className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
               />
+              shift out: {shiftTimeOut}
             </div>
 
-            {/* Total Leave Days */}
+            {/* Total Leave Days   */}
             {startDate && endDate && (
               <div className="mt-2 text-sm text-gray-700 dark:text-white">
-                {dict.leave.totalleaveday}: {getLeaveDuration()} day(s)
+                {/* {dict.leave.totalleaveday}: {getLeaveDuration()} day(s) */}
+                {dict.leave.totalleaveday}: {totaldays} day(s)
               </div>
             )}
 

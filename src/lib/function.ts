@@ -237,6 +237,18 @@ export async function extractDateAndDay(dateTimeString: string) {
     year: parseInt(year),
   };
 }
+export async function extractDateAndTime(dateTimeString: string) {
+  const [dateString, time, period] = dateTimeString.split(" ");
+  const [day, month, year] = dateString.split("-");
+
+  return {
+    date: dateString,
+    day: parseInt(day, 10),
+    month: parseInt(month, 10),
+    year: parseInt(year, 10),
+    time: `${time} ${period}` // Combines time and AM/PM
+  };
+}
 export async function countDaysBetween(
   startDate: string,
   endDate: string,
@@ -323,3 +335,155 @@ export const roleAdmin = async (role: string) => {
       return "A";
   }
 };
+/**
+ * Calculates the time difference between two timestamps and determines if it's a half-day
+ * based on the user's shift duration
+ * 
+ * @param startTime - Start time in format "DD-MM-YYYY HH:MM AM/PM"
+ * @param endTime - End time in format "DD-MM-YYYY HH:MM AM/PM"
+ * @param shiftStart - Optional user shift start time in format "HH:MM" (24-hour)
+ * @param shiftEnd - Optional user shift end time in format "HH:MM" (24-hour)
+ * @returns Object with hours, isHalfDay flag and percentage of shift worked
+ */
+export async function calculateTimeDifference(
+  startTime: string,
+  endTime: string,
+  shiftStart?: string,
+  shiftEnd?: string
+): Promise<{
+  hours: number;
+  isHalfDay: boolean;
+  percentageOfShift?: number;
+}> {
+  try {
+    console.log("🚀 ~ calculateTimeDifference inputs:", { startTime, endTime, shiftStart, shiftEnd });
+
+    // Parse the date strings - defensive coding to handle potential malformed input
+    const startParts = startTime.split(' ');
+    const endParts = endTime.split(' ');
+
+    if (startParts.length < 3 || endParts.length < 3) {
+      console.error("Invalid date format. Expected 'DD-MM-YYYY HH:MM AM/PM'");
+      return { hours: 0, isHalfDay: false };
+    }
+
+    const startDateStr = startParts[0];
+    const startTimeStr = startParts[1];
+    const startPeriod = startParts[2];
+
+    const endDateStr = endParts[0];
+    const endTimeStr = endParts[1];
+    const endPeriod = endParts[2];
+
+    // Parse date components (DD-MM-YYYY)
+    const startDateParts = startDateStr.split('-');
+    const endDateParts = endDateStr.split('-');
+
+    if (startDateParts.length !== 3 || endDateParts.length !== 3) {
+      console.error("Invalid date format. Expected 'DD-MM-YYYY'");
+      return { hours: 0, isHalfDay: false };
+    }
+
+    const startDay = parseInt(startDateParts[0], 10);
+    const startMonth = parseInt(startDateParts[1], 10);
+    const startYear = parseInt(startDateParts[2], 10);
+
+    const endDay = parseInt(endDateParts[0], 10);
+    const endMonth = parseInt(endDateParts[1], 10);
+    const endYear = parseInt(endDateParts[2], 10);
+
+    // Parse time components
+    const startTimeParts = startTimeStr.split(':');
+    const endTimeParts = endTimeStr.split(':');
+
+    if (startTimeParts.length !== 2 || endTimeParts.length !== 2) {
+      console.error("Invalid time format. Expected 'HH:MM'");
+      return { hours: 0, isHalfDay: false };
+    }
+
+    let startHour = parseInt(startTimeParts[0], 10);
+    let startMinute = parseInt(startTimeParts[1], 10);
+
+    let endHour = parseInt(endTimeParts[0], 10);
+    let endMinute = parseInt(endTimeParts[1], 10);
+
+    // Convert to 24-hour format
+    if (startPeriod === 'PM' && startHour < 12) startHour += 12;
+    if (startPeriod === 'AM' && startHour === 12) startHour = 0;
+    if (endPeriod === 'PM' && endHour < 12) endHour += 12;
+    if (endPeriod === 'AM' && endHour === 12) endHour = 0;
+
+    console.log("🚀 ~ Parsed times:", {
+      start: `${startYear}-${startMonth}-${startDay} ${startHour}:${startMinute}`,
+      end: `${endYear}-${endMonth}-${endDay} ${endHour}:${endMinute}`
+    });
+
+    // Create Date objects
+    const startDate = new Date(startYear, startMonth - 1, startDay, startHour, startMinute);
+    const endDate = new Date(endYear, endMonth - 1, endDay, endHour, endMinute);
+
+    // Calculate difference in milliseconds
+    const diffMs = endDate.getTime() - startDate.getTime();
+
+    // Convert to hours
+    const hours = diffMs / (1000 * 60 * 60);
+
+    console.log("🚀 ~ Calculated hours:", hours);
+
+    // Calculate shift duration if shift times are provided
+    let isHalfDay = false;
+    let percentageOfShift: number | undefined = undefined;
+
+    if (shiftStart && shiftEnd) {
+      // Parse shift hours
+      const shiftStartParts = shiftStart.split(':');
+      const shiftEndParts = shiftEnd.split(':');
+
+      if (shiftStartParts.length !== 2 || shiftEndParts.length !== 2) {
+        console.error("Invalid shift time format. Expected 'HH:MM'");
+        // Fall back to standard calculation
+        isHalfDay = hours >= 3.5 && hours <= 5;
+        return { hours, isHalfDay };
+      }
+
+      const shiftStartHour = parseInt(shiftStartParts[0], 10);
+      const shiftStartMinute = parseInt(shiftStartParts[1], 10);
+
+      const shiftEndHour = parseInt(shiftEndParts[0], 10);
+      const shiftEndMinute = parseInt(shiftEndParts[1], 10);
+
+      // Calculate total shift hours
+      let shiftHours = shiftEndHour - shiftStartHour +
+        (shiftEndMinute - shiftStartMinute) / 60;
+
+      // Handle overnight shifts
+      if (shiftHours < 0) {
+        shiftHours += 24;
+      }
+
+      console.log("🚀 ~ Shift hours:", shiftHours);
+
+      // Calculate percentage of shift worked
+      percentageOfShift = (hours / shiftHours) * 100;
+      console.log("🚀 ~ Percentage of shift:", percentageOfShift);
+
+      // Determine if it's a half day (between 40% and 60% of shift duration)
+      isHalfDay = percentageOfShift >= 40 && percentageOfShift <= 60;
+      console.log("🚀 ~ Is half day (shift-based):", isHalfDay);
+    } else {
+      // Default behavior when no shift information is provided
+      // Determine if it's a half day (typically between 3.5 to 5 hours for a standard 8-hour shift)
+      isHalfDay = hours >= 3.5 && hours <= 5;
+      console.log("🚀 ~ Is half day (standard):", isHalfDay);
+    }
+
+    return {
+      hours,
+      isHalfDay,
+      percentageOfShift
+    };
+  } catch (error) {
+    console.error("Error calculating time difference:", error);
+    return { hours: 0, isHalfDay: false };
+  }
+}

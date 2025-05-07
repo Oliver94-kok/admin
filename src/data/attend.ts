@@ -226,12 +226,18 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
   const date = new Date(
     Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
   );
+  console.log("🚀 ~ deliveryClockAttend ~ date:", date)
   let user = await db.attends.findFirst({
     where: { userId, dates: { equals: date } },
   });
+  let shift = await db.attendBranch.findFirst({ where: { userId } })
+  let c = shift?.clockIn?.split(":");
+  let newdate = dayjs(date).set('hour', Number(c![0])).set('minute', Number(c![1]))
+  console.log("🚀 ~ deliveryClockAttend ~ newdate:", newdate)
   if (!user) {
     let data = {
       userId,
+      clockIn: newdate.toISOString(),
       dates: date,
       status: AttendStatus.Active,
     };
@@ -240,6 +246,7 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
   }
   let data = {
     status: AttendStatus.Active,
+    clockIn: newdate.toISOString(),
     fine: null,
   };
   let result = await db.attends.update({ where: { id: user.id }, data });
@@ -546,7 +553,7 @@ export async function handleClockOut(
           userId,
           dates: attendDate,
           clockOut: today.toISOString(),
-          fine: fine,
+          fine2: fine,
           locationOut: location || null,
           overtime: overtimeValue,
           status: AttendStatus.No_ClockIn_ClockOut
@@ -610,9 +617,9 @@ export async function processClockOut(
     shift.clockOut,
     "out"
   );
-
+  console.log("patch clock ot", attendance)
   // Handle clock out for No_ClockIn case
-  if (attendance.clockIn === null) {
+  if (attendance === null) {
     return await handleNoClockInCase(userId, attendance, location, today);
   }
 
@@ -627,12 +634,15 @@ async function handleNoClockInCase(
   today: dayjs.Dayjs
 ): Promise<Response> {
   // Update attendance record
-  const result = await db.attends.update({
-    where: { id: attendance.id },
+  const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
+  const result = await db.attends.create({
     data: {
+      userId: userId,
+      dates: today.toDate(),
       clockOut: today.toISOString(),
       status: AttendStatus.No_ClockIn_ClockOut,
-      locationOut: location || null
+      locationOut: location || null,
+      fine2
     }
   });
 
@@ -640,7 +650,7 @@ async function handleNoClockInCase(
   const salaryData: AttendanceSalaryData = {
     userId,
     fineLate: null,
-    fineNoClockIn: attendance.fine,
+    fineNoClockIn: fine2,
     fineNoClockOut: null,
     overtime: 0,
     workingHour: null
@@ -682,7 +692,7 @@ async function handleNormalClockOut(
           workingHour: workingHour,
           overtime: overtimeValue,
           locationOut: location || null,
-          status: attendance.fine ? AttendStatus.Late : AttendStatus.Full_Attend
+          status: attendance.status == "Half_Day" ? "Half_Day" : attendance.fine ? AttendStatus.Late : AttendStatus.Full_Attend
         }
       });
 

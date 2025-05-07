@@ -29,7 +29,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                 userBatch.map(async (user) => {
                     try {
                         return await db.$transaction(async (tx) => {
-                            const [noClockInAttends, lateAttends, attends, absent] =
+                            const [noClockInAttends, lateAttends, attends, absent, halfday] =
                                 await Promise.all([
                                     tx.attends.findMany({
                                         where: {
@@ -38,7 +38,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                                 lte: new Date(endDate.format('YYYY-MM-DD')),
                                             },
                                             userId: user.id,
-                                            status: "No_ClockIn_ClockOut",
+                                            status: { in: ["No_ClockIn_ClockOut", "No_clockIn_ClockOut_Late"] },
                                         },
                                     }),
                                     tx.attends.findMany({
@@ -48,7 +48,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                                 lte: new Date(endDate.format('YYYY-MM-DD')),
                                             },
                                             userId: user.id,
-                                            status: "Late",
+                                            status: { in: ['Late', 'No_clockIn_ClockOut_Late'] },
                                         },
                                     }),
                                     tx.attends.findMany({
@@ -59,7 +59,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                             },
                                             userId: user.id,
                                             NOT: {
-                                                OR: [{ status: "Absent" }, { status: "Leave" }, { status: "Active" }],
+                                                OR: [{ status: "Absent" }, { status: "Leave" }, { status: "Active" }, { status: "Half_Day" }],
                                             },
                                         },
                                     }),
@@ -74,11 +74,22 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                             status: "Absent",
                                         },
                                     }),
+                                    tx.attends.findMany({
+                                        where: {
+                                            dates: {
+                                                gte: new Date(startDate.format('YYYY-MM-DD')),
+                                                lte: new Date(endDate.format('YYYY-MM-DD')),
+                                            },
+                                            userId: user.id,
+
+                                            status: "Half_Day",
+                                        },
+                                    })
                                 ]);
 
                             const [updatedNoClockIn, updatedLate] = await Promise.all([
-                                updateAttendsInDb(noClockInAttends),
-                                updateAttendsInDb(lateAttends),
+                                updateAttendsInDb(noClockInAttends, 'noclockinout'),
+                                updateAttendsInDb(lateAttends, 'Late'),
                             ]);
 
                             const totalNoClockInFine = updatedNoClockIn.reduce(
@@ -94,7 +105,12 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                 startDate.format('YYYY-MM-DD'),
                                 endDate.format('YYYY-MM-DD'),
                             );
-                            let totalDay = attends.length + leave!;
+                            let totalhalf = halfday.length * 0.5;
+                            console.log("half day ", totalhalf, user.name)
+                            let totalDay = attends.length + leave! + totalhalf;
+                            console.log("totalDay day ", totalDay, user.name)
+                            console.log("attends.length day ", attends.length, user.name)
+                            console.log("leave day ", leave, user.name)
                             const salary = await tx.salary.findFirst({
                                 where: { userId: user.id, month: Number(month), year: Number(year) },
                             });
@@ -159,14 +175,22 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
         return { error: error instanceof Error ? error.message : "An unknown error occurred" }
     }
 }
-const updateAttendsInDb = async (attendArray: any[]) => {
+const updateAttendsInDb = async (attendArray: any[], status: "Late" | "noclockinout") => {
     return await db.$transaction(
         attendArray.map((attend, index) => {
+            let data;
+            if (status == "Late") {
+                data = {
+                    fine: index === 0 ? 50 : 100
+                }
+            } else {
+                data = {
+                    fine2: index === 0 ? 50 : 100
+                }
+            }
             return db.attends.update({
                 where: { id: attend.id },
-                data: {
-                    fine: index === 0 ? 50 : 100,
-                },
+                data
             });
         }),
     );

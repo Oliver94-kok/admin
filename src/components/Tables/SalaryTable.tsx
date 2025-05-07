@@ -96,7 +96,6 @@ const SalaryTable = ({
   const [printLoading, setLoadingPrint] = useState<boolean>(false)
   const [username, setusername] = useState("");
   const [branch, setbranch] = useState("");
-  const [inputValue, setInputValue] = useState<number | undefined>();
   useEffect(() => {
     if (data) {
       setDataSalary(data);
@@ -203,7 +202,7 @@ const SalaryTable = ({
         d.push(dd)
       })
       totals = data.dataAbsent.length * 2 * perDay;
-      const lateNumbers: string = `Absent * ${d.join(', ')} RM${totals}`;
+      const lateNumbers: string = `Absent * ${d.join(', ')} `;
       return lateNumbers
     }
     return "1212"
@@ -306,7 +305,7 @@ const SalaryTable = ({
         const totalSalary = salary.perDay! * salary.workingDay!;
         const totalBonus = salary.bonus || 0;
         const totalAllowance = salary.allowance || 0;
-        const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut! + (AbsentLength * 2 * salary.perDay!)) || 0;
+        const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut!) || 0;
         const totalAdvances = salary.advances || 0;
         const totalShort = salary.short || 0;
         const totalOvertime = salary.overTime || 0;
@@ -1233,7 +1232,7 @@ const SalaryTable = ({
             </div>
             <div className="col-span-1 flex items-center justify-center">
               <p className="text-body-sm font-medium text-red-500 dark:text-red-300">
-                {salary.fineLate! + salary.fineNoClockIn! + (salary.perDay! * salary.absent! * 2)}
+                {salary.fineLate! + salary.fineNoClockIn!}
               </p>
             </div>
             <div className="col-span-1 flex flex-col items-center justify-center">
@@ -1540,134 +1539,7 @@ const SalaryTable = ({
         />
       </Modal>
 
-      {/*isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-full max-w-xl rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
-            <h2 className="mb-4 text-xl font-semibold text-blue dark:text-white">
-              {`${username} (${branch})`}
-            </h2>
-
-            <div className="space-y-4">
-
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">Username</label>
-                <input
-                  type="text"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={`${username} (${branch})`}
-                  disabled
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">Bonus</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">Allow</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">Advance</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">Short</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">OT</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">Transport</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">M</label>
-                <input
-                  type="number"
-                  className="w-full rounded border border-stroke px-4 py-2 dark:bg-dark-1 dark:text-white"
-                  value={inputValue !== undefined ? inputValue.toString() : ""}
-                  onChange={(e) => setInputValue(Number(e.target.value))}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-            </div>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={handleCloseForm}
-                className="font-medium text-black underline hover:text-black"
-              >
-                Cancel
-              </button>
-              <button
-                // onClick={() =>
-                // handleAddComponentSalary({
-                //   id: idSalary,
-                //   type: typeComponentSalary[activePopup],
-                //   amount,
-                //   remark,
-                //   items: selectedItems,
-                //   name: username,
-                //   branch,
-                // })
-                // }
-                className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-green-600"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
-
+      {/* Combined Popups */}
       {isFormOpen && (
         <>
           {activePopup === "Bonus" && (
