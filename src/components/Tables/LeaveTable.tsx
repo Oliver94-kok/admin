@@ -82,7 +82,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const getUser = async () => {
     try {
       let admin_role = session.data?.user.role!;
-      console.log("🚀 ~ getUser ~ admin_role:", admin_role)
+
       let role;
       if (admin_role != "ADMIN") {
         role = await roleAdmin(admin_role);
@@ -172,7 +172,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedUser || !startDate || !endDate || !leaveType) {
+    if (!selectedUser || !startDate || !endDate || !leaveType || !reason) {
       alert("Please fill in all required fields.");
       return;
     }

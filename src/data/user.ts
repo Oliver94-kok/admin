@@ -78,12 +78,12 @@ export const getUserLeave = async (role: string) => {
     if (role == "ADMIN") {
       const users = await db.user.findMany({
         where: { isDelete: false, role: "USER", }, select: {
-          id: true, username: true, AttendBranch: { select: { clockIn: true, clockOut: true } }
+          id: true, name: true, username: true, AttendBranch: { select: { clockIn: true, clockOut: true } }
         }
       });
       const data = users.map((r) => ({
         value: r.id,
-        label: r.username
+        label: r.name
       }));
 
 
@@ -91,12 +91,12 @@ export const getUserLeave = async (role: string) => {
     }
     const users = await db.user.findMany({
       where: { isDelete: false, role: "USER", AttendBranch: { team: role } }, select: {
-        id: true, username: true, AttendBranch: { select: { clockIn: true, clockOut: true } }
+        id: true, name: true, username: true, AttendBranch: { select: { clockIn: true, clockOut: true } }
       }
     });
     const data = users.map((r) => ({
       value: r.id,
-      label: r.username
+      label: r.name
     }));
 
     return { data, users }
