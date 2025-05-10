@@ -37,7 +37,7 @@ export const checkClockIn = async (userId: string) => {
 
     });
     if (!user) {
-      user = await db.attends.findFirst({ where: { dates: t } })
+      user = await db.attends.findFirst({ where: { userId, dates: t } })
     }
     return user;
   } catch (error) {
