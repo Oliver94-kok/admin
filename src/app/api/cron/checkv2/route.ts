@@ -92,7 +92,7 @@ export const POST = async (req: Request) => {
         const todayDate = new Date(formattedDate);
 
         // Get all users and attendances in parallel to save time
-        const [users, allAttendances, activeAttendances, absent] = await Promise.all([
+        const [users, allAttendances, activeAttendances, NoClockInorOut] = await Promise.all([
             db.user.findMany({ where: { role: "USER", isDelete: false } }) as Promise<User[]>,
             db.attends.findMany({ where: { dates: todayDate } }) as Promise<Attends[]>,
             db.attends.findMany({ where: { dates: todayDate, status: "Active" } }) as Promise<Attends[]>,
@@ -109,7 +109,8 @@ export const POST = async (req: Request) => {
 
         // Process absent users
         const absentProcessResults = await processAbsentUsers(absentUsers, todayDate);
-
+        //Process check no clock in or out 
+        await processNoClockInorOut(NoClockInorOut,)
         // Process active users who didn't clock out
         const activeProcessResults = await processActiveAttendances(activeAttendances);
 
@@ -140,6 +141,32 @@ async function processAbsentUsers(absentUsers: User[], todayDate: Date): Promise
                     }
                 });
 
+                return {
+                    userId: user.id,
+                    type: 'success' as const,
+                    created: true,
+                };
+            } catch (error) {
+                return {
+                    userId: user.id,
+                    type: 'error' as const,
+                    error: error instanceof Error ? error.message : "Unknown error",
+                    created: false,
+                };
+            }
+        })
+    );
+}
+
+/**
+ * Process users who were absent and create attendance records for them
+ */
+async function processNoClockInorOut(absentUsers: Attends[],): Promise<PromiseSettledResult<ProcessResult>[]> {
+    return Promise.allSettled(
+        absentUsers.map(async (user) => {
+            try {
+
+                await db.attends.update({ where: { id: user.id }, data: { status: "Absent", fine: null, fine2: null } })
                 return {
                     userId: user.id,
                     type: 'success' as const,
