@@ -32,9 +32,13 @@ export const checkClockIn = async (userId: string) => {
     let user = await db.attends.findFirst({
       where: {
         userId,
-        OR: [{ dates: t }, { status: "Active" }],
+        status: "Active",
       },
+
     });
+    if (!user) {
+      user = await db.attends.findFirst({ where: { dates: t } })
+    }
     return user;
   } catch (error) {
     return null;
