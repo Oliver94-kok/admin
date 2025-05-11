@@ -121,17 +121,20 @@ model Branch {
 }
 
 model AttendBranch {
-  id        String   @id @default(cuid())
-  clockIn   String?
-  clockOut  String?
-  userId    String   @unique
-  team      String
-  branch    String?
-  startOn   String?
-  offDay    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  clockIn     String?
+  clockOut    String?
+  clockInNew  String?
+  clockOutNew String?
+  userId      String   @unique
+  team        String
+  branch      String?
+  branchNew   String?
+  startOn     String?
+  offDay      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Leave {

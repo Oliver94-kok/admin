@@ -117,7 +117,7 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
       // Move to next day
       currentDate = currentDate.add(1, 'day');
     }
-    // await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
+    await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
     return { success: "Leave approved" };
 
   } catch (error) {

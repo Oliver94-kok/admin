@@ -623,7 +623,7 @@ export async function processClockOut(
   );
   console.log("patch clock ot", attendance)
   // Handle clock out for No_ClockIn case
-  if (attendance === null) {
+  if (attendance === null || attendance.clockIn === null) {
     return await handleNoClockInCase(userId, attendance, location, today);
   }
 
@@ -639,16 +639,29 @@ async function handleNoClockInCase(
 ): Promise<Response> {
   // Update attendance record
   const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
-  const result = await db.attends.create({
-    data: {
-      userId: userId,
-      dates: today.toDate(),
-      clockOut: today.toISOString(),
-      status: AttendStatus.No_ClockIn_ClockOut,
-      locationOut: location || null,
-      fine2
-    }
-  });
+  if (attendance.clockIn == null) {
+    await db.attends.update({
+      where: { id: attendance.id }, data: {
+        clockOut: today.toISOString(),
+        status: AttendStatus.No_ClockIn_ClockOut,
+        locationOut: location || null,
+        fine: null,
+        fine2
+      }
+    })
+  } else {
+    const result = await db.attends.create({
+      data: {
+        userId: userId,
+        dates: today.toDate(),
+        clockOut: today.toISOString(),
+        status: AttendStatus.No_ClockIn_ClockOut,
+        locationOut: location || null,
+        fine2
+      }
+    });
+  }
+
 
   // Update salary calculations
   const salaryData: AttendanceSalaryData = {
@@ -662,7 +675,7 @@ async function handleNoClockInCase(
 
   await CheckSalarys(salaryData);
 
-  return Response.json({ timeOut: result.clockOut }, { status: 200 });
+  return Response.json({ timeOut: today.toISOString() }, { status: 200 });
 }
 
 async function handleNormalClockOut(
