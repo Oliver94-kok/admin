@@ -48,13 +48,13 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     if (leave.duration == 0.5) {
       let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(startTime.format("YYYY-MM-DD")) } })
       if (attend) {
-        await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day" } })
+        await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
         await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
         return { success: "Leave has been approve" }
       }
       await db.attends.create({
         data: {
-          userId: leave.userId, dates: startTime.toDate(), status: "Half_Day"
+          userId: leave.userId, dates: startTime.toDate(), status: "Half_Day", leaveId: leave.id
         }
       });
       await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
@@ -63,13 +63,13 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     if (leave.duration == 1) {
       let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(startTime.format("YYYY-MM-DD")) } })
       if (attend) {
-        await db.attends.update({ where: { id: attend.id }, data: { status: "Leave" } })
+        await db.attends.update({ where: { id: attend.id }, data: { status: "Leave", leaveId: leave.id } })
         await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
         return { success: "Leave has been approve" }
       }
       await db.attends.create({
         data: {
-          userId: leave.userId, dates: startTime.toDate(), status: "Leave"
+          userId: leave.userId, dates: startTime.toDate(), status: "Leave", leaveId: leave.id
         }
       });
       await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
@@ -88,11 +88,11 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
       if (d <= 0.5) {
         let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
         if (attend) {
-          await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day" } })
+          await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
         } else {
           await db.attends.create({
             data: {
-              userId: leave.userId, dates: currentDate.toDate(), status: "Half_Day"
+              userId: leave.userId, dates: currentDate.toDate(), status: "Half_Day", leaveId: leave.id
             }
           });
         }
@@ -104,11 +104,11 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
           }
         });
         if (attend) {
-          await db.attends.update({ where: { id: attend.id }, data: { status: "Leave" } })
+          await db.attends.update({ where: { id: attend.id }, data: { status: "Leave", leaveId: leave.id } })
         } else {
           await db.attends.create({
             data: {
-              userId: leave.userId, dates: currentDate.toDate(), status: "Leave"
+              userId: leave.userId, dates: currentDate.toDate(), status: "Leave", leaveId: leave.id
             }
           });
         }

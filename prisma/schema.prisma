@@ -74,10 +74,12 @@ model Attends {
   fine        Float?
   fine2       Float?
   userId      String
+  leaveId     String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   status      AttendStatus @default(Active)
   users       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaves      Leave?       @relation(fields: [leaveId], references: [id])
 }
 
 model Salary {
@@ -138,7 +140,7 @@ model AttendBranch {
 }
 
 model Leave {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   reason    String
   type      String
@@ -147,9 +149,10 @@ model Leave {
   status    String
   duration  Float?
   img       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User?    @relation(references: [id], fields: [userId], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     User?     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  Attends   Attends[]
 }
 
 model NotificationUser {

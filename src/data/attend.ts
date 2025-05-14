@@ -311,6 +311,7 @@ export async function getLastThreeMonthsData(userId: string) {
             clockOut: true,
             status: true,
             dates: true,
+            leaves: { select: { type: true } }
           },
           orderBy: {
             dates: "desc",
@@ -624,6 +625,7 @@ export async function processClockOut(
   console.log("patch clock ot", attendance)
   // Handle clock out for No_ClockIn case
   if (attendance === null || attendance.clockIn === null) {
+    console.log("🚀 ~ processClockOut ~ attendance:", attendance)
     return await handleNoClockInCase(userId, attendance, location, today);
   }
 
@@ -639,17 +641,7 @@ async function handleNoClockInCase(
 ): Promise<Response> {
   // Update attendance record
   const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
-  if (attendance.clockIn == null) {
-    await db.attends.update({
-      where: { id: attendance.id }, data: {
-        clockOut: today.toISOString(),
-        status: AttendStatus.No_ClockIn_ClockOut,
-        locationOut: location || null,
-        fine: null,
-        fine2
-      }
-    })
-  } else {
+  if (attendance == null) {
     const result = await db.attends.create({
       data: {
         userId: userId,
@@ -660,6 +652,16 @@ async function handleNoClockInCase(
         fine2
       }
     });
+  } else {
+    await db.attends.update({
+      where: { id: attendance.id }, data: {
+        clockOut: today.toISOString(),
+        status: AttendStatus.No_ClockIn_ClockOut,
+        locationOut: location || null,
+        fine: null,
+        fine2
+      }
+    })
   }
 
 

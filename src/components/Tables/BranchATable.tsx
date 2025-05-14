@@ -75,6 +75,7 @@ export const BranchATable = ({
   const filteredData = data.filter((teamA) =>
     teamA.users?.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+  console.log("🚀 ~ filteredData:", filteredData)
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const fetchData = async () => {
