@@ -13,6 +13,7 @@ interface AttendRecord {
   status: string;
   dates: Date; // ISO date string
   fine: number | null;
+  fine2: number | null;
 }
 
 export interface AttendanceResult {

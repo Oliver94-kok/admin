@@ -192,7 +192,7 @@ const SalaryTable = ({
       data.No_ClockIn_ClockOut.map((e) => {
         let dd = e.dates.getDate()
         d.push(dd);
-        totals = totals + e.fine!
+        totals = totals + e.fine2!
       })
       const lateNumbers: string = `No clock in or out * ${d.join(', ')} RM${totals}`;
       return lateNumbers

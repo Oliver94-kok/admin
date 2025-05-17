@@ -13,8 +13,8 @@ import timezone from "dayjs/plugin/timezone";
 import isBetween from "dayjs/plugin/isBetween";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { TimeUtils } from "@/lib/timeUtility";
-import { SalaryUser } from "@/types/salary";
-import { AttendanceResult, Salary, SalaryRecord } from "@/types/salary2";
+
+import { Salary, SalaryRecord } from "@/types/salary2";
 import { getAllresultAttend } from "@/lib/salaryPrintService";
 
 // Initialize dayjs plugins

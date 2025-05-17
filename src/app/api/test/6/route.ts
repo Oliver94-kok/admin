@@ -10,10 +10,10 @@ export const GET = async () => {
     const attends = await db.attends.findMany({
       where: {
         dates: {
-          gte: new Date("2025-04-01"),
-          lte: new Date("2025-04-30"),
+          gte: new Date("2025-05-01"),
+          lte: new Date("2025-05-30"),
         },
-        status: "No_ClockIn_ClockOut",
+        status: "No_clockIn_ClockOut_Late",
         clockIn: null,
         clockOut: null
       }
@@ -29,7 +29,8 @@ export const GET = async () => {
             await db.attends.update({
               where: { id: a.id }, data: {
                 status: "Absent",
-                fine: null
+                fine: null,
+                fine2: null,
               }
             })
             return {

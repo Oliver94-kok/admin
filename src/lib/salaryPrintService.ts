@@ -16,6 +16,7 @@ type AttendRecord = {
   status: string;
   dates: Date;
   fine: number | null;
+  fine2: number | null;
 };
 
 // Define attendance status enum for type safety
@@ -23,6 +24,7 @@ enum AttendanceStatus {
   LATE = "Late",
   No_ClockIn_ClockOut = "No_ClockIn_ClockOut",
   ABSENT = "Absent",
+  No_clockIn_ClockOut_Late = "No_clockIn_ClockOut_Late"
 }
 
 export const getAllresultAttend = async (
@@ -55,6 +57,7 @@ export const getAllresultAttend = async (
         status: true,
         dates: true,
         fine: true,
+        fine2: true
       },
     });
 
@@ -68,7 +71,10 @@ export const getAllresultAttend = async (
           case AttendanceStatus.No_ClockIn_ClockOut:
             acc.No_ClockIn_ClockOut.push(record);
             break;
-
+          case AttendanceStatus.No_clockIn_ClockOut_Late:
+            acc.No_ClockIn_ClockOut.push(record);
+            acc.dataLate.push(record);
+            break;
           case AttendanceStatus.ABSENT:
             acc.dataAbsent.push(record);
             break;

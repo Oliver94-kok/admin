@@ -7,7 +7,8 @@ export const NoClockInorOut = () => {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
     const [shift, setShift] = useState("");
-    const [date, setDate] = useState("")
+    const [date, setDate] = useState("");
+
     return (
         <>
             <div>
