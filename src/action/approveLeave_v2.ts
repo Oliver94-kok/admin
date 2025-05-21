@@ -44,14 +44,15 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     let startTime;
     let endTime
     if (leave.duration == null || leave.duration == undefined) {
-      startTime = dayjs(leave.startDate, 'DD-MM-YYYY hh:mm A')
-      endTime = dayjs(leave.endDate, 'DD-MM-YYYY hh:mm A');
+      startTime = dayjs(leave.startDate, 'YYYY-MM-DD HH:mm ')
+      endTime = dayjs(leave.endDate, 'YYYY-MM-DD HH:mm ');
     } else {
-      startTime = dayjs(leave.startDate, 'YYYY-MM-DD hh:mm A');
-      endTime = dayjs(leave.endDate, 'YYYY-MM-DD hh:mm A');
+      startTime = dayjs(leave.startDate, 'YYYY-MM-DD HH:mm ');
+      endTime = dayjs(leave.endDate, 'YYYY-MM-DD HH:mm ');
     }
     if (leave.duration == null || leave.duration == undefined) {
       let duration = endTime.diff(startTime, 'day');
+      console.log("🚀 ~ ApproveLeaveV2 ~ duration:", leave.id, duration)
 
       if (duration == 0.5) {
         let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(startTime.format("YYYY-MM-DD")) } })

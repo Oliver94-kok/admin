@@ -2,17 +2,12 @@ import { Logging } from "@/data/log";
 import { checkUsername, getUserById } from "@/data/user";
 import { db } from "@/lib/db";
 import {
-  countDaysBetween,
-  extractDateAndDay,
-  formatDateTime,
-  formatDateTimeIntl,
-  hashPassword,
-  mergeArrays,
   postImage,
   sendtoAdmin,
 } from "@/lib/function";
-import { NextRequest, NextResponse } from "next/server";
-const { DateTime } = require("luxon");
+import { NextRequest, } from "next/server";
+import dayjs from "dayjs";
+
 export const GET = async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("id");
@@ -39,16 +34,34 @@ export const POST = async (req: Request) => {
         throw new Error("Error upload image")
       imgname = result?.success;
     }
-    console.log("🚀 ~ POST ~ data.totalDay:", totalDay)
+    let startTime;
+    let endTime
+    let startDateFormat = removeAmPm(startDate);
+    let endDateFormat = removeAmPm(endDate);
+    let newformatStartDate = formatToIsoDateTime(startDateFormat);
+    let newformatEndDate = formatToIsoDateTime(endDateFormat);
+
+    if (totalDay == null || totalDay == undefined) {
+
+      startTime = dayjs(newformatStartDate, 'YYYY-MM-DD HH:mm', true);
+      endTime = dayjs(newformatEndDate, 'YYYY-MM-DD HH:mm', true);
+    } else {
+
+      startTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm A');
+      endTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm A');
+    }
+
+    let duration = endTime.diff(startTime, 'day') + 1;
+
     let data = {
       userId,
       reason,
       type,
-      startDate,
-      endDate,
+      startDate: startTime.format("YYYY-MM-DD HH:mm"),
+      endDate: endTime.format("YYYY-MM-DD HH:mm"),
       status,
       img: imgname,
-      duration: totalDay
+      duration: totalDay ? totalDay : duration,
     };
 
     let user = await db.leave.create({ data });
@@ -56,17 +69,17 @@ export const POST = async (req: Request) => {
       where: { userId },
       select: { leave: true, id: true },
     });
-    const currentArray = Array.isArray(noti?.leave) ? noti?.leave : [];
-    const updatedArray = [...currentArray, notify];
-    await db.notificationUser.update({
-      where: { id: noti?.id },
-      data: { leave: updatedArray },
-    });
-    await sendtoAdmin(
-      "Leave",
-      `Has new request leave by ${users?.name}`,
-      users?.AttendBranch?.team!,
-    );
+    // const currentArray = Array.isArray(noti?.leave) ? noti?.leave : [];
+    // const updatedArray = [...currentArray, notify];
+    // await db.notificationUser.update({
+    //   where: { id: noti?.id },
+    //   data: { leave: updatedArray },
+    // });
+    // await sendtoAdmin(
+    //   "Leave",
+    //   `Has new request leave by ${users?.name}`,
+    //   users?.AttendBranch?.team!,
+    // );
     return Response.json({ id: user.id }, { status: 201 });
   } catch (error) {
     let err = error instanceof Error ? error.message : "An unknown error occurred"
@@ -75,4 +88,38 @@ export const POST = async (req: Request) => {
       Error: error instanceof Error ? error.message : "An unknown error occurred"
     }, { status: 400 })
   }
+
+
 };
+function removeAmPm(dateTimeStr: string): string {
+  // Split into [date, time, period (AM/PM)]
+  const [datePart, timePart, period] = dateTimeStr.split(/\s+/);
+
+  if (!period) {
+    // If no AM/PM exists, return as-is (assumes 24-hour format)
+    return dateTimeStr;
+  }
+
+  let [hours, minutes] = timePart.split(':').map(Number);
+
+  // Convert 12-hour to 24-hour format
+  if (period === 'PM' && hours < 12) {
+    hours += 12;
+  } else if (period === 'AM' && hours === 12) {
+    hours = 0; // 12 AM → 00:00
+  }
+
+  // Pad hours with leading zero if needed (e.g., 7 → "07")
+  const hours24 = hours.toString().padStart(2, '0');
+  const time24 = `${hours24}:${minutes.toString().padStart(2, '0')}`;
+
+  return `${datePart} ${time24}`;
+}
+
+function formatToIsoDateTime(input: string): string {
+  const [datePart, timePart] = input.split(' ');
+  const [day, month, year] = datePart.split('-');
+
+  // Rebuild as YYYY-MM-DD HH:mm
+  return `${year}-${month}-${day} ${timePart}`;
+}

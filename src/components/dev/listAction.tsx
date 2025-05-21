@@ -19,14 +19,14 @@ export const ListAction = () => {
                     className=" h-[22rem] w-[21rem] rounded-[10px] bg-white p-4 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:p-6 2xl:p-10">
                     <CalculateSalary />
                 </div>
-                <div
+                {/* <div
                     className=" h-[22rem] w-[21rem] rounded-[10px] bg-white p-4 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:p-6 2xl:p-10">
                     <ShiftClock />
-                </div>
-                <div
+                </div> */}
+                {/* <div
                     className=" h-[22rem] w-[21rem] rounded-[10px] bg-white p-4 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:p-6 2xl:p-10">
                     <CheckAttend />
-                </div>
+                </div> */}
                 <div
                     className=" h-[22rem] w-[21rem] rounded-[10px] bg-white p-4 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:p-6 2xl:p-10">
                     <NoClockInorOut />
