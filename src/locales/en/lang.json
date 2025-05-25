@@ -111,7 +111,8 @@
     "bereavementleave": "Bereavement Leave",
     "medicalleave": "Medical Leave (MC)",
     "annualleave": "Annual Leave",
-    "forgetclock": "Forgot to Clock In/Out"
+    "forgetclock": "Forgot to Clock In/Out",
+    "delivery": "Delivery late"
   },
   "title": {
     "titledashboard": "Dashboard",

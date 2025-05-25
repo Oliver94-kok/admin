@@ -405,9 +405,17 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                 onChange={(e) => setLeaveType(e.target.value)}
               >
                 <option value="">{dict.leave.selecttype}</option>
-                {fullLeaveTypes.map((type, idx) => (
+                <option value={dict.leave.paidleave}>{dict.leave.paidleave}</option>
+                <option value={dict.leave.unpaidleave}>{dict.leave.unpaidleave}</option>
+                <option value={dict.leave.emergencyleave}>{dict.leave.emergencyleave}</option>
+                <option value={dict.leave.bereavementleave}>{dict.leave.bereavementleave}</option>
+                <option value={dict.leave.medicalleave}>{dict.leave.medicalleave}</option>
+                <option value={dict.leave.annualleave}>{dict.leave.annualleave}</option>
+                <option value={dict.leave.forgetclock}>{dict.leave.forgetclock}</option>
+                <option value={dict.leave.delivery}>{dict.leave.delivery}</option>
+                {/*fullLeaveTypes.map((type, idx) => (
                   <option key={idx} value={type}>{type}</option>
-                ))}
+                ))*/}
               </select>
 
               {/* Reason */}
