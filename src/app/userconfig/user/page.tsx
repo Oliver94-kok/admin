@@ -3,14 +3,16 @@
 import { getUsers } from "@/action/dev/getUser";
 import { useState } from "react";
 import { DateTime } from "luxon";
-import { Attends, Leave, User } from "@prisma/client";
+import { AttendBranch, Attends, Leave, Salary, User } from "@prisma/client";
 
 import { TableAttendDev } from "@/components/dev/tableAttend";
 import { TableLeaveDev } from "@/components/dev/tableLeave";
 interface datagetUsers {
     user: User,
     attend: Attends[],
-    leave: Leave[]
+    leave: Leave[],
+    branch: AttendBranch,
+    salary: Salary
 }
 
 
@@ -22,7 +24,7 @@ export default function UserConfigUser() {
     const [success, setSuccess] = useState<string>('');
     const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
     const [year, setYear] = useState(DateTime.now().toFormat('yyyy'));
-    const [data, setData] = useState<datagetUsers>()
+    const [data, setData] = useState<datagetUsers | null>()
     const getdata = async () => {
         try {
             if (!user) {
@@ -38,6 +40,7 @@ export default function UserConfigUser() {
             seIsloading(true)
             const result = await getUsers(user, type as "name" | "username", Number(month), Number(year));
             if (result.Error) {
+                setData(null)
                 setError(result.Error)
                 return;
             }
@@ -53,36 +56,147 @@ export default function UserConfigUser() {
             seIsloading(false)
         }
     }
+    const replaceAttendById = (idToReplace: string, newData: Attends) => {
+        setData(prevData => {
+            if (!prevData) return null;
+
+            return {
+                ...prevData,
+                attend: prevData.attend.map(item =>
+                    item.id === idToReplace ? newData : item
+                ),
+            };
+        });
+    };
     return (
         <>
             <div className="p-4">
-
-                <div className="mt-4 bg-white ml-2 w-[50rem] p-4 rounded-lg shadow-sm">
-                    <div className="flex flex-row items-center gap-4">
+                <div className="mt-4 bg-white p-4 rounded-lg shadow-sm w-full max-w-4xl mx-auto">
+                    {/* Mobile: Stacked layout */}
+                    <div className="md:hidden space-y-3">
                         <input
                             onChange={(e) => setUser(e.target.value)}
                             type="text"
                             placeholder="Search..."
-                            className="flex-1 rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+                            className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary"
+                        />
+
+                        <div className="flex flex-col space-y-2">
+                            <div className="flex items-center space-x-4">
+                                <div className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="type"
+                                        id="name"
+                                        value="name"
+                                        className="mr-1"
+                                        // checked={type === "name"}
+                                        onChange={(e) => setType(e.target.value)}
+                                    />
+                                    <label htmlFor="name">Name</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="type"
+                                        id="username"
+                                        value="username"
+                                        className="mr-1"
+                                        // checked={type === "username"}
+                                        onChange={(e) => setType(e.target.value)}
+                                    />
+                                    <label htmlFor="username">Username</label>
+                                </div>
+                            </div>
+
+                            <div className="flex space-x-2">
+                                <select
+                                    id="year"
+                                    className="flex-1 rounded bg-white p-2 font-bold text-dark border border-stroke"
+                                    value={year}
+                                    onChange={(e) => setYear(e.target.value)}
+                                >
+                                    <option value={new Date().getFullYear() - 1}>
+                                        {new Date().getFullYear() - 1}
+                                    </option>
+                                    <option value={new Date().getFullYear()}>
+                                        {new Date().getFullYear()}
+                                    </option>
+                                </select>
+
+                                <select
+                                    id="month"
+                                    className="flex-1 rounded bg-white p-2 font-bold uppercase text-dark border border-stroke"
+                                    value={month}
+                                    onChange={(e) => selectMonth(e.target.value)}
+                                >
+                                    <option value="01">Jan</option>
+                                    <option value="02">Feb</option>
+                                    <option value="03">Mar</option>
+                                    <option value="04">Apr</option>
+                                    <option value="05">May</option>
+                                    <option value="06">Jun</option>
+                                    <option value="07">Jul</option>
+                                    <option value="08">Aug</option>
+                                    <option value="09">Sep</option>
+                                    <option value="10">Oct</option>
+                                    <option value="11">Nov</option>
+                                    <option value="12">Dec</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors"
+                            onClick={getdata}
+                        >
+                            Search
+                        </button>
+                    </div>
+
+                    {/* Desktop: Horizontal layout */}
+                    <div className="hidden md:flex flex-row items-center gap-3">
+                        <input
+                            onChange={(e) => setUser(e.target.value)}
+                            type="text"
+                            placeholder="Search..."
+                            className="flex-1 rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary"
                         />
 
                         <div className="flex items-center gap-2">
                             <div className="flex items-center">
-                                <input type="radio" name="type" id="name" value="name" className="mr-1" onChange={(e) => setType(e.target.value)} />
-                                <label htmlFor="name">Name</label>
+                                <input
+                                    type="radio"
+                                    name="type"
+                                    id="name-desktop"
+                                    value="name"
+                                    className="mr-1"
+                                    // checked={type === "name"}
+                                    onChange={(e) => setType(e.target.value)}
+                                />
+                                <label htmlFor="name-desktop">Name</label>
                             </div>
                             <div className="flex items-center">
-                                <input type="radio" name="type" id="username" value="username" className="mr-1" onChange={(e) => setType(e.target.value)} />
-                                <label htmlFor="username">Username</label>
+                                <input
+                                    type="radio"
+                                    name="type"
+                                    id="username-desktop"
+                                    value="username"
+                                    className="mr-1"
+                                    // checked={type === "username"}
+                                    onChange={(e) => setType(e.target.value)}
+                                />
+                                <label htmlFor="username-desktop">Username</label>
                             </div>
                         </div>
+
                         <select
-                            id="year"
-                            className="rounded bg-white p-2 pr-5  font-bold text-dark dark:bg-gray-dark dark:text-white"
+                            id="year-desktop"
+                            className="rounded bg-white p-2 pr-5 font-bold text-dark border border-stroke"
                             value={year}
                             onChange={(e) => setYear(e.target.value)}
                         >
-                            {/* Add year options */}
                             <option value={new Date().getFullYear() - 1}>
                                 {new Date().getFullYear() - 1}
                             </option>
@@ -91,15 +205,12 @@ export default function UserConfigUser() {
                             </option>
                         </select>
 
-                        {/* Month selection dropdown with Check button beside it */}
                         <select
-                            id="month"
-                            className="ml-5 mr-5 rounded bg-white p-2 font-bold uppercase text-dark dark:border-gray-600 dark:bg-gray-dark dark:text-white"
-                            // defaultValue={String(new Date().getMonth() + 1).padStart(2, '0')}  // Set default to current month
+                            id="month-desktop"
+                            className="rounded bg-white p-2 font-bold uppercase text-dark border border-stroke"
                             value={month}
                             onChange={(e) => selectMonth(e.target.value)}
                         >
-                            {/* Add month options */}
                             <option value="01">Jan</option>
                             <option value="02">Feb</option>
                             <option value="03">Mar</option>
@@ -115,17 +226,16 @@ export default function UserConfigUser() {
                         </select>
 
                         <button
-                            type="submit"
+                            type="button"
                             className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors"
                             onClick={getdata}
                         >
                             Search
                         </button>
-
                     </div>
+
                     {error && <p className="text-red-500 mt-2">{error}</p>}
                 </div>
-
             </div>
             <div className="p-4 flex justify-center">  {/* Added flex justify-center here */}
                 <div className="inline-flex items-center bg-white rounded-lg shadow-sm px-4">  {/* Added px-4 for better padding */}
@@ -139,6 +249,24 @@ export default function UserConfigUser() {
                     </div>
                 </div>
             </div>
+            <div className="p-4 flex flex-row justify-center space-x-4">
+                <div className="bg-white rounded-lg shadow-sm p-4">
+                    <div>
+                        <p>Shift</p>
+                        <p>In : {data?.branch.clockIn}</p>
+                        <p>Out: {data?.branch.clockIn}</p>
+                        <button className="bg-blue-600 rounded-md p-2 text-white">Change shift</button>
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg shadow-sm p-4">
+                    <div>
+                        <p>Salary</p>
+                        <p>Total Day : {data?.salary.workingDay} / {new Date().getDate()}</p>
+                        <p>Total: {data?.salary.total}</p>
+
+                    </div>
+                </div>
+            </div>
             <div className="p-4 ">
                 {isloading && (<><p className="text-blue-600">Loading...</p></>)}
                 {error && (<><p className="text-red-600">{error}</p></>)}
@@ -146,14 +274,14 @@ export default function UserConfigUser() {
 
                     {success && (<>
 
-                        <TableAttendDev attends={data?.attend!} />
+                        {data && <TableAttendDev attends={data?.attend!} onSave={replaceAttendById} />}
                     </>)}
 
                 </div>
                 <div>
                     {success && (<>
 
-                        <TableLeaveDev leaves={data?.leave!} />
+                        {data && <TableLeaveDev leaves={data?.leave!} />}
                     </>)}
 
                 </div>

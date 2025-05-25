@@ -249,7 +249,7 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
     return result;
   }
   let data = {
-    status: AttendStatus.Active,
+    status: user.clockOut ? AttendStatus.Full_Attend : AttendStatus.Active,
     clockIn: newdate.toISOString(),
     fine: null,
   };

@@ -14,7 +14,7 @@ export const GET = async () => {
             where: {
                 status: "Approve", createdAt: {
                     gte: new Date('2025-05-01'),
-                    lte: new Date('2025-05-20')
+                    lte: new Date('2025-08-31')
                 }
             },
             orderBy: {
@@ -95,79 +95,37 @@ interface Leave {
 
 export const POST = async (req: Request) => {
     try {
-        const { userId } = await req.json();
-        if (!userId) {
-            return Response.json({ error: "userId is required" }, { status: 400 });
-        }
+        let year = 2025;
+        let month = 5;
+        const users = await db.user.findFirst({
+            where: {
+                username: "user258"
+            },
 
-        const leaves = await db.leave.findMany();
-
-        if (!leaves || leaves.length === 0) {
-            return Response.json({ error: "No leaves found" }, { status: 404 });
-        }
-
-        const BATCH_SIZE = 5;
-        const results = [];
-
-        for (let i = 0; i < leaves.length; i += BATCH_SIZE) {
-            const batch = leaves.slice(i, i + BATCH_SIZE);
-
-            const batchResults = await Promise.allSettled(
-                batch.map(async (leave: Leave) => {
-                    try {
-                        const startDate = formatWithDayjs(leave.startDate);
-                        const endDate = formatWithDayjs(leave.endDate);
-
-                        if (!startDate || !endDate) {
-                            throw new Error("Invalid date format");
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                Attends: {
+                    where: {
+                        dates: {
+                            lte: new Date(`${year}-${month}-31`),
+                            gte: new Date(`${year}-${month}-01`)
                         }
-                        await db.leave.update({ where: { id: leave.id }, data: { startDate: startDate, endDate: endDate } })
-                        return {
-                            userId: leave.userId,
-                            leaveId: leave.id,
-                            startDate,
-                            endDate,
-                            success: true
-                        };
-                    } catch (err) {
-                        const error = err as Error;
-                        console.error(`Error processing leave ${leave.id}:`, error);
-                        return {
-                            userId: leave.userId,
-                            leaveId: leave.id,
-                            error: error.message || "Unknown error occurred",
-                            success: false,
-                        };
                     }
-                })
-            );
+                },
+                Leave: true,
+                AttendBranch: true,
+                Salary: {
+                    where: {
+                        month: month,
+                        year: year
+                    }
+                }
 
-            results.push(...batchResults);
-
-            // Only add delay if not the last batch
-            if (i + BATCH_SIZE < leaves.length) {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
             }
-        }
-
-        const successful = results.filter(
-            (r) => r.status === "fulfilled" && r.value.success
-        );
-
-        const failed = results.filter(
-            (r) => r.status === "rejected" || !r.value?.success
-        );
-
-        const summary = {
-            totalProcessed: results.length,
-            successful: successful.length,
-            failed: failed.length,
-            details: results.map((r) =>
-                r.status === "fulfilled" ? r.value : { error: r.reason }
-            ),
-        };
-
-        return Response.json(summary, { status: 200 });
+        })
+        return Response.json(users, { status: 200 });
     } catch (error) {
         console.error("Error in POST handler:", error);
         return Response.json(

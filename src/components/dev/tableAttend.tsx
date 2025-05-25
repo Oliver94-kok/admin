@@ -7,13 +7,18 @@ import { useEffect, useState } from "react"
 import { DateTime } from "luxon";
 import Modal from "../modal";
 import dayjs from "dayjs";
+import { Modal2 } from "./modalDev";
+import { editAttend } from "@/action/dev/editAttend";
+import { on } from "events";
 interface TableAttendDevProps {
-    attends: Attends[]
+    attends: Attends[];
+    onSave: (id: string, data: Attends) => void
 }
 
-export const TableAttendDev = ({ attends }: TableAttendDevProps) => {
+export const TableAttendDev = ({ attends, onSave }: TableAttendDevProps) => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [data, setData] = useState<Attends | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const displayTime = (clock: Date | null) => {
         // const dateTime = DateTime.fromISO(clock);
         const dateTime = DateTime.fromJSDate(new Date(clock!));
@@ -51,6 +56,26 @@ export const TableAttendDev = ({ attends }: TableAttendDevProps) => {
 
         // Default return (shouldn't reach here)
         return "N/A";
+    }
+    const editData = async (attend: Attends) => {
+
+        try {
+            setIsSubmitting(true);
+            const result = await editAttend(attend)
+            if (result.error) {
+                alert(result.error);
+                return
+            }
+            if (result.success) {
+                onSave(attend.id, result.result);
+                return
+            }
+
+        } catch (error) {
+
+        } finally {
+            setIsSubmitting(false);
+        }
     }
     return (
         <>
@@ -132,10 +157,9 @@ export const TableAttendDev = ({ attends }: TableAttendDevProps) => {
                     ))}
 
                 </div>
-                <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
-                    <div className="p-5">
-                        <h2 className="text-lg font-bold">Edit Attendance</h2>
-                        <div className="mt-4">
+                <Modal2 isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="Edit Attendance">
+                    <div className="space-y-4">
+                        <div>
                             <label className="block text-sm font-medium text-gray-700">Date</label>
                             <input
                                 type="text"
@@ -147,26 +171,27 @@ export const TableAttendDev = ({ attends }: TableAttendDevProps) => {
                                         : ""
                                 }
                                 disabled
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
-                        <div className="mt-4">
+
+                        <div>
                             <label className="block text-sm font-medium text-gray-700">Clock In:</label>
                             <input
                                 type="time"
                                 value={
-                                    data?.dates
-                                        ? new Date(data.clockIn!).toLocaleTimeString([], {
+                                    data?.clockIn
+                                        ? new Date(data.clockIn).toLocaleTimeString([], {
                                             hour: '2-digit',
                                             minute: '2-digit',
-                                            hour12: false // Force 24-hour format
-                                        }).replace(/^24:/, '00:') // Handle midnight
+                                            hour12: false
+                                        }).replace(/^24:/, '00:')
                                         : ""
                                 }
                                 onChange={(e) => {
-                                    if (!data) return; // Handle null case
+                                    if (!data) return;
                                     const [hours, minutes] = e.target.value.split(":").map(Number);
-                                    const newDate = new Date(data.clockIn!);
+                                    const newDate = new Date(data.dates!);
                                     newDate.setHours(hours);
                                     newDate.setMinutes(minutes);
                                     setData({
@@ -174,26 +199,27 @@ export const TableAttendDev = ({ attends }: TableAttendDevProps) => {
                                         clockIn: newDate
                                     });
                                 }}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
-                        <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700">Clock Out: </label>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Clock Out:</label>
                             <input
                                 type="time"
                                 value={
-                                    data?.dates
-                                        ? new Date(data.clockOut!).toLocaleTimeString([], {
+                                    data?.clockOut
+                                        ? new Date(data.clockOut).toLocaleTimeString([], {
                                             hour: '2-digit',
                                             minute: '2-digit',
-                                            hour12: false // Force 24-hour format
-                                        }).replace(/^24:/, '00:') // Handle midnight
+                                            hour12: false
+                                        }).replace(/^24:/, '00:')
                                         : ""
                                 }
                                 onChange={(e) => {
-                                    if (!data) return; // Handle null case
+                                    if (!data) return;
                                     const [hours, minutes] = e.target.value.split(":").map(Number);
-                                    const newDate = new Date(data.clockOut!);
+                                    const newDate = new Date(data.dates!);
                                     newDate.setHours(hours);
                                     newDate.setMinutes(minutes);
                                     setData({
@@ -201,22 +227,51 @@ export const TableAttendDev = ({ attends }: TableAttendDevProps) => {
                                         clockOut: newDate
                                     });
                                 }}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
-                        <div className="mt-4">
+
+                        <div>
                             <label className="block text-sm font-medium text-gray-700">Status:</label>
-                            <select value={data?.status} name="status" id="status" className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <select
+                                value={data?.status}
+                                name="status"
+                                id="status"
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                onChange={(e) => {
+                                    if (!data) return;
+                                    setData({ ...data, status: e.target.value as AttendStatus });
+                                }}
+                            >
                                 {Object.entries(AttendStatus).map(([key, value]) => (
                                     <option key={key} value={value}>
-                                        {value.replace(/_/g, ' ')} {/* Converts "Full_Attend" to "Full Attend" */}
+                                        {value.replace(/_/g, ' ')}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                        {/* Add more fields as needed */}
                     </div>
-                </Modal>
+
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <button
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); setIsEditOpen(false) }}
+                            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={(e) => {
+
+                                editData(data!)
+                            }}
+                            disabled={isSubmitting}
+                            className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isSubmitting ? "Submitting..." : "Submit"}
+                        </button>
+                    </div>
+                </Modal2>
             </div>
         </>
     )

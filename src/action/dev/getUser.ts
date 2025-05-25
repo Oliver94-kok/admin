@@ -1,12 +1,14 @@
 'use server'
 
 import { db } from "@/lib/db"
-import { Attends, Leave, User } from "@prisma/client"
+import { AttendBranch, Attends, Leave, Salary, User } from "@prisma/client"
 
 interface datagetUsers {
     user: User,
     attend: Attends[],
-    leave: Leave[]
+    leave: Leave[],
+    branch: AttendBranch,
+    salary: Salary
 }
 
 export const getUsers = async (user: string, type: "name" | "username", month: number, year: number) => {
@@ -34,30 +36,30 @@ export const getUsers = async (user: string, type: "name" | "username", month: n
 
         const users = await db.user.findFirst({
             where: wherecondition,
+
             select: {
                 id: true,
                 name: true,
                 username: true,
+                Attends: {
+                    where: {
+                        dates: {
+                            lte: new Date(`${year}-${month}-31`),
+                            gte: new Date(`${year}-${month}-01`)
+                        }
+                    }
+                },
+                Leave: true,
+                AttendBranch: true,
             }
         })
+        const salary = await db.salary.findFirst({ where: { month: month, year: year, userId: users?.id } })
         if (!users) {
             return { Error: "User not found" }
         }
-        const attend = await db.attends.findMany({
-            where: {
-                userId: users.id,
-                dates: {
-                    lte: new Date(`${year}-${month}-31`),
-                    gte: new Date(`${year}-${month}-01`)
-                }
+        const { id, name, username, Attends, AttendBranch, Leave, } = users;
+        return { Success: "Success", data: { user: { id, name, username }, attend: Attends, leave: Leave, branch: AttendBranch, salary } as datagetUsers }
 
-
-            }
-        })
-        console.log("🚀 ~ getUsers ~ attend:", attend)
-        const leave = await db.leave.findMany({ where: { userId: users.id } })
-
-        return { Success: "Success", data: { user: users, attend, leave } as datagetUsers }
     } catch (error) {
         console.log("🚀 ~ getUsers ~ error:", error)
         return { Error: error instanceof Error ? error.message : "An unknown error occurred" }

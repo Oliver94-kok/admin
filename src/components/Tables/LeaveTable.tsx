@@ -176,7 +176,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       alert("Please fill in all required fields.");
       return;
     }
-
+    if (totaldays == 0) {
+      alert("Leave day is 0");
+      return;
+    }
 
     const newLeave: AddUserLeave = {
       userId: selectedUser,
@@ -434,7 +437,15 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             {/* Buttons */}
             <div className="mt-6 flex justify-end gap-3">
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false)
+                  setStartDate(null);
+                  setEndDate(null);
+                  setTotaldays(0);
+                  setReason('');
+                  setLeaveType('');
+                  setShiftTimeOut(''); setShiftTimein('')
+                }}
                 className="font-medium text-black underline hover:text-black"
               >
                 {dict.leave.cancel}
