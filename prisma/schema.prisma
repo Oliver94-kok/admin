@@ -21,6 +21,7 @@ enum UserRole {
   MANAGER_C
   MANAGER_D
   MANAGER_E
+  SWManager
 }
 
 enum AttendStatus {
