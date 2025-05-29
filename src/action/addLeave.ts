@@ -26,7 +26,7 @@ export const AddLeaveUser = async ({ userId, startDate, endDate, duration, reaso
         if (!user) return { error: "User not found" }
         let startLeave = dayjs(startDate);
         let endLeave = dayjs(endDate)
-        await db.leave.create({ data: { userId, startDate: startLeave.format("YYYY-MM-DD HH:mm A"), endDate: endLeave.format("YYYY-MM-DD HH:mm A"), duration, reason, type: leaveType, status: "Pending" } })
+        await db.leave.create({ data: { userId, startDate: startLeave.format("YYYY-MM-DD HH:mm"), endDate: endLeave.format("YYYY-MM-DD HH:mm"), duration, reason, type: leaveType, status: "Pending" } })
         return { Success: "Success add leave" }
     } catch (error) {
         return { error: "something wrong" }

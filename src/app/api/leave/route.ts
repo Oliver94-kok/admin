@@ -46,9 +46,9 @@ export const POST = async (req: Request) => {
       startTime = dayjs(newformatStartDate, 'YYYY-MM-DD HH:mm', true);
       endTime = dayjs(newformatEndDate, 'YYYY-MM-DD HH:mm', true);
     } else {
-
-      startTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm A');
-      endTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm A');
+      
+      startTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm');
+      endTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm');
     }
 
     let duration = endTime.diff(startTime, 'day') + 1;
