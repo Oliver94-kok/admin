@@ -193,8 +193,8 @@ export const lateClockIn = async (userId: string, clockIn: string) => {
   return null;
 };
 
-export const leaveForgetClockAttend = async (dates: string, userId: string) => {
-  console.log("🚀 ~ leaveForgetClockAttend ~ userId:", userId);
+export const leaveForgetClockAttend = async (dates: string, userId: string, leaveId: string) => {
+  console.log("🚀 ~ leaveForgetClockAttend ~ userId:", dates);
   const date = new Date(
     Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
   );
@@ -204,29 +204,40 @@ export const leaveForgetClockAttend = async (dates: string, userId: string) => {
     where: { userId, dates: { equals: date } },
   });
   console.log("🚀 ~ leaveForgetClockAttend ~ user:", user);
+  let shift = await db.attendBranch.findFirst({ where: { userId } })
+  let c = shift?.clockIn?.split(":");
+  let e = shift?.clockOut?.split(":")
+  let newdate = dayjs(date).set('hour', Number(c![0])).set('minute', Number(c![1]))
+  let newdate2 = dayjs(date).set('hour', Number(e![0])).set('minute', Number(e![1]))
   if (user) {
+
     let data = {
-      clockIn: null,
-      clockOut: null,
+      clockIn: newdate.toISOString(),
+      clockOut: newdate2.toISOString(),
       workingHour: null,
       locationIn: null,
-      locationOut: "Address not available",
+      locationOut: null,
       overtime: null,
       fine: null,
-      status: AttendStatus.Leave,
+      status: AttendStatus.Full_Attend,
+      leaveId
     };
     await db.attends.update({ where: { id: user.id }, data });
     return user;
   }
   let data = {
     dates: date,
-    status: AttendStatus.Leave,
+    userId,
+    clockIn: newdate.toISOString(),
+    clockOut: newdate2.toISOString(),
+    status: AttendStatus.Full_Attend,
+    leaveId
   };
   let attend = await db.attends.create({ data });
   return attend;
 };
 
-export const deliveryClockAttend = async (dates: string, userId: string) => {
+export const deliveryClockAttend = async (dates: string, userId: string, leaveId: string) => {
   const date = new Date(
     Date.parse(dates.replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$2-$1")),
   );
@@ -236,7 +247,9 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
   });
   let shift = await db.attendBranch.findFirst({ where: { userId } })
   let c = shift?.clockIn?.split(":");
+  let e = shift?.clockOut?.split(":");
   let newdate = dayjs(date).set('hour', Number(c![0])).set('minute', Number(c![1]))
+  let newdate2 = dayjs(date).set('hour', Number(e![0])).set('minute', Number(e![1]))
   console.log("🚀 ~ deliveryClockAttend ~ newdate:", newdate)
   if (!user) {
     let data = {
@@ -244,15 +257,30 @@ export const deliveryClockAttend = async (dates: string, userId: string) => {
       clockIn: newdate.toISOString(),
       dates: date,
       status: AttendStatus.Active,
+      leaveId
     };
     let result = await db.attends.create({ data });
     return result;
   }
-  let data = {
-    status: user.clockOut ? AttendStatus.Full_Attend : AttendStatus.Active,
-    clockIn: newdate.toISOString(),
-    fine: null,
-  };
+  let data;
+  if (user.status == "No_ClockIn_ClockOut" || user.status == "No_clockIn_ClockOut_Late") {
+    data = {
+      status: AttendStatus.Full_Attend,
+      clockIn: user.clockIn ? user.clockIn : newdate.toISOString(),
+      clockOut: user.clockOut ? user.clockOut : newdate2.toISOString(),
+      leaveId,
+      fine: null,
+      fine2: null
+    }
+  } else {
+    data = {
+      status: user.clockOut ? AttendStatus.Full_Attend : AttendStatus.Active,
+      clockIn: newdate.toISOString(),
+      fine: null,
+      fine2: null
+    };
+  }
+
   let result = await db.attends.update({ where: { id: user.id }, data });
   let salary = await db.salary.findFirst({
     where: { userId, month: date.getMonth() + 1, year: date.getFullYear() },

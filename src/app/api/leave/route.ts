@@ -40,17 +40,16 @@ export const POST = async (req: Request) => {
     let endDateFormat = removeAmPm(endDate);
     let newformatStartDate = formatToIsoDateTime(startDateFormat);
     let newformatEndDate = formatToIsoDateTime(endDateFormat);
-
     if (totalDay == null || totalDay == undefined) {
 
       startTime = dayjs(newformatStartDate, 'YYYY-MM-DD HH:mm', true);
       endTime = dayjs(newformatEndDate, 'YYYY-MM-DD HH:mm', true);
     } else {
-      
-      startTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm');
-      endTime = dayjs(endDateFormat, 'YYYY-MM-DD hh:mm');
+      startTime = dayjs(newformatStartDate, 'YYYY-MM-DD HH:mm');
+      endTime = dayjs(newformatEndDate, 'YYYY-MM-DD HH:mm');
     }
-
+    console.log("🚀 ~ POST ~ startTime:", startTime)
+    console.log("🚀 ~ POST ~ endTime:", endTime)
     let duration = endTime.diff(startTime, 'day') + 1;
 
     let data = {
@@ -69,17 +68,17 @@ export const POST = async (req: Request) => {
       where: { userId },
       select: { leave: true, id: true },
     });
-    // const currentArray = Array.isArray(noti?.leave) ? noti?.leave : [];
-    // const updatedArray = [...currentArray, notify];
-    // await db.notificationUser.update({
-    //   where: { id: noti?.id },
-    //   data: { leave: updatedArray },
-    // });
-    // await sendtoAdmin(
-    //   "Leave",
-    //   `Has new request leave by ${users?.name}`,
-    //   users?.AttendBranch?.team!,
-    // );
+    const currentArray = Array.isArray(noti?.leave) ? noti?.leave : [];
+    const updatedArray = [...currentArray, notify];
+    await db.notificationUser.update({
+      where: { id: noti?.id },
+      data: { leave: updatedArray },
+    });
+    await sendtoAdmin(
+      "Leave",
+      `Has new request leave by ${users?.name}`,
+      users?.AttendBranch?.team!,
+    );
     return Response.json({ id: user.id }, { status: 201 });
   } catch (error) {
     let err = error instanceof Error ? error.message : "An unknown error occurred"

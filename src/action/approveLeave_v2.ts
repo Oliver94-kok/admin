@@ -32,13 +32,13 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     }
     let clockdate = leave.startDate.split(" ")[0];
     if (leave.type == "Forget clock" || leave.type == "Lupa clock" || leave.type == "忘记打卡") {
-      await leaveForgetClockAttend(clockdate, leave.userId);
+      await leaveForgetClockAttend(clockdate, leave.userId, leave.id);
       await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
       return { success: "Leave approved" };
     }
     if (leave.type == "Delivery late" || leave.type == "Penghantaran lewat" || leave.type == "载送延迟") {
 
-      await deliveryClockAttend(clockdate, leave.userId);
+      await deliveryClockAttend(clockdate, leave.userId, leave.id);
       await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
       return { success: "Leave approved" };
     }

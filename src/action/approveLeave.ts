@@ -24,13 +24,13 @@ export const ApproveLeave = async (status: string, id: string) => {
     if (check?.type == "Forget clock") {
       let clockdate = check.startDate.split(" ")[0];
       if (status == "Approve") {
-        leaveForgetClockAttend(clockdate, check.userId);
+        leaveForgetClockAttend(clockdate, check.userId, check.id);
       }
     }
     if (check?.type == "Delivery leave") {
       let clockdate = check.startDate.split(" ")[0];
       if (status == "Approve") {
-        deliveryClockAttend(clockdate, check.userId);
+        deliveryClockAttend(clockdate, check.userId, check.id);
       }
     }
     if (status == "Approve") {
