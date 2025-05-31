@@ -29,7 +29,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                 userBatch.map(async (user) => {
                     try {
                         return await db.$transaction(async (tx) => {
-                            const [noClockInAttends, lateAttends, attends, absent, halfday] =
+                            const [noClockInAttends, lateAttends, attends, absent, halfday, leaveAttend] =
                                 await Promise.all([
                                     tx.attends.findMany({
                                         where: {
@@ -38,7 +38,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                                 lte: new Date(endDate.format('YYYY-MM-DD')),
                                             },
                                             userId: user.id,
-                                            status: { in: ["No_ClockIn_ClockOut", "No_clockIn_ClockOut_Late"] },
+                                            status: { in: ["No_ClockIn_ClockOut", "No_clockIn_ClockOut_Late",] },
                                         },
                                     }),
                                     tx.attends.findMany({
@@ -48,7 +48,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                                 lte: new Date(endDate.format('YYYY-MM-DD')),
                                             },
                                             userId: user.id,
-                                            status: { in: ['Late', 'No_clockIn_ClockOut_Late'] },
+                                            status: { in: ['Late', 'No_clockIn_ClockOut_Late', "Half_Day"] },
                                         },
                                     }),
                                     tx.attends.findMany({
@@ -84,6 +84,20 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
 
                                             status: "Half_Day",
                                         },
+                                    }),
+                                    tx.attends.findMany({
+                                        where: {
+                                            dates: {
+                                                gte: new Date(startDate.format('YYYY-MM-DD')),
+                                                lte: new Date(endDate.format('YYYY-MM-DD')),
+                                            },
+                                            userId: user.id,
+
+                                            status: "Leave",
+                                            leaves: {
+                                                type: { in: leaveType }
+                                            }
+                                        }
                                     })
                                 ]);
 
@@ -100,17 +114,16 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                 (sum, _, index) => sum + (index === 0 ? 50 : 100),
                                 0,
                             );
-                            let leave = await countMatchingLeaves(
-                                user.id,
-                                startDate.format('YYYY-MM-DD'),
-                                endDate.format('YYYY-MM-DD'),
-                            );
+                            // let leave = await countMatchingLeaves(
+                            //     user.id,
+                            //     startDate.format('YYYY-MM-DD'),
+                            //     endDate.format('YYYY-MM-DD'),
+                            // );
+                            console.log("leave ", user.name, leaveAttend,)
                             let totalhalf = halfday.length * 0.5;
-                            console.log("half day ", totalhalf, user.name)
-                            let totalDay = attends.length + leave! + totalhalf;
-                            console.log("totalDay day ", totalDay, user.name)
-                            console.log("attends.length day ", attends.length, user.name)
-                            console.log("leave day ", leave, user.name)
+                            let totalDay = attends.length + leaveAttend.length + totalhalf;
+                            console.log("totalday ", user.name, totalDay,)
+                            console.log(`total day ${attends.length} totalleave:${leaveAttend.length} totalhalf:${totalhalf}`)
                             const salary = await tx.salary.findFirst({
                                 where: { userId: user.id, month: Number(month), year: Number(year) },
                             });
