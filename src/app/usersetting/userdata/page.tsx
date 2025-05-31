@@ -279,6 +279,7 @@ const FormLayout = () => {
                                         <option value="C">C</option>
                                         <option value="D">D</option>
                                         <option value="E">E</option>
+                                        <option value="SW">SW</option>
                                     </select>
                                 </div>
 
