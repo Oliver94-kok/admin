@@ -68,6 +68,8 @@ export default function UserConfigUser() {
             };
         });
     };
+    const currentDate = new Date();
+    const daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
     return (
         <>
             <div className="p-4">
@@ -254,16 +256,16 @@ export default function UserConfigUser() {
                     <div>
                         <p>Shift</p>
                         <p>In : {data?.branch.clockIn}</p>
-                        <p>Out: {data?.branch.clockIn}</p>
-                        <button className="bg-blue-600 rounded-md p-2 text-white">Change shift</button>
+                        <p>Out: {data?.branch.clockOut}</p>
+                        {/* <button className="bg-blue-600 rounded-md p-2 text-white">Change shift</button> */}
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow-sm p-4">
                     <div>
                         <p>Salary</p>
-                        <p>Total Day : {data?.salary.workingDay} / {new Date().getDate()}</p>
+                        <p>Total Day : {data?.salary.workingDay} / {daysInCurrentMonth}</p>
                         <p>Total: {data?.salary.total}</p>
-
+                        <button className="bg-blue-600 rounded-md p-2 text-white">Calculate Salary</button>
                     </div>
                 </div>
             </div>

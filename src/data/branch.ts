@@ -8,6 +8,10 @@ export const getDataBranch = async (team: string) => {
     try {
       let data = await db.branch.findMany({
         select: { id: true, code: true, team: true },
+        orderBy: [
+          { team: "asc" },
+          { code: "asc" }
+        ]
       });
       return data;
     } catch (error) {
@@ -18,6 +22,10 @@ export const getDataBranch = async (team: string) => {
       let data = await db.branch.findMany({
         where: { team },
         select: { id: true, code: true, team: true },
+        orderBy: [
+          { team: "asc" },
+          { code: "asc" }
+        ]
       });
       return data;
     } catch (error) {

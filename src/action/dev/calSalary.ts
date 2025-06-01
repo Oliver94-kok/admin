@@ -131,7 +131,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                             if (!salary) {
                                 throw new Error(`No salary record found for user ${user.id}`);
                             }
-                            let total = totalDay * salary.perDay! - totalLateFine - totalNoClockInFine - (absent.length * 2 * salary.perDay!)
+                            let total = totalDay * salary.perDay! - totalLateFine - totalNoClockInFine + salary.advances! + salary.bonus! + salary.allowance! + salary.cover! + salary.m! + salary.overTime! + salary.transport! + salary.short!
                             const updatedSalary = await tx.salary.update({
                                 where: { id: salary.id },
                                 data: {
