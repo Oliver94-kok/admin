@@ -80,6 +80,7 @@ export const TableAttendDev = ({ attends, onSave }: TableAttendDevProps) => {
     return (
         <>
             <div className="overflow-x-auto p-4">
+
                 <table className="table-auto w-full hidden md:table ">
                     <thead>
                         <tr>

@@ -7,6 +7,7 @@ import { AttendBranch, Attends, Leave, Salary, User } from "@prisma/client";
 
 import { TableAttendDev } from "@/components/dev/tableAttend";
 import { TableLeaveDev } from "@/components/dev/tableLeave";
+import { SalaryPerUser, SalaryPerUserProps } from "@/action/dev/calSalaryPerUser";
 interface datagetUsers {
     user: User,
     attend: Attends[],
@@ -68,7 +69,31 @@ export default function UserConfigUser() {
             };
         });
     };
-    const currentDate = new Date();
+    const CalculateSalary = async ({ userId, month, year }: SalaryPerUserProps) => {
+        try {
+            const result = await SalaryPerUser({ userId, month, year })
+            if (result.success) {
+                setData(prezData => {
+                    if (!prezData) {
+                        throw new Error("Cannot calculate salary without base user data");
+                    }
+                    return {
+                        ...prezData,
+                        salary: {
+                            ...prezData.salary,
+                            total: result.data?.totalSalary!,
+
+                        }
+                    }
+                })
+            }
+        } catch (error) {
+
+            console.log("🚀 ~ CalculateSalary ~ error:", error)
+
+        }
+    }
+    const currentDate = new Date(`${year}-${month}-01`);
     const daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
     return (
         <>
@@ -265,13 +290,18 @@ export default function UserConfigUser() {
                         <p>Salary</p>
                         <p>Total Day : {data?.salary.workingDay} / {daysInCurrentMonth}</p>
                         <p>Total: {data?.salary.total}</p>
-                        <button className="bg-blue-600 rounded-md p-2 text-white">Calculate Salary</button>
+                        <button
+                            onClick={() => {
+                                CalculateSalary({ userId: data?.user.id!, month: Number(month), year: Number(year) })
+                            }}
+                            className="bg-blue-600 rounded-md p-2 text-white">Calculate Salary</button>
                     </div>
                 </div>
             </div>
             <div className="p-4 ">
                 {isloading && (<><p className="text-blue-600">Loading...</p></>)}
                 {error && (<><p className="text-red-600">{error}</p></>)}
+                <button>Add Attend</button>
                 <div className="bg-white rounded-lg shadow-sm">
 
                     {success && (<>

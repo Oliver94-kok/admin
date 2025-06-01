@@ -44,10 +44,19 @@ export const getDataUser = async (
     const users =
       team === "All"
         ? await db.attendBranch.findMany({
+          where: {
+            users: {
+              isDelete: false
+            }
+          },
           select: { userId: true },
         })
         : await db.attendBranch.findMany({
-          where: { team },
+          where: {
+            team, users: {
+              isDelete: false
+            }
+          },
           select: { userId: true },
         });
 
