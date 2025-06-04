@@ -191,15 +191,29 @@ const FormLayout = () => {
                     worksheet.getCell(`C${currentRow}`).fill = {
                         type: 'pattern',
                         pattern: 'solid',
-                        fgColor: { argb: '008000' }
+                        fgColor: { argb: '00FF00' }
                     };
-                    worksheet.getCell(`C${currentRow}`).fill = {
+                    worksheet.getCell(`E${currentRow}`).fill = {
                         type: 'pattern',
                         pattern: 'solid',
-                        fgColor: { argb: '008000' }
+                        fgColor: { argb: '00FF00' }
                     };
                 } else {
                     addFormattedRows([`${a.dates}`, "in", `${ins}`, "out", `${out}`]);
+                    if (ins == "No clock") {
+                        worksheet.getCell(`C${currentRow}`).fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFFF00' }
+                        };
+                    }
+                    if (out == "No clock") {
+                        worksheet.getCell(`E${currentRow}`).fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFFF00' }
+                        };
+                    }
                 }
                 console.log("row id", currentRow, a.dates)
                 if (a.status == "Late" || a.status == "No_clockIn_ClockOut_Late") {
