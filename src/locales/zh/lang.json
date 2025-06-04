@@ -109,7 +109,7 @@
     "unpaidleave": "无薪假",
     "emergencyleave": "紧急假",
     "bereavementleave": "丧假",
-    "medicalleave": "病假",
+    "medicalleave": "病假 (MC)",
     "annualleave": "年假",
     "forgetclock": "忘记打卡",
     "delivery": "载送延迟"
