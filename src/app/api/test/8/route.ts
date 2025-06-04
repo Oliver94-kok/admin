@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { leaveTypeMap } from "@/types/leave";
 
 // Extend dayjs with required plugins
 dayjs.extend(customParseFormat);
@@ -12,8 +13,8 @@ export const GET = async () => {
     try {
         const leave = await db.leave.findMany({
             where: {
-                status: "Approve", createdAt: {
-                    gte: new Date('2025-05-01'),
+                createdAt: {
+                    gte: new Date('2025-01-01'),
                     lte: new Date('2025-08-31')
                 }
             },
@@ -21,7 +22,7 @@ export const GET = async () => {
                 createdAt: "asc"
             }
         })
-        const BATCH_SIZE = 5;
+        const BATCH_SIZE = 3;
         const results = [];
         for (let i = 0; i < leave.length; i += BATCH_SIZE) {
             const userBatch = leave.slice(i, i + BATCH_SIZE);
@@ -29,7 +30,8 @@ export const GET = async () => {
             const batchResults = await Promise.allSettled(
                 userBatch.map(async (a) => {
                     try {
-                        const result = ApproveLeaveV2("Approve", a.id)
+                        const englishType = leaveTypeMap[a.type] || "Unknown leave type";
+                        const result = await db.leave.update({where: { id: a.id }, data: {type:englishType} });
                         return {
                             userId: a.userId,
                             success: true,
