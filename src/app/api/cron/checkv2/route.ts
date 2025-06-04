@@ -71,8 +71,9 @@ interface SalaryUpdateData {
     fineLate: number | null;
     fineNoClockIn: number | null;
     fineNoClockOut: number | null;
-    overtime: number | null;
+    overtimes: number | null;
     workingHour: number | null;
+    add10: number | null
 }
 
 interface Summary {
@@ -212,7 +213,7 @@ async function processActiveAttendances(activeAttendances: Attends[]): Promise<P
                     fineLate: attend.fine ? attend.fine : null,
                     fineNoClockIn: fine2,
                     fineNoClockOut: null,
-                    overtime: null,
+                    overtimes: null,
                     workingHour: null,
                 } as SalaryUpdateData);
 

@@ -24,7 +24,8 @@ enum AttendanceStatus {
   LATE = "Late",
   No_ClockIn_ClockOut = "No_ClockIn_ClockOut",
   ABSENT = "Absent",
-  No_clockIn_ClockOut_Late = "No_clockIn_ClockOut_Late"
+  No_clockIn_ClockOut_Late = "No_clockIn_ClockOut_Late",
+  Half_Day = "Half_Day"
 }
 
 export const getAllresultAttend = async (
@@ -74,7 +75,15 @@ export const getAllresultAttend = async (
           case AttendanceStatus.No_clockIn_ClockOut_Late:
             acc.No_ClockIn_ClockOut.push(record);
             acc.dataLate.push(record);
+
             break;
+          case AttendanceStatus.Half_Day:
+            if (record.fine) {
+              acc.dataLate.push(record)
+            } else if (record.fine2) {
+              acc.No_ClockIn_ClockOut.push(record)
+            }
+            break
           case AttendanceStatus.ABSENT:
             acc.dataAbsent.push(record);
             break;

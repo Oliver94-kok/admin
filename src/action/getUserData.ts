@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import axios from "axios";
+import { userExcel } from "@/app/usersetting/userdata/page";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -36,36 +37,29 @@ export const getDataUser = async (
   year: number,
   month: number,
   team: string,
-) => {
+): Promise<userExcel[] | null> => {
   try {
     const firstDay = dayjs(`${year}-${month}-01`);
     const lastDay = firstDay.endOf("month");
-    // Adjust the query to handle "All Team" case
+
+    // Get all users in the team (including deleted ones, since they might have attendance data to pay)
     const users =
       team === "All"
         ? await db.attendBranch.findMany({
-          where: {
-            users: {
-              isDelete: false
-            }
-          },
           select: { userId: true },
         })
         : await db.attendBranch.findMany({
-          where: {
-            team, users: {
-              isDelete: false
-            }
-          },
+          where: { team },
           select: { userId: true },
         });
 
-    let result = await Promise.all(
+    const result = await Promise.all(
       users.map(async (u) => {
         const userDetail = await db.user.findFirst({
           where: { id: u.userId },
           include: { AttendBranch: { select: { branch: true } } },
         });
+
         const attends = await db.attends.findMany({
           where: {
             userId: u.userId,
@@ -77,31 +71,12 @@ export const getDataUser = async (
             clockIn: true,
             clockOut: true,
             dates: true,
+            status: true
           },
         });
-        // const localizedAttends = attends.map((attend) => ({
-        //   ...attend,
-        //   // Assuming you want to convert to the system's local timezone
-        //   clockIn: attend.clockIn
-        //     ? dayjs.utc(attend.clockIn).local().format("h:mm A")
-        //     : null,
-        //   clockOut: attend.clockOut
-        //     ? dayjs.utc(attend.clockOut).local().format("h:mm A")
-        //     : null,
-        //   dates: dayjs(attend.dates).format("YYYY-MM-DD"),
-        //   // If you want to specify a specific timezone (e.g., 'Asia/Jakarta')
-        //   // clockIn: attend.clockIn ? dayjs.utc(attend.clockIn).tz('Asia/Jakarta').toDate() : null
-        // }));
+
         const localizedAttends = await Promise.all(
           attends.map(async (attend) => {
-            // Fetch the image buffer from the URL
-            // let imageBuffer;
-            // if (attend.img != null) {
-            //   imageBuffer = await fetchImageBuffer(
-            //     `http://image.ocean00.com${attend.img}`,
-            //   );
-            // }
-
             return {
               ...attend,
               // Convert to local timezone
@@ -112,19 +87,28 @@ export const getDataUser = async (
                 ? dayjs.utc(attend.clockOut).local().format("HH:mm")
                 : null,
               dates: dayjs(attend.dates).format("YYYY-MM-DD"),
-              // img: imageBuffer, // Replace the image URL with the buffer
+              status: attend.status
             };
           }),
         );
 
-        return {
-          name: userDetail?.name,
-          branch: userDetail?.AttendBranch?.branch,
-          attend: localizedAttends,
-        };
+        // Only return users who have attendance data for this month
+        // This ensures users without attendance are filtered out
+        if (attends.length > 0) {
+          return {
+            name: userDetail?.name,
+            branch: userDetail?.AttendBranch?.branch,
+            attend: localizedAttends,
+          };
+        }
+
+        // Return undefined for users with no attendance - they'll be filtered out
+        return undefined;
       }),
     );
-    return result;
+
+    // Filter out undefined values and ensure type safety
+    return result.filter((item): item is userExcel => item !== undefined);
   } catch (error) {
     return null;
   }

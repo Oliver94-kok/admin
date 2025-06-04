@@ -3,11 +3,12 @@
 import { getUsers } from "@/action/dev/getUser";
 import { useState } from "react";
 import { DateTime } from "luxon";
-import { AttendBranch, Attends, Leave, Salary, User } from "@prisma/client";
+import { AttendBranch, Attends, AttendStatus, Leave, Salary, User } from "@prisma/client";
 
 import { TableAttendDev } from "@/components/dev/tableAttend";
 import { TableLeaveDev } from "@/components/dev/tableLeave";
 import { SalaryPerUser, SalaryPerUserProps } from "@/action/dev/calSalaryPerUser";
+import { Modal2 } from "@/components/dev/modalDev";
 interface datagetUsers {
     user: User,
     attend: Attends[],
@@ -26,6 +27,7 @@ export default function UserConfigUser() {
     const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
     const [year, setYear] = useState(DateTime.now().toFormat('yyyy'));
     const [data, setData] = useState<datagetUsers | null>()
+    const [openAddAttendModal, setOpenAddAttendModal] = useState<boolean>(false)
     const getdata = async () => {
         try {
             if (!user) {
@@ -301,7 +303,11 @@ export default function UserConfigUser() {
             <div className="p-4 ">
                 {isloading && (<><p className="text-blue-600">Loading...</p></>)}
                 {error && (<><p className="text-red-600">{error}</p></>)}
-                <button>Add Attend</button>
+                <button
+                    className="bg-blue-600 rounded-md p-2 text-white m-4"
+                    onClick={() => { setOpenAddAttendModal(true) }}
+                    disabled={data ? false : true}
+                >Add Attend</button>
                 <div className="bg-white rounded-lg shadow-sm">
 
                     {success && (<>
@@ -318,6 +324,110 @@ export default function UserConfigUser() {
 
                 </div>
             </div>
+            <Modal2 isOpen={openAddAttendModal} onClose={() => setOpenAddAttendModal(false)} title="Edit Attendance">
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Date</label>
+                        <input
+                            type='date'
+
+
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Clock In:</label>
+                        <input
+                            type="time"
+                            // value={
+
+                            // }
+                            // onChange={(e) => {
+                            //     if (!data) return;
+                            //     const [hours, minutes] = e.target.value.split(":").map(Number);
+                            //     const newDate = new Date(data.dates!);
+                            //     newDate.setHours(hours);
+                            //     newDate.setMinutes(minutes);
+                            //     setData({
+                            //         ...data,
+                            //         clockIn: newDate
+                            //     });
+                            // }}
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Clock Out:</label>
+                        <input
+                            type="time"
+                            // value={
+                            //     data?.clockOut
+                            //         ? new Date(data.clockOut).toLocaleTimeString([], {
+                            //             hour: '2-digit',
+                            //             minute: '2-digit',
+                            //             hour12: false
+                            //         }).replace(/^24:/, '00:')
+                            //         : ""
+                            // }
+                            // onChange={(e) => {
+                            //     if (!data) return;
+                            //     const [hours, minutes] = e.target.value.split(":").map(Number);
+                            //     const newDate = new Date(data.dates!);
+                            //     newDate.setHours(hours);
+                            //     newDate.setMinutes(minutes);
+                            //     setData({
+                            //         ...data,
+                            //         clockOut: newDate
+                            //     });
+                            // }}
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Status:</label>
+                        <select
+                            // value={data?.status}
+                            name="status"
+                            id="status"
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        // onChange={(e) => {
+                        //     if (!data) return;
+                        //     setData({ ...data, status: e.target.value as AttendStatus });
+                        // }}
+                        >
+                            {Object.entries(AttendStatus).map(([key, value]) => (
+                                <option key={key} value={value}>
+                                    {value.replace(/_/g, ' ')}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="mt-6 flex justify-end space-x-3">
+                    <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); setOpenAddAttendModal(false) }}
+                        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={(e) => {
+
+                            // editData(data!)
+                        }}
+                        // disabled={isSubmitting}
+                        className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {/* {isSubmitting ? "Submitting..." : "Submit"} */}
+                        Add
+                    </button>
+                </div>
+            </Modal2>
         </>
     )
 }

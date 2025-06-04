@@ -87,22 +87,24 @@ interface CheckSalaryProp {
   fineLate: number | null;
   fineNoClockIn: number | null;
   fineNoClockOut: number | null;
-  overtime: number | null;
+  overtimes: number | null;
   workingHour: number | null;
+  add10: number | null;
 }
 export const CheckSalarys = async ({
   userId,
   fineLate,
   fineNoClockIn,
   fineNoClockOut,
-  overtime,
+  overtimes,
   workingHour,
+  add10
 }: CheckSalaryProp) => {
   let salary = await getSalaryByUserId(userId);
   if (salary) {
     let newWorkingDay = salary.workingDay! + 1;
     console.log("🚀 ~ newWorkingDay:", newWorkingDay);
-    let newOverTime = salary.overTimeHour! + overtime!;
+    let newOverTime = salary.overTimeHour! + overtimes!;
     var data;
     if (fineLate) {
       var newFineLAte = salary.fineLate! + fineLate;
@@ -134,9 +136,14 @@ export const CheckSalarys = async ({
       await db.salary.update({ where: { id: salary.id }, data });
       return;
     }
+    let overTimeAdd10 = 0;
+    if (add10 != null) {
+      overTimeAdd10 = salary.overTime! + 10
+    }
     data = {
       workingDay: newWorkingDay,
       overTimeHour: newOverTime,
+      overTime: overTimeAdd10
     };
     await db.salary.update({ where: { id: salary.id }, data });
     return;
@@ -183,19 +190,19 @@ export const calculateTotalSalaryUserBySalaryId = async (id: string) => {
       },
     });
     if (!salary) throw new Error("Not found user salary");
-    let totalAbsent = salary.absent! * salary.perDay! * 2;
+
     let totalWorkingDay = salary.workingDay! * salary.perDay!;
     let totalFine = salary.fineLate! + salary.fineNoClockIn!;
     let totalSide =
       salary.bonus! +
-      salary.short! -
+      salary.short! +
       salary.advances! +
       salary.allowance! +
       salary.m! +
       salary.transport! +
       salary.cover! +
       salary.overTime!;
-    let total = totalWorkingDay + totalSide - totalAbsent - totalFine;
+    let total = totalWorkingDay + totalSide - totalFine;
     let result = await db.salary.update({
       where: { id: salary.id },
       data: { total },
@@ -330,31 +337,7 @@ export const getNoClockOut = async (
     return null;
   }
 };
-// export const getAllresultAttend = async (
-//   userId: string,
-//   month: number,
-//   year: number,
-// ) => {
-//   const firstDay = dayjs()
-//     .year(year)
-//     .month(month - 1)
-//     .startOf("month");
-//   const lastDay = dayjs()
-//     .year(year)
-//     .month(month - 1)
-//     .endOf("month");
-//   let result = await db.attends.findMany({
-//     where: { userId, dates: { gte: firstDay.toDate(), lte: lastDay.toDate() } },
-//     select: { status: true, dates: true, fine: true },
-//   });
-//   let dataLate = result.filter((e) => e.status == "Late");
-//   let No_ClockIn_ClockOut = result.filter(
-//     (e) => e.status == "No_ClockIn_ClockOut",
-//   );
-//   let notClockOut = result.filter((e) => e.status == "No_ClockIn_ClockOut");
-//   let dataAbsent = result.filter((e) => e.status == "Absent");
-//   return { dataAbsent, No_ClockIn_ClockOut, dataLate };
-// };
+
 const checkLate = async () => { };
 export const calculateSalary = async (team: "A" | "B" | "C" | "D") => {
   try {

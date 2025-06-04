@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { leaveTypeMap } from "@/types/leave";
+import { getDataBranch } from "@/data/branch";
 
 // Extend dayjs with required plugins
 dayjs.extend(customParseFormat);
@@ -31,7 +32,7 @@ export const GET = async () => {
                 userBatch.map(async (a) => {
                     try {
                         const englishType = leaveTypeMap[a.type] || "Unknown leave type";
-                        const result = await db.leave.update({where: { id: a.id }, data: {type:englishType} });
+                        const result = await db.leave.update({ where: { id: a.id }, data: { type: englishType } });
                         return {
                             userId: a.userId,
                             success: true,
@@ -97,37 +98,8 @@ interface Leave {
 
 export const POST = async (req: Request) => {
     try {
-        let year = 2025;
-        let month = 5;
-        const users = await db.user.findFirst({
-            where: {
-                username: "user258"
-            },
-
-            select: {
-                id: true,
-                name: true,
-                username: true,
-                Attends: {
-                    where: {
-                        dates: {
-                            lte: new Date(`${year}-${month}-31`),
-                            gte: new Date(`${year}-${month}-01`)
-                        }
-                    }
-                },
-                Leave: true,
-                AttendBranch: true,
-                Salary: {
-                    where: {
-                        month: month,
-                        year: year
-                    }
-                }
-
-            }
-        })
-        return Response.json(users, { status: 200 });
+        let data = await getDataBranch("All")
+        return Response.json(data, { status: 200 });
     } catch (error) {
         console.error("Error in POST handler:", error);
         return Response.json(

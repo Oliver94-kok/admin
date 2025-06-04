@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from "@/lib/db"
+import { branchAssistant } from "@/types/branchs"
 import { leaveType } from "@/types/leave"
 import dayjs from "dayjs"
 
@@ -29,7 +30,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                 userBatch.map(async (user) => {
                     try {
                         return await db.$transaction(async (tx) => {
-                            const [noClockInAttends, lateAttends, attends, absent, halfday, leaveAttend] =
+                            const [noClockInAttends, lateAttends, attends, absent, halfday, leaveAttend, shift] =
                                 await Promise.all([
                                     tx.attends.findMany({
                                         where: {
@@ -98,22 +99,35 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                                 type: { in: leaveType }
                                             }
                                         }
+                                    }),
+                                    tx.attendBranch.findFirst({
+                                        where: {
+                                            userId: user.id
+                                        }
                                     })
                                 ]);
-
-                            const [updatedNoClockIn, updatedLate] = await Promise.all([
-                                updateAttendsInDb(noClockInAttends, 'noclockinout'),
-                                updateAttendsInDb(lateAttends, 'Late'),
-                            ]);
-
-                            const totalNoClockInFine = updatedNoClockIn.reduce(
-                                (sum, _, index) => sum + (index === 0 ? 50 : 100),
-                                0,
-                            );
-                            const totalLateFine = updatedLate.reduce(
-                                (sum, _, index) => sum + (index === 0 ? 50 : 100),
-                                0,
-                            );
+                            let fine200 = branchAssistant.find((e) => e === shift?.branch)
+                            let totalNoClockInFine = 0
+                            let totalLateFine = 0
+                            if (fine200) {
+                                let newnoclock = noClockInAttends;
+                                let newlate = lateAttends
+                                totalNoClockInFine = newnoclock.reduce((sum, item) => sum + Number(item.fine2), 0)
+                                totalLateFine = newlate.reduce((sum, item) => sum + Number(item.fine), 0)
+                            } else {
+                                const [updatedNoClockIn, updatedLate] = await Promise.all([
+                                    updateAttendsInDb(noClockInAttends, 'noclockinout'),
+                                    updateAttendsInDb(lateAttends, 'Late'),
+                                ]);
+                                totalNoClockInFine = updatedNoClockIn.reduce(
+                                    (sum, _, index) => sum + (index === 0 ? 50 : 100),
+                                    0,
+                                );
+                                totalLateFine = updatedLate.reduce(
+                                    (sum, _, index) => sum + (index === 0 ? 50 : 100),
+                                    0,
+                                );
+                            }
                             // let leave = await countMatchingLeaves(
                             //     user.id,
                             //     startDate.format('YYYY-MM-DD'),

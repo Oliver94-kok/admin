@@ -11,7 +11,7 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
   onSendData,
   initialValue,
 }) => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [selectedOption, setSelectedOption] = useState<string>(initialValue);
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
   console.log("initisl value", initialValue);
   const changeTextColor = () => {
@@ -26,8 +26,8 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
 
       <div className="relative rounded-[7px] bg-white dark:bg-dark-2">
         <select
-          defaultValue={initialValue}
-          // value={selectedOption}
+          // defaultValue={initialValue}
+          value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
             onSendData(typeData.TEAM, e.target.value);

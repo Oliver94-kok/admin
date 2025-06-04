@@ -15,6 +15,7 @@ import { TimeUtils } from "@/lib/timeUtility";
 import { postImage, SentNoti } from "@/lib/function";
 import { notificationClock } from "./notification";
 import { Logging } from "./log";
+import { branchAssistant } from "@/types/branchs";
 
 // Enable required dayjs plugins
 dayjs.extend(utc);
@@ -500,7 +501,13 @@ export async function handleClockIn(
   }
   let fine: number | null = null;
   if (isLate) {
-    fine = await getAttendLate(userId, today.month() + 1, today.year());
+    let fine200 = branchAssistant.find((e) => e === shift.branch)
+    if (fine200) {
+      fine = 200;
+    } else {
+      fine = await getAttendLate(userId, today.month() + 1, today.year());
+    }
+
   }
 
   // Upload clock-in image
@@ -545,8 +552,9 @@ interface AttendanceSalaryData {
   fineLate: number | null;
   fineNoClockIn: number | null;
   fineNoClockOut: number | null;
-  overtime: number;
+  overtimes: number;
   workingHour: number | null;
+  add10: number | null
 }
 
 export async function handleClockOut(
@@ -598,8 +606,9 @@ export async function handleClockOut(
         fineLate: null,
         fineNoClockIn: fine,
         fineNoClockOut: null,
-        overtime: overtimeValue,
-        workingHour: null
+        overtimes: overtimeValue,
+        workingHour: null,
+        add10: null
       };
 
       await CheckSalarys(salaryData);
@@ -641,7 +650,7 @@ export async function processClockOut(
 
   // Get shift information
   const shift = await db.attendBranch.findFirst({ where: { userId } });
-  if (!shift?.clockOut) {
+  if (!shift?.clockOut || !shift?.branch) {
     throw new Error(`No shift found for user ${userId}`);
   }
 
@@ -650,22 +659,25 @@ export async function processClockOut(
     shift.clockOut,
     "out"
   );
-  console.log("patch clock ot", attendance)
+  let fine200 = branchAssistant.find((e) => e === shift.branch)
+  let add10 = checkShift(shift.clockIn!)
   // Handle clock out for No_ClockIn case
   if (attendance === null || attendance.clockIn === null) {
-    console.log("🚀 ~ processClockOut ~ attendance:", attendance)
-    return await handleNoClockInCase(userId, attendance, location, today);
+
+    return await handleNoClockInCase(userId, attendance, location, today, fine200, add10);
   }
 
   // Handle normal clock out case
-  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today);
+  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today, add10);
 }
 
 async function handleNoClockInCase(
   userId: string,
   attendance: Attends,
   location: string | undefined,
-  today: dayjs.Dayjs
+  today: dayjs.Dayjs,
+  fine200: string | undefined,
+  add10: string
 ): Promise<Response> {
   // Update attendance record
   const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
@@ -677,7 +689,7 @@ async function handleNoClockInCase(
         clockOut: today.toISOString(),
         status: AttendStatus.No_ClockIn_ClockOut,
         locationOut: location || null,
-        fine2
+        fine2: fine200 ? Number(fine200) : fine2
       }
     });
   } else {
@@ -687,7 +699,7 @@ async function handleNoClockInCase(
         status: AttendStatus.No_ClockIn_ClockOut,
         locationOut: location || null,
         fine: null,
-        fine2
+        fine2: fine200 ? Number(fine200) : fine2
       }
     })
   }
@@ -697,10 +709,11 @@ async function handleNoClockInCase(
   const salaryData: AttendanceSalaryData = {
     userId,
     fineLate: null,
-    fineNoClockIn: fine2,
+    fineNoClockIn: fine200 ? Number(fine200) : fine2,
     fineNoClockOut: null,
-    overtime: 0,
-    workingHour: null
+    overtimes: 0,
+    workingHour: null,
+    add10: add10 == "" ? 10 : null
   };
 
   await CheckSalarys(salaryData);
@@ -714,7 +727,8 @@ async function handleNormalClockOut(
   location: string | undefined,
   notify: NotifyData,
   shiftOut: Date,
-  today: dayjs.Dayjs
+  today: dayjs.Dayjs,
+  add10: string
 ): Promise<Response> {
   if (!attendance.clockIn) {
     throw new Error("Clock-in time is missing");
@@ -749,8 +763,9 @@ async function handleNormalClockOut(
         fineLate: attendance.status === "Late" ? attendance.fine : null,
         fineNoClockIn: null,
         fineNoClockOut: null,
-        overtime: overtimeValue,
-        workingHour: workingHour
+        overtimes: overtimeValue,
+        workingHour: workingHour,
+        add10: add10 == "night" ? 10 : null
       };
 
       await CheckSalarys(salaryData);
@@ -775,4 +790,33 @@ async function handleNormalClockOut(
     await Logging(userId, "Clock out transaction", errorMessage);
     throw error; // Re-throw to be caught by the main try-catch
   }
+}
+const parseTimeToMinutes = (time: string): number => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+const isTimeInRange = (time: string, startTime: string, endTime: string): boolean => {
+  const timeInMinutes = parseTimeToMinutes(time);
+  const startInMinutes = parseTimeToMinutes(startTime);
+  const endInMinutes = parseTimeToMinutes(endTime);
+  return timeInMinutes >= startInMinutes && timeInMinutes <= endInMinutes;
+};
+const checkShift = (clockIn: string) => {
+  if (clockIn) {
+    if (isTimeInRange(clockIn, '07:00', '10:00')) {
+      return 'morning';
+    }
+
+    // Mid shift (中班): 11 AM - 17:00 (5 PM)
+    if (isTimeInRange(clockIn, '11:00', '17:00')) {
+      return 'afternoon';
+    }
+
+    // Night shift (晚班): 7 PM - 10 PM
+    if (isTimeInRange(clockIn, '19:00', '22:00')) {
+      return 'night';
+    }
+  }
+
+  return '';
 }

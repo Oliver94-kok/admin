@@ -45,8 +45,9 @@ export const AddClock = async ({ username, clockIn, clockOut, date }: addClockPr
                 fineLate: null,
                 fineNoClockIn: null,
                 fineNoClockOut: null,
-                overtime: null,
+                overtimes: null,
                 workingHour: null,
+                add10: null
             });
             return { Succes: "Success" }
         }

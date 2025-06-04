@@ -243,8 +243,9 @@ export const POST = async (req: Request) => {
             fineLate: attend.status == "Late" ? attend.fine : null,
             fineNoClockIn: null,
             fineNoClockOut: null,
-            overtime: Number(overtime!),
+            overtimes: Number(overtime!),
             workingHour: workingHour,
+            add10: null
           });
 
           return {

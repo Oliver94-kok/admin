@@ -9,19 +9,21 @@ import { getDataUser } from "@/action/getUserData";
 export const dynamicParams = true;
 import ExcelJS from 'exceljs';
 import { Buffer } from 'buffer';
+import { AttendStatus } from "@prisma/client";
 
 const dictionaries = {
     en: () => import("../../../locales/en/lang.json").then((module) => module.default),
     zh: () => import("../../../locales/zh/lang.json").then((module) => module.default),
 };
 
-interface userExcel {
+export interface userExcel {
     name: string | undefined;
     branch: string | null | undefined;
     attend: {
         clockIn: string | null;
         clockOut: string | null;
         dates: string;
+        status: AttendStatus;
         img: string | null; // Optional property for the photo path
     }[];
 }
@@ -59,7 +61,8 @@ const FormLayout = () => {
         console.log(`Exporting data for Year: ${year}, Month: ${month}, Team: ${team}`);
         setIsLoading(true);
         let result = await getDataUser(Number(year), Number(month), team);
-        if (result != null) {
+        if (result != null || result != undefined) {
+            console.log("Result from getDataUser:", result);
             await saveAsExcel(result)
             return setIsLoading(false)
         }
@@ -167,21 +170,37 @@ const FormLayout = () => {
                     ext: { width: 50, height: 50 },
                 });
             } catch (error) {
-                console.error(`Failed to fetch image from ${url}:`, error);
+                // console.error(`Failed to fetch image from ${url}:`, error);
             }
         };
 
         let currentRow = 1;
         const imagePromises: Promise<void>[] = [];
-
+        console.log("print excel 1 ")
         for (const item of data) {
             const { name, branch, attend } = item;
 
             addFormattedRows([`${branch}`, `${name}`], { bold: true });
             currentRow++;
-
+            console.log("print excel 2")
             for (const a of attend) {
-                addFormattedRows([`${a.dates}`, "in", `${a.clockIn}`, "out", `${a.clockOut}`]);
+                let ins = a.clockIn == null ? "No clock out" : a.clockIn
+                let out = a.clockOut == null ? "No clock out" : a.clockOut
+                if (a.status == "Leave") {
+                    addFormattedRows([`${a.dates}`, "in", 'Leave', "out", 'Leave']);
+                } else {
+                    addFormattedRows([`${a.dates}`, "in", `${ins}`, "out", `${out}`]);
+                }
+                console.log("row id", currentRow, a.dates)
+                if (a.status == "Late" || a.status == "No_clockIn_ClockOut_Late") {
+                    console.log("row id", currentRow, a.dates)
+
+                    worksheet.getCell(`C${currentRow}`).fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FF0000' }
+                    };
+                }
                 currentRow++;
 
                 if (a.img) {

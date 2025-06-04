@@ -36,8 +36,9 @@ export const POST = async (req: Request) => {
     fineLate: null,
     fineNoClockIn: fine,
     fineNoClockOut: null,
-    overtime: null,
+    overtimes: null,
     workingHour: null,
+    add10: null
   });
   return Response.json({ result: "okay" }, { status: 200 });
 };

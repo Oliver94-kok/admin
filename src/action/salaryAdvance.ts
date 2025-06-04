@@ -14,14 +14,6 @@ export const AddAdvance = async (id: string, advance: number) => {
     if (!user) return { error: "cannot find user" };
     console.log("🚀 ~ AddAdvance ~ user:", user);
     let total = user?.total! - advance;
-
-    // let total = 0;
-    // if (user.total == null) {
-    //   let t = user?.workingDay! * user?.perDay!;
-    //   total = t - advance;
-    // } else {
-    //   total = user?.total! - advance;
-    // }
     await db.salary.update({
       where: { id },
       data: { advances: Math.abs(advance) * -1, total },

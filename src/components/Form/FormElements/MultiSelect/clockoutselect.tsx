@@ -11,7 +11,8 @@ const ClockoutSelectGroup: React.FC<ClockoutSelectGroupProps> = ({
   onSendData,
   initialValue,
 }) => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+  console.log("🚀 ~ initialValue:", initialValue)
+  const [selectedOption, setSelectedOption] = useState<string>(initialValue);
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
 
   const changeTextColor = () => {
@@ -26,8 +27,8 @@ const ClockoutSelectGroup: React.FC<ClockoutSelectGroupProps> = ({
 
       <div className="relative rounded-[7px] bg-white dark:bg-dark-2">
         <select
-          defaultValue={initialValue}
-          // value={selectedOption}
+          // defaultValue={initialValue}
+          value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
             onSendData(typeData.CLOCKOUT, e.target.value);

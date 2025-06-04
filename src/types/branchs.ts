@@ -9,3 +9,7 @@ export interface BranchsUser {
   offDay: string | null;
   users: { name: string; username: string; userImg: string | null } | null;
 }
+
+export const branchAssistant = [
+  "助手A", "助手B", "助手C", "助手D", "助手E"
+]
