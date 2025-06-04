@@ -7,6 +7,7 @@ import {
 } from "@/lib/function";
 import { NextRequest, } from "next/server";
 import dayjs from "dayjs";
+import { leaveTypeMap } from "@/types/leave";
 
 export const GET = async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
@@ -51,11 +52,11 @@ export const POST = async (req: Request) => {
     console.log("🚀 ~ POST ~ startTime:", startTime)
     console.log("🚀 ~ POST ~ endTime:", endTime)
     let duration = endTime.diff(startTime, 'day') + 1;
-
+    const englishType = leaveTypeMap[type] || "Unknown leave type";
     let data = {
       userId,
       reason,
-      type,
+      type:englishType,
       startDate: startTime.format("YYYY-MM-DD HH:mm"),
       endDate: endTime.format("YYYY-MM-DD HH:mm"),
       status,

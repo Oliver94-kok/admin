@@ -59,3 +59,36 @@ export const fullLeaveTypes = [
   'Penghantaran lewat',
   '载送延迟',
 ];
+
+export const leaveTypeMap: Record<string, string> = {
+  "Paid leave": "Paid leave",
+  "Cuti bergaji": "Paid leave",
+  "带薪假": "Paid leave",
+
+  "Unpaid leave": "Unpaid leave",
+  "Cuti tanpa gaji": "Unpaid leave",
+  "无薪假": "Unpaid leave",
+
+  "Emergency leave": "Emergency leave",
+  "紧急假": "Emergency leave",
+
+  "Cuti sakit (MC)": "Medical leave (MC)",
+  "Medical leave (MC)": "Medical leave (MC)",
+  "病假 (MC)": "Medical leave (MC)",
+
+  "Bereavement leave": "Bereavement leave",
+  "Cuti berkabung": "Bereavement leave",
+  "丧假": "Bereavement leave",
+
+  "Annual leave": "Annual leave",
+  "Cuti tahunan": "Annual leave",
+  "年假": "Annual leave",
+
+  "Forget clock": "Forget clock",
+  "Lupa clock": "Forget clock",
+  "忘记打卡": "Forget clock",
+
+  "Delivery late": "Delivery late",
+  "Penghantaran lewat": "Delivery late",
+  "载送延迟": "Delivery late",
+};

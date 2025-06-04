@@ -2,6 +2,7 @@
 
 import { addLeaveAttend, forEachDate } from "@/data/leave";
 import { db } from "@/lib/db"
+import { leaveTypeMap } from "@/types/leave";
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
@@ -26,7 +27,8 @@ export const AddLeaveUser = async ({ userId, startDate, endDate, duration, reaso
         if (!user) return { error: "User not found" }
         let startLeave = dayjs(startDate);
         let endLeave = dayjs(endDate)
-        await db.leave.create({ data: { userId, startDate: startLeave.format("YYYY-MM-DD HH:mm"), endDate: endLeave.format("YYYY-MM-DD HH:mm"), duration, reason, type: leaveType, status: "Pending" } })
+        const englishType = leaveTypeMap[leaveType] || "Unknown leave type";
+        await db.leave.create({ data: { userId, startDate: startLeave.format("YYYY-MM-DD HH:mm"), endDate: endLeave.format("YYYY-MM-DD HH:mm"), duration, reason, type: englishType, status: "Pending" } })
         return { Success: "Success add leave" }
     } catch (error) {
         return { error: "something wrong" }
