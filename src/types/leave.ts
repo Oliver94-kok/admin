@@ -70,6 +70,7 @@ export const leaveTypeMap: Record<string, string> = {
   "无薪假": "Unpaid leave",
 
   "Emergency leave": "Emergency leave",
+  "Cuti kecemasan": "Emergency leave",
   "紧急假": "Emergency leave",
 
   "Cuti sakit (MC)": "Medical leave (MC)",
