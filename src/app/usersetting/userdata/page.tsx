@@ -184,10 +184,20 @@ const FormLayout = () => {
             currentRow++;
             console.log("print excel 2")
             for (const a of attend) {
-                let ins = a.clockIn == null ? "No clock out" : a.clockIn
-                let out = a.clockOut == null ? "No clock out" : a.clockOut
+                let ins = a.clockIn == null ? "No clock" : a.clockIn
+                let out = a.clockOut == null ? "No clock" : a.clockOut
                 if (a.status == "Leave") {
                     addFormattedRows([`${a.dates}`, "in", 'Leave', "out", 'Leave']);
+                    worksheet.getCell(`C${currentRow}`).fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: '008000' }
+                    };
+                    worksheet.getCell(`C${currentRow}`).fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: '008000' }
+                    };
                 } else {
                     addFormattedRows([`${a.dates}`, "in", `${ins}`, "out", `${out}`]);
                 }
