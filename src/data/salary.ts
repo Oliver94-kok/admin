@@ -289,6 +289,31 @@ export const getNoClockIn = async (
     return null;
   }
 };
+export const getNoClockInOut = async (userId: string, month: number,
+  year: number,) => {
+  try {
+    const startDate = dayjs()
+      .year(year)
+      .month(month - 1)
+      .startOf("month");
+    const endDate = dayjs()
+      .year(year)
+      .month(month - 1)
+      .endOf("month");
+    console.log("🚀 ~ startDate:", new Date(startDate.format("YYYY-MM-DD")));
+    console.log("🚀 ~ endDate:", new Date(endDate.format("YYYY-MM-DD")))
+    const attend = await db.attends.findMany({ where: { userId, dates: { gte: new Date(startDate.format("YYYY-MM-DD")), lte: new Date(endDate.format("YYYY-MM-DD")), }, status: { in: ['No_ClockIn_ClockOut', 'No_clockIn_ClockOut_Late'] } }, })
+    if (attend.length < 1) {
+      return 50
+    } else {
+      return 100
+    }
+
+  } catch (error) {
+    return null;
+  }
+
+}
 export const getNoClockOut = async (
   userId: string,
   month: number,
@@ -305,6 +330,7 @@ export const getNoClockOut = async (
       .month(month - 1)
       .endOf("month")
       .toDate();
+
     let salary = await db.attends.findMany({
       where: {
         userId,

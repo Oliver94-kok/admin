@@ -97,7 +97,16 @@ export const POST = async (req: Request) => {
             db.user.findMany({ where: { role: "USER", isDelete: false } }) as Promise<User[]>,
             db.attends.findMany({ where: { dates: todayDate } }) as Promise<Attends[]>,
             db.attends.findMany({ where: { dates: todayDate, status: "Active" } }) as Promise<Attends[]>,
-            db.attends.findMany({ where: { dates: todayDate, clockIn: null, clockOut: null, status: "No_ClockIn_ClockOut" } }) as Promise<Attends[]>
+            db.attends.findMany({
+                where: {
+                    dates: todayDate, clockIn: null, clockOut: null, status: {
+                        in: [
+                            'No_ClockIn_ClockOut',
+                            "No_clockIn_ClockOut_Late"
+                        ]
+                    }
+                }
+            }) as Promise<Attends[]>
         ]);
 
         // Create a Set of user IDs who already have attendance records

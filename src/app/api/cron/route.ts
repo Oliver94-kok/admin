@@ -123,7 +123,7 @@ export const POST = async (req: Request) => {
               userId: absentUser.id,
               dates: today.toDate(),
               status: AttendStatus.Active,
-              fine: fine2
+              fine2: fine2
             }
             await db.attends.create({ data })
           }
