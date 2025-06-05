@@ -26,20 +26,20 @@ async function processAndRespond(
   });
 
   let finalShiftData = detailedUserData.AttendBranch;
-  if (detailedUserData.AttendBranch?.startOn) {
-    const today = dayjs();
-    const startOnDate = dayjs(detailedUserData.AttendBranch.startOn);
-    if (today.isSame(startOnDate, 'day')) {
-      finalShiftData = await db.attendBranch.update({
-        where: { id: detailedUserData.AttendBranch.id },
-        data: {
-          clockIn: detailedUserData.AttendBranch.clockInNew,
-          clockOut: detailedUserData.AttendBranch.clockOutNew,
-          startOn: null,
-        },
-      });
-    }
-  }
+  // if (detailedUserData.AttendBranch?.startOn) {
+  //   const today = dayjs();
+  //   const startOnDate = dayjs(detailedUserData.AttendBranch.startOn);
+  //   if (today.isSame(startOnDate, 'day')) {
+  //     finalShiftData = await db.attendBranch.update({
+  //       where: { id: detailedUserData.AttendBranch.id },
+  //       data: {
+  //         clockIn: detailedUserData.AttendBranch.clockInNew,
+  //         clockOut: detailedUserData.AttendBranch.clockOutNew,
+  //         startOn: null,
+  //       },
+  //     });
+  //   }
+  // }
 
   return Response.json({
     data: {

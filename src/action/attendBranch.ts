@@ -30,34 +30,34 @@ export const UpdateUserBranch = async (
     console.log("🚀 ~ Parsed Date:", start.format('YYYY-MM-DD'));
     console.log("🚀 ~ Today:", today.format('YYYY-MM-DD'));
 
-    if (today.isSame(start, 'day')) { // Compare only dates (ignores time)
-      let data = {
-        clockIn: timeIn,
-        clockOut: timeOut,
-        team: teams!,
-        branch: branch!,
+    // if (today.isSame(start, 'day')) { // Compare only dates (ignores time)
+    let data = {
+      clockIn: timeIn,
+      clockOut: timeOut,
+      team: teams!,
+      branch: branch!,
 
-        offDay: offDay!,
-      };
-      console.log("🚀 ~ data:", data);
-      let attend = await db.attends.findFirst({ where: { userId: shift.userId, dates: new Date(start.format('YYYY-MM-DD')) } })
-      if (attend) {
-        if (attend.clockIn == null && attend.clockOut == null && attend.status == "Active") {
-          let resultdelete = await db.attends.delete({ where: { id: attend.id } })
-          console.log("🚀 ~ resultdelete:", resultdelete)
-        }
+      offDay: offDay!,
+    };
+    console.log("🚀 ~ data:", data);
+    let attend = await db.attends.findFirst({ where: { userId: shift.userId, dates: new Date(start.format('YYYY-MM-DD')) } })
+    if (attend) {
+      if (attend.clockIn == null && attend.clockOut == null && attend.status == "Active") {
+        let resultdelete = await db.attends.delete({ where: { id: attend.id } })
+        console.log("🚀 ~ resultdelete:", resultdelete)
       }
-      console.log("🚀 ~ attend:", attend)
-      await db.attendBranch.update({ data, where: { id } });
-    } else {
-      let data = {
-        clockInNew: timeIn,
-        clockOutNew: timeOut,
-        branchNew: branch!,
-        startOn: start.format('YYYY-MM-DD'),
-      }
-      await db.attendBranch.update({ data, where: { id } });
     }
+    console.log("🚀 ~ attend:", attend)
+    await db.attendBranch.update({ data, where: { id } });
+    // } else {
+    //   let data = {
+    //     clockInNew: timeIn,
+    //     clockOutNew: timeOut,
+    //     branchNew: branch!,
+    //     startOn: start.format('YYYY-MM-DD'),
+    //   }
+    //   await db.attendBranch.update({ data, where: { id } });
+    // }
 
     await Logging(session?.user.id, "success update user branch", `success user  ${id}`)
     return { success: "data update" };
