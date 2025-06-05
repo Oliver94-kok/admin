@@ -507,6 +507,7 @@ export const excelData = async (
       where: {
         month,
         year,
+        workingDay: { gt: 0 },
         users: { role: "USER", AttendBranch: { team } },
       },
       orderBy: { users: { AttendBranch: { branch: "asc" } } },

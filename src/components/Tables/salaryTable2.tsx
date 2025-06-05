@@ -35,6 +35,7 @@ import { excelData } from "@/data/salary";
 import ExcelJS from 'exceljs';
 import LoadingButton from "../Buttons/loadingButton";
 import { addPerDay } from "@/action/addperDay";
+import { roleAdmin } from "@/lib/function";
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -111,10 +112,21 @@ export const SalaryTable2 = () => {
         dictionaries[locale]().then((languageDict) => {
             setDict(languageDict); // Set the dictionary in the state
         });
+        getTeam()
     }, []);
-
-    const selectTeams = (value: string) => {
+    const getTeam = async () => {
         try {
+            let team = await roleAdmin(session.data?.user.role)
+            setSelectedTeam(team)
+        } catch (error) {
+            console.log("🚀 ~ getTeam ~ error:", error)
+
+        }
+    }
+    const selectTeams = async (value: string) => {
+        try {
+            setSelectedTeam(value);
+
             setSelectedTeam(value);
             // getFilteredSalaries()
 
