@@ -62,6 +62,7 @@ export const SalaryTable2 = () => {
         `/api/salary/dashboardv2?role=${session.data?.user.role}&month=${month}&year=${year}`,
         fetcher,
     );
+    console.log("🚀 ~ SalaryTable2 ~ swrData:", swrData)
     const {
         salaries,
         loading,
@@ -77,7 +78,6 @@ export const SalaryTable2 = () => {
         setSelectedTeam,
         getFilteredSalaries
     } = useSalaryStore();
-
     useEffect(() => {
         const currentDate = DateTime.now();
         let targetMonth, targetYear;
@@ -94,6 +94,9 @@ export const SalaryTable2 = () => {
 
         selectMonth(targetMonth);
         setYear(targetYear);
+    }, [])
+    useEffect(() => {
+
         if (swrError) {
             console.error("SWR Error:", swrError);
             setError(swrError.message || "Failed to fetch salaries");
@@ -728,7 +731,7 @@ export const SalaryTable2 = () => {
             // window.location.reload();
         }
     };
-    if (swrIsLoading) { // Show SWR loading only on initial load or if reducer hasn't been populated
+    if (swrIsLoading || !dict) { // Show SWR loading only on initial load or if reducer hasn't been populated
         return <Loader2 />;
     }
 

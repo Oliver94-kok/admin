@@ -226,7 +226,7 @@ export const BranchATable = ({
       console.log("🚀 ~ getBranch ~ data:", data)
     }
   }
-  console.log("🚀 ~ getBranch ~  team:", team)
+  if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
   return (
     <>
       <div className="mb-5 flex justify-between">

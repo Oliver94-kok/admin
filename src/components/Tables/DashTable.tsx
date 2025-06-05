@@ -91,7 +91,7 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
     const dateTime = DateTime.fromISO(clock);
     return dateTime.toLocaleString(DateTime.TIME_24_SIMPLE);
   };
-
+  if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
   return (
     <div
       className="w-[1920px] min-w-[1280px]">
