@@ -62,7 +62,9 @@ export const POST = async (req: Request) => {
               } as ProcessingResult;
             }
           }
-          const now = new Date();
+          let shifttimein = shift.clockIn!.split(":").map(Number)
+          let result12 = isBetweenZeroAndSix(shifttimein[0])
+          const now = result12 ? new Date(today.add(1, 'day').format("YYYY-MM-DD")) : new Date();
           const shiftIn = TimeUtils.createDateFromTimeString(
             now,
             shift.clockIn,
@@ -160,3 +162,8 @@ export const POST = async (req: Request) => {
     );
   }
 };
+
+const validNumbers = [0, 1, 2, 3, 4, 5, 6];
+function isBetweenZeroAndSix(num: number): boolean {
+  return validNumbers.includes(num);
+}

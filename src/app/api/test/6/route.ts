@@ -10,8 +10,8 @@ export const GET = async () => {
     const attends = await db.attends.findMany({
       where: {
         dates: {
-          gte: new Date("2025-05-01"),
-          lte: new Date("2025-05-30"),
+          gte: new Date("2025-06-01"),
+          lte: new Date("2025-06-30"),
         },
         status: "No_clockIn_ClockOut_Late",
         clockIn: null,
