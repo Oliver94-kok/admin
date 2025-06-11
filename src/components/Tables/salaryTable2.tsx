@@ -1249,13 +1249,13 @@ export const SalaryTable2 = () => {
                             </p>
                         </div>
                         <div className="col-span-1 flex items-center justify-center">
-                            <label className="flex items-center">
+                            {/* <label className="flex items-center">
                                 <input
                                     type="checkbox"
 
                                     className="mr-2"
                                 />
-                            </label>
+                            </label> */}
                         </div>
 
                         <div className="col-span-1 flex items-center justify-center space-x-3.5">
