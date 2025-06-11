@@ -51,6 +51,7 @@ model User {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   isLogin          Boolean
+  isBranch         Boolean           @default(false)
   isDelete         Boolean           @default(false)
   role             UserRole          @default(USER)
   Attends          Attends[]

@@ -154,11 +154,14 @@ async function processAbsentUser(
         };
       }
     }
-
+    let shifttimein = shift.clockIn!.split(":").map(Number)
+    let result12 = isBetweenZeroAndSix(shifttimein[0])
+    let today2 = dayjs(dateFormatted)
+    const now = result12 ? new Date(today2.add(1, 'day').format("YYYY-MM-DD")) : new Date(dateFormatted);
     // Calculate shift times for this date
-    const dateForShift = new Date(dateFormatted);
-    const shiftIn = TimeUtils.createDateFromTimeString(dateForShift, shift.clockIn, "in");
-    const shiftOut = TimeUtils.createDateFromTimeString(dateForShift, shift.clockOut, "out");
+    // const dateForShift = new Date(dateFormatted);
+    const shiftIn = TimeUtils.createDateFromTimeString(now, shift.clockIn, "in");
+    const shiftOut = TimeUtils.createDateFromTimeString(now, shift.clockOut, "out");
 
     // Check against shift times
     const shiftResult = await attendanceService.cronAttendCheckShift(shiftIn, shiftOut);
@@ -195,8 +198,8 @@ async function processAbsentUser(
           data: {
             userId: user.id,
             dates: new Date(dateFormatted),
-            status: AttendStatus.Active,
-            fine: fine
+            status: AttendStatus.No_ClockIn_ClockOut,
+            fine2: fine
           }
         });
         return {
@@ -230,4 +233,8 @@ async function processAbsentUser(
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to process user ${user.id}: ${errorMessage}`);
   }
+}
+const validNumbers = [0, 1, 2, 3, 4, 5, 6];
+function isBetweenZeroAndSix(num: number): boolean {
+  return validNumbers.includes(num);
 }

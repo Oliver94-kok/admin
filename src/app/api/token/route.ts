@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
-const TRACKER_USERNAMES = ['user80', 'user77', 'user78', 'user79', 'user135', 'user136', 'user137', 'user187', 'user274', 'user258'].map(u => u.trim()); // Trim spaces
+const TRACKER_USERNAMES = ['user80', 'user77', 'user78', 'user79', 'user135', 'user136', 'user137', 'user187', 'user274',].map(u => u.trim()); // Trim spaces
 
 async function processAndRespond(
   userForProcessing: { id: string; username: string; /* other fields needed from initial user lookup */ },
@@ -49,6 +49,7 @@ async function processAndRespond(
       token: currentToken, // Use the token that is currently in effect
       userImg: detailedUserData.userImg,
       isLogin: detailedUserData.isLogin,
+      isBranch: detailedUserData.isBranch,
       role: isTrackerRole ? "Tracker" : detailedUserData.role,
       AttendBranch: finalShiftData,
     },
@@ -59,11 +60,16 @@ async function processAndRespond(
 
 export const POST = async (req: Request) => {
   try {
-    const { token: tokenFromRequest } = await req.json();
-
+    const { token: tokenFromRequest, versionApp } = await req.json();
+    // if (!versionApp) {
+    //   return Response.json({ Error: "Version app not provided" }, { status: 400 });
+    // }
     if (!tokenFromRequest) {
       return Response.json({ Error: "Token not provided" }, { status: 400 });
     }
+    // if (versionApp != '1.1.4') {
+    //   return Response.json({ Error: "Version app not supported" }, { status: 400 });
+    // }
 
     // Find user by the token they provided (which should be the one in user.token)
     const user = await db.user.findFirst({ where: { token: tokenFromRequest } });

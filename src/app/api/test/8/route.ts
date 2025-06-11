@@ -5,6 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { leaveTypeMap } from "@/types/leave";
 import { getDataBranch } from "@/data/branch";
+import { branchAssistant } from "@/types/branchs";
 
 // Extend dayjs with required plugins
 dayjs.extend(customParseFormat);
@@ -98,8 +99,70 @@ interface Leave {
 
 export const POST = async (req: Request) => {
     try {
-        let data = await getDataBranch("All")
-        return Response.json(data, { status: 200 });
+        const branchs = await db.attendBranch.findMany({
+            where: {
+                branch: { in: branchAssistant },
+                users: { isDelete: false }
+            }
+        })
+        const BATCH_SIZE = 5;
+        const results = [];
+        for (let i = 0; i < branchs.length; i += BATCH_SIZE) {
+            const userBatch = branchs.slice(i, i + BATCH_SIZE);
+
+            const batchResults = await Promise.allSettled(
+                userBatch.map(async (b) => {
+                    try {
+                        const attends = await db.attends.findMany({
+                            where: {
+                                dates: { gte: new Date('2025-06-01'), lte: new Date("2025-06-30") }
+                            }
+                        })
+                        attends.map(async (a) => {
+                            if (a.status == "No_ClockIn_ClockOut") {
+                                await db.attends.update({ where: { id: a.id }, data: { fine2: 200, fine: null } })
+                            } else if (a.status == "No_clockIn_ClockOut_Late") {
+                                await db.attends.update({ where: { id: a.id }, data: { fine2: 200, fine: 200 } })
+                            } else if (a.status == "Late") {
+                                await db.attends.update({ where: { id: a.id }, data: { fine: 200, fine2: null } })
+                            }
+                        })
+                        return {
+                            userId: b.userId,
+                            success: true,
+                        };
+                    } catch (err) {
+                        const error = err as Error;
+                        console.error(`Error processing user ${b.userId}:`, error);
+                        return {
+                            userId: b.userId,
+                            error: error.message || "Unknown error occurred",
+                            success: false,
+                        };
+                    }
+
+                })
+            )
+
+            results.push(...batchResults);
+
+            if (i + BATCH_SIZE < branchs.length) {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+            }
+        }
+        const summary = {
+            totalProcessed: results.length,
+            successful: results.filter(
+                (r) => r.status === "fulfilled" && r.value.success,
+            ).length,
+            failed: results.filter((r) => r.status === "rejected" || !r.value.success)
+                .length,
+            details: results.map((r) =>
+                r.status === "fulfilled" ? r.value : { error: r.reason },
+            ),
+        };
+
+        return Response.json(summary, { status: 200 })
     } catch (error) {
         console.error("Error in POST handler:", error);
         return Response.json(

@@ -13,8 +13,13 @@ export const GET = async () => {
 export const POST = async (req: Request) => {
   let userid
   try {
-    const { username, password } = await req.json();
-
+    const { username, password, versionApp } = await req.json();
+    // if (!versionApp) {
+    //   return Response.json({ Error: "Version app not provided " }, { status: 400 })
+    // }
+    // if (versionApp != '1.1.4') {
+    //   return Response.json({ Error: "Version app not supported" }, { status: 400 });
+    // }
     let user = await getUserByUsernameWithAttend(username);
     if (!user) throw new Error("User not exist");
     userid = user.id
@@ -30,7 +35,7 @@ export const POST = async (req: Request) => {
     let branch = await db.branch.findMany({
       where: { team: user.AttendBranch?.team },
     });
-    let usersRole = ['user258', 'user80', 'user77', 'user78', 'user79', 'user135 ', 'user136', 'user137', 'user187', 'user274']
+    let usersRole = ['user80', 'user77', 'user78', 'user79', 'user135 ', 'user136', 'user137', 'user187', 'user274']
     let roles = usersRole.find((e) => e === user?.username!);
 
     return Response.json({
@@ -40,6 +45,7 @@ export const POST = async (req: Request) => {
         role: roles ? "Tracker" : user.role,
         username,
         token,
+        isBranch: user.isBranch,
         userImg: user.userImg,
         AttendBranch: user.AttendBranch,
       },

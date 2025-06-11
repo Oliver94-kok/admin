@@ -45,6 +45,7 @@ export const POST = async (req: Request) => {
         dates: t, // Ensure the date matches today
       },
     });
+    console.log("🚀 ~ POST ~ attend:", attend)
 
 
 
@@ -55,7 +56,7 @@ export const POST = async (req: Request) => {
         {
           id: attend.id,
           status: attend.status,
-          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? attend.dates : attend.clockIn,
+          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? null : attend.clockIn,
           shiftOut: attend.clockOut,
           locationIn: attend.locationIn,
           locationOut: attend.locationOut,
@@ -79,7 +80,7 @@ export const POST = async (req: Request) => {
           id: attend.id,
           date: attend.dates,
           status: attend.status,
-          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? attend.dates : attend.clockIn,
+          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? null : attend.clockIn,
           shiftOut: attend.clockOut,
           locationIn: attend.locationIn,
           locationOut: attend.locationOut,
