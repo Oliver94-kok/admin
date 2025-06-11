@@ -34,7 +34,7 @@ export enum typeData {
   BRANCH,
   CLOCKIN,
   CLOCKOUT,
-  STARTON,
+  // STARTON,
   OFFDAY,
   TEAM
 }
@@ -57,7 +57,7 @@ export const BranchATable = ({
   const [clockIn, setClockIn] = useState<string>();
   const [clockOut, setClockOut] = useState<string>();
   const [offDay, setOffDay] = useState<string>();
-  const [startOn, setStartOn] = useState<string>();
+  // const [startOn, setStartOn] = useState<string>();
   const [idBranch, setIdBranch] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [iduser, setIdUser] = useState<string>("");
@@ -116,20 +116,20 @@ export const BranchATable = ({
         console.log("onsend off", data);
         setOffDay(data);
         break;
-      case typeData.STARTON:
-        console.log("onsend off", data);
-        setStartOn(data);
-        break;
-      default:
-        break;
+      // case typeData.STARTON:
+      //   console.log("onsend off", data);
+      //   setStartOn(data);
+      //   break;
+      // default:
+      //   break;
     }
   };
 
   const submit = async () => {
-    if (!startOn) {
-      setErrorMsg("Please enter start on");
-      return;
-    }
+    // if (!startOn) {
+    //   setErrorMsg("Please enter start on");
+    //   return;
+    // }
     console.log("days", days)
     const combinedString: string = days.join(',');
     console.log("days", combinedString)
@@ -141,7 +141,7 @@ export const BranchATable = ({
       clockIn,
       clockOut,
       combinedString,
-      startOn,
+      // startOn,
     ).then((data) => {
       if (data.error) {
         console.error(data.error);
@@ -267,7 +267,7 @@ export const BranchATable = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-9 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-9 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-8 gap-4 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.branches.username}
@@ -293,11 +293,11 @@ export const BranchATable = ({
             {dict.branches.clockouttime}
           </h5>
         </div>
-        <div className="col-span-1 flex items-center justify-center">
+        {/* <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.branches.starton}
           </h5>
-        </div>
+        </div> */}
         <div className="col-span-1 flex items-center justify-center">
           <h5 className="text-sm font-medium uppercase xsm:text-base">
             {dict.branches.offday}
@@ -315,7 +315,7 @@ export const BranchATable = ({
 
       {currentData.map((teamA, key) => (
         <div
-          className={`grid grid-cols-9 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-9 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
+          className={`grid grid-cols-8 border-t border-stroke px-4 py-4.5 dark:border-dark-3 sm:grid-cols-8 md:px-6 2xl:px-7.5 ${key === currentData.length - 1
             ? ""
             : "border-b border-stroke dark:border-dark-3"
             }`}
@@ -388,7 +388,7 @@ export const BranchATable = ({
             </p>
           </div>
 
-          <div className="col-span-1 flex items-center justify-center px-2">
+          {/* <div className="col-span-1 flex items-center justify-center px-2">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
               <Flatpickr
                 placeholder="dd/mm/yyyy"
@@ -429,7 +429,7 @@ export const BranchATable = ({
               // value={clockIn}
               />
             </p>
-          </div>
+          </div> */}
 
           <div className="col-span-1 flex items-center justify-center px-2">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">

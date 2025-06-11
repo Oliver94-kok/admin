@@ -15,7 +15,7 @@ export const UpdateUserBranch = async (
   timeIn?: string,
   timeOut?: string,
   offDay?: string,
-  startOn?: string,
+  // startOn?: string,
 ) => {
   const session = await auth()
   try {
@@ -25,9 +25,9 @@ export const UpdateUserBranch = async (
       return { error: "Shift not found" };
     }
     const today = dayjs();
-    const start = dayjs(startOn, 'D/M/YYYY'); // Parse with correct format
+    // const start = dayjs(startOn, 'D/M/YYYY'); // Parse with correct format
 
-    console.log("🚀 ~ Parsed Date:", start.format('YYYY-MM-DD'));
+    // console.log("🚀 ~ Parsed Date:", start.format('YYYY-MM-DD'));
     console.log("🚀 ~ Today:", today.format('YYYY-MM-DD'));
 
     // if (today.isSame(start, 'day')) { // Compare only dates (ignores time)
@@ -40,14 +40,14 @@ export const UpdateUserBranch = async (
       offDay: offDay!,
     };
     console.log("🚀 ~ data:", data);
-    let attend = await db.attends.findFirst({ where: { userId: shift.userId, dates: new Date(start.format('YYYY-MM-DD')) } })
-    if (attend) {
-      if (attend.clockIn == null && attend.clockOut == null && attend.status == "Active") {
-        let resultdelete = await db.attends.delete({ where: { id: attend.id } })
-        console.log("🚀 ~ resultdelete:", resultdelete)
-      }
-    }
-    console.log("🚀 ~ attend:", attend)
+    // let attend = await db.attends.findFirst({ where: { userId: shift.userId, dates: new Date(start.format('YYYY-MM-DD')) } })
+    // if (attend) {
+    //   if (attend.clockIn == null && attend.clockOut == null && attend.status == "Active") {
+    //     let resultdelete = await db.attends.delete({ where: { id: attend.id } })
+    //     console.log("🚀 ~ resultdelete:", resultdelete)
+    //   }
+    // }
+    // console.log("🚀 ~ attend:", attend)
     await db.attendBranch.update({ data, where: { id } });
     // } else {
     //   let data = {
