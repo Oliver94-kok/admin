@@ -708,7 +708,9 @@ export const SalaryTable2 = () => {
             const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'PayslipReport.xlsx';
+            const safeTeam = selectedTeam?.replace(/\s+/g, '_') || 'All';
+            link.download = `${year}-${month}_Team${safeTeam}_Payslip.xlsx`;
+            // link.download = 'PayslipReport.xlsx';
             link.click();
             setLoadingPrint(false)
         } catch (error) {

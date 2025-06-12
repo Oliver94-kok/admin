@@ -247,7 +247,9 @@ const FormLayout = () => {
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `UserData.xlsx`;
+        const safeTeam = `Team${team.replace(/\s+/g, '_')}`;
+        link.download = `${year}-${month}_${safeTeam}_UserData.xlsx`;
+        // link.download = `UserData.xlsx`;
         link.click();
     };
 
@@ -293,14 +295,17 @@ const FormLayout = () => {
                                     <select
                                         className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary active:border-primary disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
                                         value={month}
-                                        onChange={(e) => setMonth(e.target.value)}
+                                        onChange={(e) => setMonth(e.target.value.padStart(2, '0'))}
                                     >
                                         <option value="">{dict.userdata.choosemonth}</option>
-                                        {Array.from({ length: 12 }, (_, i) => (
-                                            <option key={i + 1} value={i + 1}>
-                                                {new Date(0, i).toLocaleString(getLocale(), { month: "long" })}
-                                            </option>
-                                        ))}
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            const value = String(i + 1).padStart(2, '0'); // e.g., 01, 02, ..., 12
+                                            return (
+                                                <option key={value} value={value}>
+                                                    {new Date(0, i).toLocaleString(getLocale(), { month: "long" })}
+                                                </option>
+                                            );
+                                        })}
                                     </select>
                                 </div>
 
