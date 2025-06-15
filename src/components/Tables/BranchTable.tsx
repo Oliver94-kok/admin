@@ -154,7 +154,7 @@ const BranchTable = ({ A, B, C, D, E, SW, refreshData }: BranchTableInterface) =
   }
   if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
   return (
-    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
+    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10  h-auto
            md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {/* Render the current team's table */}
       {currentTeamData && (
