@@ -275,6 +275,9 @@ export default function UserConfigUser() {
                         <div>
                             Username: {data?.user.username}
                         </div>
+                        <div>
+                            id : {data?.user.id}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -204,28 +204,28 @@ export const postImage = async (
   username: string,
   type: string,
 ) => {
-  // try {
-  let data = {
-    image,
-    username,
-    type,
-  };
-  var res = await axios.post("http://localhost:3001/api/saveImage", data, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  console.log("🚀 ~ res:", res.status);
-  if (res.status == 201) {
-    console.log(res.data);
-    return { success: res.data.url };
+  try {
+    let data = {
+      image,
+      username,
+      type,
+    };
+    var res = await axios.post("http://localhost:3001/api/saveImage", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("🚀 ~ res:", res.status);
+    if (res.status == 201) {
+      console.log(res.data);
+      return { success: res.data.url };
+    }
+    if (res.status == 400 || res.status == 500) {
+      return { error: res.data.error };
+    }
+  } catch (error) {
+    return { error: error };
   }
-  if (res.status == 400 || res.status == 500) {
-    return { error: res.data.error };
-  }
-  // } catch (error) {
-  //   console.log(error);
-  // }
 };
 export async function extractDateAndDay(dateTimeString: string) {
   const [dateString] = dateTimeString.split(" ");

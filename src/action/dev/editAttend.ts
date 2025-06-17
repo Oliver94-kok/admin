@@ -14,7 +14,9 @@ export const editAttend = async (attend: Attends) => {
                 status: attend.status,
                 clockIn: attend.clockIn,
                 clockOut: attend.clockOut,
-                dates: attend.dates
+                dates: attend.dates,
+                fine: attend.fine,
+                fine2: attend.fine2
             }
         })
         return { success: "Attend updated successfully", result }

@@ -3,7 +3,7 @@
 
 
 import { Attends, AttendStatus } from "@prisma/client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { DateTime } from "luxon";
 import Modal from "../modal";
 import dayjs from "dayjs";
@@ -19,6 +19,8 @@ export const TableAttendDev = ({ attends, onSave }: TableAttendDevProps) => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [data, setData] = useState<Attends | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const clockInRef = useRef<Date | null>();
+    const clockOutRef = useRef<Date | null>();
     const displayTime = (clock: Date | null) => {
         // const dateTime = DateTime.fromISO(clock);
         const dateTime = DateTime.fromJSDate(new Date(clock!));
@@ -202,6 +204,16 @@ export const TableAttendDev = ({ attends, onSave }: TableAttendDevProps) => {
                                 }}
                                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                             />
+                            <input type='checkbox' onChange={(e) => {
+                                if (!data) return;
+                                if (e.target.checked) {
+                                    clockInRef.current = data.clockIn;
+                                    setData({ ...data, clockIn: null })
+                                } else {
+                                    setData({ ...data, clockIn: clockInRef.current! });
+                                }
+                            }} />
+                            <label htmlFor="">Null</label>
                         </div>
 
                         <div>
@@ -230,6 +242,16 @@ export const TableAttendDev = ({ attends, onSave }: TableAttendDevProps) => {
                                 }}
                                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                             />
+                            <input type='checkbox' onChange={(e) => {
+                                if (!data) return;
+                                if (e.target.checked) {
+                                    clockOutRef.current = data.clockOut;
+                                    setData({ ...data, clockOut: null })
+                                } else {
+                                    setData({ ...data, clockIn: clockOutRef.current! });
+                                }
+                            }} />
+                            <label htmlFor="">Null</label>
                         </div>
 
                         <div>
@@ -249,6 +271,40 @@ export const TableAttendDev = ({ attends, onSave }: TableAttendDevProps) => {
                                         {value.replace(/_/g, ' ')}
                                     </option>
                                 ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Fine</label>
+                            <select
+                                value={data?.fine!}
+                                onChange={(e) => {
+                                    if (!data) return;
+                                    setData({ ...data, fine: e.target.value ? Number(e.target.value!) : null })
+                                }}
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                            >
+
+                                <option value="">Null</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Fine 2</label>
+                            <select
+                                value={data?.fine2!}
+                                onChange={(e) => {
+                                    if (!data) return;
+                                    setData({ ...data, fine2: e.target.value ? Number(e.target.value!) : null })
+                                }}
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                            >
+
+                                <option value="">Null</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
                             </select>
                         </div>
                     </div>

@@ -1,112 +1,85 @@
 import { isOffDay } from "@/data/attend";
-import { Logging } from "@/data/log";
-import { getNoClockIn } from "@/data/salary";
-import { AttendanceService } from "@/lib/attendService";
 import { db } from "@/lib/db";
-import { TimeUtils } from "@/lib/timeUtility";
-import { AttendsInterface } from "@/types/attendents";
-import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
 
-function getToday() {
-  const now = dayjs();
-  const hour = now.hour();
-
-  // If time is between 12am and 5:59am (0-5 hours)
-  if (hour >= 0 && hour < 6) {
-    return dayjs().utc();
-  } else {
-    // 6am onwards
-    return dayjs();
-  }
-}
+const CLOCK_OUT_GRACE_PERIOD_HOURS = 4;
+const createAttendanceResponse = (attendant: any) => {
+  return {
+    id: attendant.id,
+    status: attendant.status,
+    shiftIn: attendant.clockIn,
+    shiftOut: attendant.clockOut,
+    locationIn: attendant.locationIn,
+    locationOut: attendant.locationOut,
+  };
+};
 
 export const POST = async (req: Request) => {
-  let userid;
   try {
     const { userId } = await req.json();
-    userid = userId;
-    const today = getToday();
-    console.log("🚀 ~ POST ~ today:", today);
-    const t = new Date(today.format("YYYY-MM-DD"));
+    if (!userId) {
+      return Response.json({ error: "User ID is required" }, { status: 400 });
+    }
+    const todayDayjs = dayjs().format("YYYY-MM-DD");
+    const today2 = dayjs().toDate();
+    console.log("🚀 ~ POST ~ today2:", today2)
+    const today = new Date(todayDayjs);
+    const [activeAttendant, todayAttendant, usershift] = await Promise.all([
+      db.attends.findFirst({ where: { status: "Active", userId } }),
+      db.attends.findFirst({ where: { userId, dates: today } }),
+      db.attendBranch.findFirst({ where: { userId } })
+    ])
 
-    const attendanceService = new AttendanceService({
-      gracePeriodMinutes: 15,
-      maxOvertimeHours: 4,
-      timezone: "UTC",
-    });
+    if (!usershift?.clockOut) {
+      return Response.json({ Error: "No shift time found" }, { status: 400 })
+    }
+    if (activeAttendant) {
+      let yesterday = dayjs().subtract(1, 'day');
+      let dateActive = dayjs(activeAttendant.dates);
+      if (dateActive.isSame(yesterday, 'day')) {
+        let shiftOut = usershift.clockOut.split(":").map(Number);
+        let timeOut4 = shiftOut[0] + 4;
+        let out = dateActive.hour(timeOut4).minute(shiftOut[1]).second(0);
+        let cannotClockout = dayjs().isAfter(out);
+        if (!cannotClockout) {
+          return Response.json({
+            id: activeAttendant.id,
+            status: activeAttendant.status,
+            shiftIn: activeAttendant.clockIn,
+            shiftOut: activeAttendant.clockOut,
+            locationIn: activeAttendant.locationIn,
+            locationOut: activeAttendant.locationOut,
+          }, { status: 200 });
+        }
 
-    // Find attendance record for the user where the date matches today
-    let attend = await db.attends.findFirst({
-      where: {
-        userId,
-        dates: t, // Ensure the date matches today
-      },
-    });
-    console.log("🚀 ~ POST ~ attend:", attend)
-
-
-
-    if (attend) {
-      // If an active attendance record is found for today
-
-      return Response.json(
-        {
-          id: attend.id,
-          status: attend.status,
-          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? null : attend.clockIn,
-          shiftOut: attend.clockOut,
-          locationIn: attend.locationIn,
-          locationOut: attend.locationOut,
-        },
-        { status: 200 }
-      );
+      }
+    }
+    if (todayAttendant) {
+      return Response.json({
+        id: todayAttendant.id,
+        status: todayAttendant.status,
+        shiftIn: todayAttendant.clockIn,
+        shiftOut: todayAttendant.clockOut,
+        locationIn: todayAttendant.locationIn,
+        locationOut: todayAttendant.locationOut,
+      }, { status: 200 });
     }
 
-    // If no  attendance record is found for today, check for other statuses
-    attend = await db.attends.findFirst({
-      where: {
-        userId,
-        status: "Active", // Ensure the status active
-      },
-    });
 
-    if (attend) {
-      // If an attendance record is found for active
-      return Response.json(
-        {
-          id: attend.id,
-          date: attend.dates,
-          status: attend.status,
-          shiftIn: (attend.status === "Active" && attend.clockIn == null) ? null : attend.clockIn,
-          shiftOut: attend.clockOut,
-          locationIn: attend.locationIn,
-          locationOut: attend.locationOut,
-        },
-        { status: 200 }
-      );
-    }
-
-    // If no attendance record is found for today, check for shift and off days
-    let shift = await db.attendBranch.findFirst({ where: { userId } });
-    if (!shift) throw new Error("No shift time");
-
-    if (shift.offDay) {
-      let offdays = shift.offDay.split(",");
+    if (usershift.offDay) {
+      let offdays = usershift.offDay.split(",");
       let resultOffDay = await isOffDay(offdays, "TODAY");
       if (resultOffDay) {
-        await db.attends.create({ data: { userId, status: "OffDay", dates: t } });
+        await db.attends.create({ data: { userId, status: "OffDay", dates: today } });
         return Response.json({ status: "OffDay" }, { status: 200 });
       }
     }
 
     // If no attendance record is found and it's not an off day
     return Response.json({ status: "Not_Start_shift" }, { status: 200 });
+
+
   } catch (error) {
-    let err = error instanceof Error ? error.message : "An unknown error occurred"
-    await Logging(userid, "Clock in 2", err)
-    return Response.json(error, { status: 400 });
+    return Response.json(error, { status: 400 })
   }
-};
+}
