@@ -96,7 +96,7 @@ export const POST = async (req: Request) => {
         );
         await db.attends.update({
           where: { id: user.id },
-          data: { status: AttendStatus.No_ClockIn_ClockOut, fine: fine2 },
+          data: { status: AttendStatus.No_ClockIn_ClockOut, fine2: fine2 },
         });
         let salary = await db.salary.findFirst({
           where: {

@@ -99,7 +99,7 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
       console.log("🚀 ~ ApproveLeaveV2 ~ durattion:", d)
       while (currentDate.isSameOrBefore(endTime2)) {
         console.log("🚀 ~ ApproveLeaveV2 ~ currentDate:", currentDate, currentDate.format("YYYY-MM-DD"))
-        if (d <= 0.5) {
+        if (d == 0.5) {
           let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
           if (attend) {
             await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
@@ -178,7 +178,7 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     while (currentDate.isSameOrBefore(endTime2)) {
       // Do something with the current date
 
-      if (d <= 0.5) {
+      if (d == 0.5) {
         let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
         if (attend) {
           await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })

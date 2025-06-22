@@ -95,6 +95,13 @@ export default function UserConfigUser() {
 
         }
     }
+    const addAttend = () => {
+        try {
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const currentDate = new Date(`${year}-${month}-01`);
     const daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
     return (
