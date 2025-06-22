@@ -536,7 +536,10 @@ export const excelData = async (
         workingDay: { gt: 0 },
         users: { role: "USER", AttendBranch: { team } },
       },
-      orderBy: { users: { AttendBranch: { branch: "asc" } } },
+      orderBy: [
+        { users: { AttendBranch: { branch: "asc" } } },
+        { users: { name: "asc" } }
+      ],
       select: {
         id: true,
         month: true,

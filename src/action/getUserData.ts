@@ -46,11 +46,17 @@ export const getDataUser = async (
     const users =
       team === "All"
         ? await db.attendBranch.findMany({
+          orderBy: [
+            { branch: "asc" }, { users: { name: "asc" } }
+          ],
           select: { userId: true },
         })
         : await db.attendBranch.findMany({
           where: { team },
           select: { userId: true },
+          orderBy: [
+            { branch: "asc" }, { users: { name: "asc" } }
+          ]
         });
 
     const result = await Promise.all(
@@ -110,6 +116,7 @@ export const getDataUser = async (
     // Filter out undefined values and ensure type safety
     return result.filter((item): item is userExcel => item !== undefined);
   } catch (error) {
+    console.log("🚀 ~ error:", error)
     return null;
   }
 };
