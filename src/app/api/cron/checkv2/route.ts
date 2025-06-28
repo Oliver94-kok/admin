@@ -2,6 +2,7 @@ import { calculateOvertimeHours, calculateWorkingHours } from "@/data/attend";
 import { CheckSalarys, getAttendLate, getNoClockOut } from "@/data/salary";
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
+import { branchAssistant } from "@/types/branchs";
 import { Attends, AttendStatus, User } from "@prisma/client";
 import dayjs from "dayjs";
 export const dynamic = "force-dynamic";
@@ -203,12 +204,19 @@ async function processActiveAttendances(activeAttendances: Attends[]): Promise<P
             try {
                 const currentMonth = new Date().getMonth() + 1;
                 const currentYear = new Date().getFullYear();
+                const shift = await db.attendBranch.findFirst({ where: { userId: attend.userId } })
+                let fine200 = branchAssistant.find((e) => e === shift?.branch)
+                let fine2;
+                if (fine200) {
+                    fine2 = 200;
+                } else {
+                    fine2 = await getNoClockOut(
+                        attend.userId,
+                        currentMonth,
+                        currentYear
+                    );
+                }
 
-                const fine2 = await getNoClockOut(
-                    attend.userId,
-                    currentMonth,
-                    currentYear
-                );
 
                 // Update the attendance record
                 await db.attends.update({

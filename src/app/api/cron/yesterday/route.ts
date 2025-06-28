@@ -1,5 +1,5 @@
 import { cronAttend, cronAttendCheckShift, isOffDay } from "@/data/attend";
-import { getNoClockIn } from "@/data/salary";
+import { getNoClockIn, getNoClockOut } from "@/data/salary";
 import { getAllUser } from "@/data/user";
 import {
   AttendanceSchema,
@@ -8,6 +8,7 @@ import {
 } from "@/lib/attendService";
 import { db } from "@/lib/db";
 import { TimeUtils } from "@/lib/timeUtility";
+import { branchAssistant } from "@/types/branchs";
 import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -119,6 +120,7 @@ async function processAbsentUser(
         clockIn: true,
         clockOut: true,
         offDay: true,
+        branch: true
       },
     });
 
@@ -188,18 +190,30 @@ async function processAbsentUser(
       const shiftInTime = dayjs(shiftIn);
       const currentTime = dayjs();
       if (currentTime.isAfter(shiftInTime.add(1, 'hour'))) {
-        const fine = await getNoClockIn(
-          user.id,
-          dateObject.getMonth() + 1,
-          dateObject.getFullYear()
-        );
+
+        let fine200 = branchAssistant.find((e) => e === shift?.branch)
+        let fine2;
+        if (fine200) {
+          fine2 = 200;
+        } else {
+          fine2 = await getNoClockOut(
+            user.id,
+            dateObject.getMonth() + 1,
+            dateObject.getFullYear()
+          );
+        }
+        // const fine = await getNoClockIn(
+        //   user.id,
+        //   dateObject.getMonth() + 1,
+        //   dateObject.getFullYear()
+        // );
 
         await db.attends.create({
           data: {
             userId: user.id,
             dates: new Date(dateFormatted),
             status: AttendStatus.No_ClockIn_ClockOut,
-            fine2: fine
+            fine2: fine2
           }
         });
         return {
