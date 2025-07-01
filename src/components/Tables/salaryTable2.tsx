@@ -43,7 +43,15 @@ const dictionaries = {
     en: () => import('../../locales/en/lang.json').then((module) => module.default),
     zh: () => import('../../locales/zh/lang.json').then((module) => module.default),
 };
-
+interface footerTotal {
+    totalBonus: number
+    totalAllow: number
+    totalAdvance: number
+    totalShort: number
+    totalOT: number
+    totalTransport: number
+    totalM: number
+}
 export const SalaryTable2 = () => {
     const session = useSession();
     const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
@@ -59,6 +67,7 @@ export const SalaryTable2 = () => {
     const [printLoading, setLoadingPrint] = useState<boolean>(false)
     const [salary, setSalary] = useState("");
     const [erroradd, setErrorAdd] = useState("");
+    const [totalFooter, setTotalFooter] = useState<footerTotal>()
     const { data: swrData, error: swrError, isLoading: swrIsLoading, mutate } = useSWR<SalaryUser[], any>( // Explicitly type SWR's data and error
         `/api/salary/dashboardv2?role=${session.data?.user.role}&month=${month}&year=${year}`,
         fetcher,
@@ -106,6 +115,7 @@ export const SalaryTable2 = () => {
         } else if (swrIsLoading) {
             setLoading(true);
         }
+        footerCal()
     }, [swrData]);
     useEffect(() => {
         const locale = getLocale(); // Get the valid locale
@@ -129,7 +139,7 @@ export const SalaryTable2 = () => {
 
             setSelectedTeam(value);
             // getFilteredSalaries()
-
+            footerCal()
         } catch (error) {
             console.error("Error filtering teams:", error);
         }
@@ -745,6 +755,30 @@ export const SalaryTable2 = () => {
             // window.location.reload();
         }
     };
+    const footerCal = () => {
+        try {
+            const bonus = getFilteredSalaries().reduce((sum, sal) => sum + (sal.bonus || 0), 0);
+            const Allow = getFilteredSalaries().reduce((sum, sal) => sum + (sal.allowance || 0), 0);
+            const Advance = getFilteredSalaries().reduce((sum, sal) => sum + (sal.advances || 0), 0);
+            const Short = getFilteredSalaries().reduce((sum, sal) => sum + (sal.short || 0), 0);
+            const OT = getFilteredSalaries().reduce((sum, sal) => sum + (sal.overTime || 0), 0);
+            const Transport = getFilteredSalaries().reduce((sum, sal) => sum + (sal.transport || 0), 0);
+            const M = getFilteredSalaries().reduce((sum, sal) => sum + (sal.m || 0), 0);
+
+            setTotalFooter({
+                totalAdvance: Advance,
+                totalAllow: Allow,
+                totalBonus: bonus,
+                totalShort: Short,
+                totalOT: OT,
+                totalTransport: Transport,
+                totalM: M
+            })
+        } catch (error) {
+            console.log("🚀 ~ footerCal ~ error:", error)
+
+        }
+    }
     if (swrIsLoading || !dict) { // Show SWR loading only on initial load or if reducer hasn't been populated
         return <Loader2 />;
     }
@@ -1314,25 +1348,25 @@ export const SalaryTable2 = () => {
 
                 {/* 下面是你重复的 Total Bonus（每项占 1 栏） */}
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterbonus}: RM
+                    T {dict.salary.enterbonus}: RM {totalFooter?.totalBonus}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterallow}: RM
+                    T {dict.salary.enterallow}: RM {totalFooter?.totalAllow}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enteradvance}: RM
+                    T {dict.salary.enteradvance}: RM {totalFooter?.totalAdvance}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.entershort}: RM
+                    T {dict.salary.entershort}: RM {totalFooter?.totalShort}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterot}: RM
+                    T {dict.salary.enterot}: RM {totalFooter?.totalOT}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.entertransport}: RM
+                    T {dict.salary.entertransport}: RM {totalFooter?.totalTransport}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterm}: RM
+                    T {dict.salary.enterm}: RM {totalFooter?.totalM}
                 </div>
 
                 {/* 最后剩下两格做空白（或你想放别的东西） */}
