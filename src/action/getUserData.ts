@@ -70,6 +70,7 @@ export const getDataUser = async (
           where: {
             userId: u.userId,
             dates: { gte: firstDay.toDate(), lte: lastDay.toDate() },
+
           },
           orderBy: { dates: "asc" },
           select: {
@@ -77,7 +78,12 @@ export const getDataUser = async (
             clockIn: true,
             clockOut: true,
             dates: true,
-            status: true
+            status: true,
+            leaves: {
+              select: {
+                type: true
+              }
+            }
           },
         });
 
@@ -93,7 +99,8 @@ export const getDataUser = async (
                 ? dayjs.utc(attend.clockOut).local().format("HH:mm")
                 : null,
               dates: dayjs(attend.dates).format("YYYY-MM-DD"),
-              status: attend.status
+              status: attend.status,
+
             };
           }),
         );

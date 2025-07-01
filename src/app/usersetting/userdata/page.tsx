@@ -25,6 +25,7 @@ export interface userExcel {
         dates: string;
         status: AttendStatus;
         img: string | null; // Optional property for the photo path
+        leaves: { type: string; } | null;
     }[];
 }
 
@@ -187,7 +188,7 @@ const FormLayout = () => {
                 let ins = a.clockIn == null ? "No clock" : a.clockIn
                 let out = a.clockOut == null ? "No clock" : a.clockOut
                 if (a.status == "Leave") {
-                    addFormattedRows([`${a.dates}`, "in", 'Leave', "out", 'Leave']);
+                    addFormattedRows([`${a.dates}`, "in", `${a.leaves?.type}`, "out", `${a.leaves?.type}`]);
                     worksheet.getCell(`C${currentRow}`).fill = {
                         type: 'pattern',
                         pattern: 'solid',

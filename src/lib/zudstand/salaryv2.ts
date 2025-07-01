@@ -2,6 +2,15 @@
 import { create } from 'zustand';
 import { SalaryUser } from '@/types/salary';
 
+// Define sorting options
+export type SortField = 'Username' | 'Branches' | 'BasicSalary' | 'TotalWorkingdays' | 'Fine' | 'Bonus' | 'Allow' | 'Advance' | 'Short' | 'OT' | 'Transport' | 'M' | 'TotalSalary';
+export type SortOrder = 'asc' | 'desc';
+
+interface SortConfig {
+    field: SortField;
+    order: SortOrder;
+}
+
 interface SalaryStore {
     salaries: SalaryUser[];
     loading: boolean;
@@ -10,6 +19,9 @@ interface SalaryStore {
     searchQuery: string;        // The actual search query used for filtering (debounced)
     localSearchQuery: string;   // The immediate input value (not debounced)
     searchDebounceTimer: NodeJS.Timeout | null;
+
+    // Sorting state
+    sortConfig: SortConfig;
 
     // Actions
     setSalaries: (salaries: SalaryUser[]) => void;
@@ -20,8 +32,14 @@ interface SalaryStore {
     setLocalSearchQuery: (query: string) => void; // This handles debouncing automatically
     clearSearch: () => void;
 
+    // Sorting actions
+    setSortConfig: (config: SortConfig) => void;
+    setSortField: (field: SortField) => void; // Smart toggle - reverses order if same field
+    clearSort: () => void;
+
     // Selectors
     getFilteredSalaries: () => SalaryUser[];
+    getSortedAndFilteredSalaries: () => SalaryUser[];
     isSearching: () => boolean;
 }
 
@@ -33,6 +51,9 @@ export const useSalaryStore = create<SalaryStore>((set, get) => ({
     searchQuery: '',
     localSearchQuery: '',
     searchDebounceTimer: null,
+
+    // Default sorting by name ascending
+    sortConfig: { field: 'Username', order: 'asc' },
 
     setSalaries: (salaries) => set({ salaries }),
 
@@ -82,13 +103,24 @@ export const useSalaryStore = create<SalaryStore>((set, get) => ({
         });
     },
 
+    // Sorting actions
+    setSortConfig: (sortConfig) => set({ sortConfig }),
+
+    setSortField: (field) => {
+        const { sortConfig } = get();
+        const newOrder = sortConfig.field === field && sortConfig.order === 'asc' ? 'desc' : 'asc';
+        set({ sortConfig: { field, order: newOrder } });
+    },
+
+    clearSort: () => set({ sortConfig: { field: 'Username', order: 'asc' } }),
+
     // Helper to check if search is in progress (debouncing)
     isSearching: () => {
         const { searchQuery, localSearchQuery } = get();
         return localSearchQuery !== searchQuery && localSearchQuery !== '';
     },
 
-    // This uses the debounced searchQuery, not localSearchQuery
+    // Original filtering method (kept for compatibility)
     getFilteredSalaries: () => {
         const { salaries, selectedTeam, searchQuery } = get();
 
@@ -116,5 +148,95 @@ export const useSalaryStore = create<SalaryStore>((set, get) => ({
         }
 
         return filtered;
+    },
+
+    // New method that includes both filtering AND sorting
+    getSortedAndFilteredSalaries: () => {
+        const { sortConfig } = get();
+        const filtered = get().getFilteredSalaries();
+
+        // Sort the filtered results
+        const sorted = [...filtered].sort((a, b) => {
+            let aValue: any;
+            let bValue: any;
+
+            // Get values based on sort field
+            switch (sortConfig.field) {
+                case 'Username':
+                    aValue = a.users?.name || '';
+                    bValue = b.users?.name || '';
+                    break;
+                case 'Branches':
+                    aValue = a.users?.username || '';
+                    bValue = b.users?.username || '';
+                    break;
+                case 'BasicSalary':
+                    aValue = a.perDay || 0;
+                    bValue = a.perDay || 0;
+                    break;
+                case 'TotalWorkingdays':
+                    aValue = a.workingDay || 0;
+                    bValue = a.workingDay || 0;
+                    break;
+                // case 'Fine':
+                //     aValue = a.f || '';
+                //     bValue = b.users?.AttendBranch?.team || '';
+                //     break;
+                case 'Bonus':
+                    aValue = a.bonus || 0;
+                    bValue = b.bonus || 0;
+                    break;
+                case 'Allow':
+                    aValue = a.allowance || 0;
+                    bValue = b.allowance || 0;
+                    break;
+                case 'Advance':
+                    aValue = a.advances || 0;
+                    bValue = b.advances || 0;
+                    break;
+                case 'Short':
+                    aValue = a.short || 0;
+                    bValue = b.short || 0;
+                    break;
+                case 'OT':
+                    aValue = a.overTime || 0;
+                    bValue = b.overTime || 0;
+                    break;
+                case 'Transport':
+                    aValue = a.transport || 0;
+                    bValue = b.transport || 0;
+                    break;
+                case 'M':
+                    aValue = a.m || 0;
+                    bValue = b.m || 0;
+                    break;
+                case 'TotalSalary':
+                    aValue = a.total || 0;
+                    bValue = b.total || 0;
+                    break;
+                default:
+                    aValue = '';
+                    bValue = '';
+            }
+
+            let comparison = 0;
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                // Proper numerical comparison - this handles negatives correctly
+                // -142 < 0 < 142 when ascending
+                comparison = aValue - bValue;
+            } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+                comparison = aValue.localeCompare(bValue);
+            } else if (aValue instanceof Date && bValue instanceof Date) {
+                comparison = aValue.getTime() - bValue.getTime();
+            } else {
+                // Fallback to string comparison
+                comparison = String(aValue).localeCompare(String(bValue));
+            }
+
+            // Apply sort order
+            return sortConfig.order === 'asc' ? comparison : -comparison;
+        });
+
+        return sorted;
     }
 }));

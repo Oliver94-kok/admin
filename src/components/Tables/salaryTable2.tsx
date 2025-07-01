@@ -51,6 +51,7 @@ interface footerTotal {
     totalOT: number
     totalTransport: number
     totalM: number
+    totalSal: number
 }
 export const SalaryTable2 = () => {
     const session = useSession();
@@ -86,7 +87,10 @@ export const SalaryTable2 = () => {
         setLoading,
         setError,
         setSelectedTeam,
-        getFilteredSalaries
+        getFilteredSalaries,
+        getSortedAndFilteredSalaries,
+        setSortField,
+        sortConfig
     } = useSalaryStore();
     useEffect(() => {
         const currentDate = DateTime.now();
@@ -764,7 +768,7 @@ export const SalaryTable2 = () => {
             const OT = getFilteredSalaries().reduce((sum, sal) => sum + (sal.overTime || 0), 0);
             const Transport = getFilteredSalaries().reduce((sum, sal) => sum + (sal.transport || 0), 0);
             const M = getFilteredSalaries().reduce((sum, sal) => sum + (sal.m || 0), 0);
-
+            const totals = getFilteredSalaries().reduce((sum, sal) => sum + (sal.total || 0), 0);
             setTotalFooter({
                 totalAdvance: Advance,
                 totalAllow: Allow,
@@ -772,7 +776,8 @@ export const SalaryTable2 = () => {
                 totalShort: Short,
                 totalOT: OT,
                 totalTransport: Transport,
-                totalM: M
+                totalM: M,
+                totalSal: totals
             })
         } catch (error) {
             console.log("🚀 ~ footerCal ~ error:", error)
@@ -896,32 +901,47 @@ export const SalaryTable2 = () => {
             <main className="w-full min-w-[1280px]">
                 <div className="w-full min-w-[1280px] p-4 md:p-6 2xl:p-10 grid grid-cols-[repeat(16,minmax(100px,1fr))]">
                     {/* <div className=""> */}
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Username')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.username}
                         </h5>
+                        {sortConfig.field === "Username" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Branches')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.branches.branches}
-                            {/* <BranchSelectGroup
-                onSendData={onSendData}
-                initialValue={teamA.team}
-              /> */}
+
                         </h5>
+                        {sortConfig.field === "Branches" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
                     <div
                         className="col-span-1 flex cursor-pointer items-center justify-center"
-                    // onClick={() => handleSort("perDay")}
+                    // onClick={() => setSortField('BasicSalary')}
                     >
                         <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.basic}
                         </h5>
-                        {/* {sortColumn === "perDay" && (
+                        {/* {sortConfig.field === "BasicSalary" && (
                             <span
-                                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
                             >
-                                {sortOrder === "asc" ? "▲" : "▼"}
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
                             </span>
                         )} */}
                     </div>
@@ -943,16 +963,16 @@ export const SalaryTable2 = () => {
                     </div>
                     <div
                         className="col-span-1 flex cursor-pointer items-center justify-center"
-                    // onClick={() => handleSort("workingDay")}
+                    // onClick={() => setSortField('TotalWorkingdays')}
                     >
                         <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.totalworkingday}
                         </h5>
-                        {/* {sortColumn === "workingDay" && (
+                        {/* {sortConfig.field === "TotalWorkingdays" && (
                             <span
-                                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
                             >
-                                {sortOrder === "asc" ? "▲" : "▼"}
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
                             </span>
                         )} */}
                     </div>
@@ -969,49 +989,110 @@ export const SalaryTable2 = () => {
                             </span>
                         )} */}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Bonus')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterbonus}</h5>
+                        {sortConfig.field === 'Bonus' && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Allow')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.enterallow}
                         </h5>
+                        {sortConfig.field === "Allow" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Advance')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.enteradvance}
                         </h5>
+                        {sortConfig.field === "Advance" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Short')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.entershort}
                         </h5>
+                        {sortConfig.field === "Short" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('OT')}
+                    >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterot}</h5>
+                        {sortConfig.field === "OT" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('Transport')}>
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.entertransport}
                         </h5>
+                        {sortConfig.field === "Transport" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 flex items-center justify-center"
+                        onClick={() => setSortField('M')}>
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterm}</h5>
+                        {sortConfig.field === "M" && (
+                            <span
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
+                            >
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
+                            </span>
+                        )}
                     </div>
                     <div
                         className="col-span-1 flex cursor-pointer items-center justify-center"
-                    // onClick={() => handleSort("total")}
+                        onClick={() => setSortField('TotalSalary')}
                     >
                         <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.totalsalary}
                         </h5>
-                        {/* {sortColumn === "total" && (
+                        {sortConfig.field === "TotalSalary" && (
                             <span
-                                className={`ml-2 ${sortOrder === "asc" ? "text-primary" : "text-secondary"}`}
+                                className={`ml-2 ${sortConfig.order === "asc" ? "text-primary" : "text-secondary"}`}
                             >
-                                {sortOrder === "asc" ? "▲" : "▼"}
+                                {sortConfig.order === "asc" ? "▲" : "▼"}
                             </span>
-                        )} */}
+                        )}
                     </div>
                     <div className="col-span-1 flex flex-col items-center justify-center">
                         <LoadingButton name={dict.salary.print} click={handlePrint} isloading={printLoading} />
@@ -1034,7 +1115,7 @@ export const SalaryTable2 = () => {
                 </div>
             </main >
             <div className="h-[860px] overflow-x-auto">
-                {getFilteredSalaries().map((salary, key) => (
+                {getSortedAndFilteredSalaries().map((salary, key) => (
                     <div
                         className={`grid grid-cols-[repeat(16,minmax(100px,1fr))] border-t border-stroke px-4 py-4.5 dark:border-dark-3 md:px-6 2xl:px-7.5 "border-b border-stroke dark:border-dark-3"
                             }`}
@@ -1348,25 +1429,28 @@ export const SalaryTable2 = () => {
 
                 {/* 下面是你重复的 Total Bonus（每项占 1 栏） */}
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterbonus}: RM {totalFooter?.totalBonus}
+                    RM {totalFooter?.totalBonus}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterallow}: RM {totalFooter?.totalAllow}
+                    RM {totalFooter?.totalAllow}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enteradvance}: RM {totalFooter?.totalAdvance}
+                    RM {totalFooter?.totalAdvance}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.entershort}: RM {totalFooter?.totalShort}
+                    RM {totalFooter?.totalShort}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterot}: RM {totalFooter?.totalOT}
+                    RM {totalFooter?.totalOT}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.entertransport}: RM {totalFooter?.totalTransport}
+                    RM {totalFooter?.totalTransport}
                 </div>
                 <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
-                    T {dict.salary.enterm}: RM {totalFooter?.totalM}
+                    RM {totalFooter?.totalM}
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    RM {totalFooter?.totalSal}
                 </div>
 
                 {/* 最后剩下两格做空白（或你想放别的东西） */}
