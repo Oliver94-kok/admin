@@ -1298,36 +1298,45 @@ export const SalaryTable2 = () => {
                 ))} </div>
 
             {/* Pagination */}
-            <div className="flex justify-between px-7.5 py-7">
-                <div className="flex items-center">
-                    <button
-                        // onClick={() => setCurrentPage(currentPage - 1)}
-                        // disabled={currentPage === 1}
-                        className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
-                    >
+            <div className="grid grid-cols-[repeat(16,minmax(100px,1fr))] gap-2 px-7.5 py-7">
+                {/* Prev/Next 按钮区域（占 2 栏） */}
+                <div className="col-span-2 flex items-center space-x-2">
+                    <button className="rounded-[3px] p-[7px] px-[12px] hover:bg-primary hover:text-white">
                         {dict.dashboard.prev}
                     </button>
-                    {/* {Array.from({ length: totalPages }).map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setCurrentPage(i + 1)}
-                            className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                                }`}
-                        >
-                            {i + 1}
-                        </button>
-                    ))} */}
-                    <button
-                        // onClick={() => setCurrentPage(currentPage + 1)}
-                        // disabled={currentPage === totalPages}
-                        className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
-                    >
+                    <button className="rounded-[3px] p-[7px] px-[12px] hover:bg-primary hover:text-white">
                         {dict.dashboard.next}
                     </button>
                 </div>
-                <p className="font-medium">
-                    {/* Showing {currentPage} of {totalPages} pages */}
-                </p>
+
+                {/* 空格占位（比如 4 栏空白） */}
+                <div className="col-span-4"></div>
+
+                {/* 下面是你重复的 Total Bonus（每项占 1 栏） */}
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.enterbonus}: RM
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.enterallow}: RM
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.enteradvance}: RM
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.entershort}: RM
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.enterot}: RM
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.entertransport}: RM
+                </div>
+                <div className="col-span-1 flex items-center justify-center text-sm font-semibold text-blue-600">
+                    T {dict.salary.enterm}: RM
+                </div>
+
+                {/* 最后剩下两格做空白（或你想放别的东西） */}
+                <div className="col-span-2"></div>
             </div>
 
             {/* Render the image modal */}
