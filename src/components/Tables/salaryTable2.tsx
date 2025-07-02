@@ -901,7 +901,7 @@ export const SalaryTable2 = () => {
             <main className="w-full min-w-[1280px]">
                 <div className="w-full min-w-[1280px] p-4 md:p-6 2xl:p-10 grid grid-cols-[repeat(16,minmax(100px,1fr))]">
                     {/* <div className=""> */}
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Username')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
@@ -915,7 +915,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Branches')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
@@ -931,7 +931,7 @@ export const SalaryTable2 = () => {
                         )}
                     </div>
                     <div
-                        className="col-span-1 flex cursor-pointer items-center justify-center"
+                        className="col-span-1 flex items-center justify-center"
                     // onClick={() => setSortField('BasicSalary')}
                     >
                         <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
@@ -947,7 +947,7 @@ export const SalaryTable2 = () => {
                     </div>
 
                     <div
-                        className="col-span-1 flex cursor-pointer items-center justify-center"
+                        className="col-span-1 flex items-center justify-center"
                     // onClick={() => handleSort("ot")}
                     >
                         <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
@@ -962,7 +962,7 @@ export const SalaryTable2 = () => {
                         )} */}
                     </div>
                     <div
-                        className="col-span-1 flex cursor-pointer items-center justify-center"
+                        className="col-span-1 flex items-center justify-center"
                     // onClick={() => setSortField('TotalWorkingdays')}
                     >
                         <h5 className="text-center text-sm font-medium uppercase xsm:text-base">
@@ -977,7 +977,7 @@ export const SalaryTable2 = () => {
                         )} */}
                     </div>
                     <div
-                        className="col-span-1 flex cursor-pointer items-center justify-center"
+                        className="col-span-1 flex items-center justify-center"
                     // onClick={() => handleSort("late")}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.fine}</h5>
@@ -989,7 +989,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )} */}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Bonus')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterbonus}</h5>
@@ -1001,7 +1001,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Allow')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
@@ -1015,7 +1015,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Advance')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
@@ -1029,7 +1029,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Short')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
@@ -1043,7 +1043,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('OT')}
                     >
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterot}</h5>
@@ -1055,7 +1055,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('Transport')}>
                         <h5 className="text-sm font-medium uppercase xsm:text-base">
                             {dict.salary.entertransport}
@@ -1068,7 +1068,7 @@ export const SalaryTable2 = () => {
                             </span>
                         )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center"
+                    <div className="col-span-1 flex cursor-pointer items-center justify-center"
                         onClick={() => setSortField('M')}>
                         <h5 className="text-sm font-medium uppercase xsm:text-base">{dict.salary.enterm}</h5>
                         {sortConfig.field === "M" && (
