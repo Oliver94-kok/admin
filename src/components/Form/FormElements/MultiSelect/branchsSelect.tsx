@@ -1,6 +1,6 @@
 "use client";
 import { typeData } from "@/components/Tables/BranchATable";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface BranchsSelectGroupProps {
     onSendData: (type: typeData, data: string) => void;
@@ -15,7 +15,9 @@ const BranchsSelectGroup: React.FC<BranchsSelectGroupProps> = ({
 }) => {
     const [selectedOption, setSelectedOption] = useState<string>(initialValue);
     const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
-    console.log("initisl value", initialValue);
+    useEffect(() => {
+        setSelectedOption(initialValue);
+    }, [initialValue]);
     const changeTextColor = () => {
         setIsOptionSelected(true);
     };

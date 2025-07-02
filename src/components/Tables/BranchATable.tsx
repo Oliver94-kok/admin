@@ -72,8 +72,14 @@ export const BranchATable = ({
   const [teamSelect, setTeamSelect] = useState<string | null>()
   const [isEditnameOpen, setIsEditnameOpen] = useState(false);
   // Paginate the data
-  const filteredData = data.filter((teamA) =>
-    teamA.users?.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredData = data.filter((teamA) => {
+    if (!teamA.users) return false;
+    const nameMatch = teamA.users.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const usernameMatch = teamA.users.username?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return nameMatch || usernameMatch;
+  }
+
   );
   console.log("🚀 ~ filteredData:", filteredData)
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);

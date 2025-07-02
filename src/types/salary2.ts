@@ -56,6 +56,7 @@ export interface Salary {
   transport: number | null;
   short: number | null;
   m: number | null;
+  absent: number | null;
 }
 
 // Define the main interface that combines both

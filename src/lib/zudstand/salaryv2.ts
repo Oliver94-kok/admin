@@ -53,7 +53,7 @@ export const useSalaryStore = create<SalaryStore>((set, get) => ({
     searchDebounceTimer: null,
 
     // Default sorting by name ascending
-    sortConfig: { field: 'Username', order: 'asc' },
+    sortConfig: { field: 'Branches', order: 'asc' },
 
     setSalaries: (salaries) => set({ salaries }),
 
@@ -167,8 +167,8 @@ export const useSalaryStore = create<SalaryStore>((set, get) => ({
                     bValue = b.users?.name || '';
                     break;
                 case 'Branches':
-                    aValue = a.users?.username || '';
-                    bValue = b.users?.username || '';
+                    aValue = a.users?.AttendBranch?.branch || '';
+                    bValue = b.users?.AttendBranch?.branch || '';
                     break;
                 case 'BasicSalary':
                     aValue = a.perDay || 0;

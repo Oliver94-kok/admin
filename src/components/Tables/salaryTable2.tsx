@@ -477,8 +477,8 @@ export const SalaryTable2 = () => {
                 let dd = e.dates.getDate();
                 d.push(dd)
             })
-            totals = data.dataAbsent.length * 2 * perDay;
-            const lateNumbers: string = `Absent * ${d.join(', ')} `;
+            totals = data.dataAbsent.length * 100;
+            const lateNumbers: string = `Absent * ${d.join(', ')} RM${totals}`;
             return lateNumbers
         }
         return "1212"
@@ -581,7 +581,7 @@ export const SalaryTable2 = () => {
                 const totalSalary = salary.perDay! * salary.workingDay!;
                 const totalBonus = salary.bonus || 0;
                 const totalAllowance = salary.allowance || 0;
-                const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut!) || 0;
+                const totalFine = -(salary.fineLate! + salary.fineNoClockIn! + salary.fineNoClockOut! + salary.absent!) || 0;
                 const totalAdvances = salary.advances || 0;
                 const totalShort = salary.short || 0;
                 const totalOvertime = salary.overTime || 0;

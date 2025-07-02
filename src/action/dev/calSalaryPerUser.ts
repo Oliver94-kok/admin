@@ -178,8 +178,8 @@ const categorizeAttendance = (attendanceData: AttendanceRecord[]) => {
             case "Late":
                 categories.late.push(record);
                 break;
-            case "Absent":
-                categories.absent.push(record);
+                // case "Absent":
+                //     categories.absent.push(record);
                 break;
             case "Half_Day":
                 categories.halfDay.push(record);

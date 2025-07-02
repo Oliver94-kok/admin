@@ -60,7 +60,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                             },
                                             userId: user.id,
                                             NOT: {
-                                                OR: [{ status: "Absent" }, { status: "Leave" }, { status: "Active" }, { status: "Half_Day" }],
+                                                OR: [{ status: "Leave" }, { status: "Active" }, { status: "Half_Day" }],
                                             },
                                         },
                                     }),
@@ -133,7 +133,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                             //     startDate.format('YYYY-MM-DD'),
                             //     endDate.format('YYYY-MM-DD'),
                             // );
-                            console.log("leave ", user.name, leaveAttend,)
+                            let totalAbsent = absent.length * 100;
                             let totalhalf = halfday.length * 0.5;
                             let totalDay = attends.length + leaveAttend.length + totalhalf;
                             console.log("totalday ", user.name, totalDay,)
@@ -145,7 +145,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                             if (!salary) {
                                 throw new Error(`No salary record found for user ${user.id}`);
                             }
-                            let total = totalDay * salary.perDay! - totalLateFine - totalNoClockInFine + salary.advances! + salary.bonus! + salary.allowance! + salary.cover! + salary.m! + salary.overTime! + salary.transport! + salary.short!
+                            let total = totalDay * salary.perDay! - totalLateFine - totalNoClockInFine + salary.advances! + salary.bonus! + salary.allowance! + salary.cover! + salary.m! + salary.overTime! + salary.transport! + salary.short! - totalAbsent;
                             const updatedSalary = await tx.salary.update({
                                 where: { id: salary.id },
                                 data: {
@@ -153,7 +153,7 @@ export const SalaryCal = async ({ team, year, month }: salaryCalProps) => {
                                     fineNoClockIn: totalNoClockInFine,
                                     fineLate: totalLateFine,
                                     workingDay: totalDay,
-                                    absent: absent.length,
+                                    absent: totalAbsent,
                                 },
                             });
 

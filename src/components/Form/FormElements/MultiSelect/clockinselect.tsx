@@ -1,6 +1,6 @@
 "use client";
 import { typeData } from "@/components/Tables/BranchATable";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface ClockinSelectGroupProps {
   onSendData: (type: typeData, data: string) => void;
@@ -11,9 +11,12 @@ const ClockinSelectGroup: React.FC<ClockinSelectGroupProps> = ({
   onSendData,
   initialValue,
 }) => {
+  console.log("🚀 ~ initialValue:", initialValue)
   const [selectedOption, setSelectedOption] = useState<string>(initialValue);
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
-
+  useEffect(() => {
+    setSelectedOption(initialValue);
+  }, [initialValue]);
   const changeTextColor = () => {
     setIsOptionSelected(true);
   };

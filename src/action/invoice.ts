@@ -71,6 +71,7 @@ export async function getData(): Promise<SalaryRecord[]> {
               transport: true,
               short: true,
               m: true,
+              absent: true,
               users: {
                 select: {
                   name: true,
@@ -94,16 +95,16 @@ export async function getData(): Promise<SalaryRecord[]> {
             ...salary,
             users: salary.users
               ? {
-                  name: salary.users.name,
-                  AttendBranch: salary.users.AttendBranch
-                    ? {
-                        team: salary.users.AttendBranch.team,
-                        branch: salary.users.AttendBranch.branch,
-                        clockIn: salary.users.AttendBranch.clockIn,
-                        clockOut: salary.users.AttendBranch.clockOut,
-                      }
-                    : null,
-                }
+                name: salary.users.name,
+                AttendBranch: salary.users.AttendBranch
+                  ? {
+                    team: salary.users.AttendBranch.team,
+                    branch: salary.users.AttendBranch.branch,
+                    clockIn: salary.users.AttendBranch.clockIn,
+                    clockOut: salary.users.AttendBranch.clockOut,
+                  }
+                  : null,
+              }
               : null,
           };
 

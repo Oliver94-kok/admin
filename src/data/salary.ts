@@ -563,6 +563,7 @@ export const excelData = async (
         transport: true,
         short: true,
         m: true,
+        absent: true,
         users: {
           select: {
             name: true,
@@ -646,5 +647,74 @@ export const excelData = async (
   } catch (error) {
     console.error("Error in excelData:", error);
     return [];
+  }
+};
+/**
+ * Calculates shift allowance. If shiftIn is missing, it estimates it
+ * by subtracting 12 hours from shiftOut.
+ *
+ * @param shiftIn - The start date and time of the shift. Can be null or undefined.
+ * @param shiftOut - The original end date and time of the shift. Must be valid if shiftIn is null.
+ * @param hasOt - A boolean indicating if the user has overtime.
+ * @returns The allowance amount (5 for Mid Shift, 10 for Night Shift) or 0.
+ */
+export const calculateShiftAllowance = async (
+  shiftIn: Date | null | undefined,
+  shiftOut: Date | null | undefined,
+  hasOt: boolean
+): Promise<number> => {
+  try {
+    // If both shiftIn and shiftOut are missing, no calculation is possible.
+    if (!shiftIn && !shiftOut) {
+      return 0;
+    }
+
+    const LOCAL_TIMEZONE = 'Asia/Kuala_Lumpur';
+    let effectiveClockIn;
+    let clockOutWithOt;
+
+    // Determine the effective clock-in time
+    if (shiftIn) {
+      effectiveClockIn = dayjs(shiftIn).tz(LOCAL_TIMEZONE);
+    } else {
+      // ASSUMPTION: If no shift in, estimate it by subtracting 12 hours from shift out.
+      effectiveClockIn = dayjs(shiftOut!).tz(LOCAL_TIMEZONE).subtract(12, 'hour');
+    }
+
+    // Determine the clock-out time, applying OT if necessary
+    let baseClockOut = dayjs(shiftOut!).tz(LOCAL_TIMEZONE);
+    if (hasOt) {
+      clockOutWithOt = baseClockOut.add(4, 'hour');
+    } else {
+      clockOutWithOt = baseClockOut;
+    }
+
+    const clockInHour = effectiveClockIn.hour();
+
+    // --- Mid Shift Allowance: RM5 ---
+    const isMidShift3to3 = clockInHour === 15 && clockOutWithOt.hour() >= 3;
+    const isMidShift4to4 = clockInHour === 16 && clockOutWithOt.hour() >= 4;
+
+    if (isMidShift3to3 || isMidShift4to4) {
+      return 5;
+    }
+
+    // --- Night Shift Allowance: RM10 ---
+    const isNightShift =
+      (clockInHour === 17 && clockOutWithOt.hour() >= 5) ||
+      (clockInHour === 18 && clockOutWithOt.hour() >= 6) ||
+      (clockInHour === 19 && clockOutWithOt.hour() >= 7) ||
+      (clockInHour === 21 && clockOutWithOt.hour() >= 9) ||
+      (clockInHour === 22 && clockOutWithOt.hour() >= 10);
+
+    if (isNightShift) {
+      return 10;
+    }
+
+    return 0; // No allowance if conditions are not met
+
+  } catch (error) {
+    console.error("Error calculating shift allowance:", error);
+    return 0;
   }
 };

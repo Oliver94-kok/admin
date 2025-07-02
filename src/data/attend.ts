@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
 import { DateTime } from "luxon";
-import { calculateTotalSalaryUser, CheckSalarys, createSalary, getAttendLate, getNoClockIn, getSalaryByUserId } from "./salary";
+import { calculateShiftAllowance, calculateTotalSalaryUser, CheckSalarys, createSalary, getAttendLate, getNoClockIn, getSalaryByUserId } from "./salary";
 import { Attends, AttendStatus } from "@prisma/client";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -660,15 +660,15 @@ export async function processClockOut(
     "out"
   );
   let fine200 = branchAssistant.find((e) => e === shift.branch)
-  let add10 = checkShift(shift.clockIn!)
-  // Handle clock out for No_ClockIn case
+  // let add10 = checkShift(shift.clockIn!)
+  // Handle clock out for No_ClockIn case user274
   if (attendance === null || attendance.clockIn === null) {
 
-    return await handleNoClockInCase(userId, attendance, location, today, fine200, add10);
+    return await handleNoClockInCase(userId, attendance, location, today, fine200);
   }
 
   // Handle normal clock out case
-  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today, add10);
+  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today);
 }
 
 async function handleNoClockInCase(
@@ -677,7 +677,7 @@ async function handleNoClockInCase(
   location: string | undefined,
   today: dayjs.Dayjs,
   fine200: string | undefined,
-  add10: string
+
 ): Promise<Response> {
   // Update attendance record
   const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
@@ -703,7 +703,7 @@ async function handleNoClockInCase(
       }
     })
   }
-
+  let add10 = await calculateShiftAllowance(attendance.clockIn, today.toDate(), true)
 
   // Update salary calculations
   const salaryData: AttendanceSalaryData = {
@@ -713,7 +713,7 @@ async function handleNoClockInCase(
     fineNoClockOut: null,
     overtimes: 0,
     workingHour: null,
-    add10: add10 == "" ? 10 : null
+    add10: add10 == 0 ? null : add10
   };
 
   await CheckSalarys(salaryData);
@@ -728,7 +728,7 @@ async function handleNormalClockOut(
   notify: NotifyData,
   shiftOut: Date,
   today: dayjs.Dayjs,
-  add10: string
+
 ): Promise<Response> {
   if (!attendance.clockIn) {
     throw new Error("Clock-in time is missing");
@@ -756,7 +756,7 @@ async function handleNormalClockOut(
           status: attendance.status == "Half_Day" ? "Half_Day" : attendance.fine ? AttendStatus.Late : AttendStatus.Full_Attend
         }
       });
-
+      let add10 = await calculateShiftAllowance(attendance.clockIn, today.toDate(), true)
       // Update salary calculations
       const salaryData: AttendanceSalaryData = {
         userId,
@@ -765,7 +765,7 @@ async function handleNormalClockOut(
         fineNoClockOut: null,
         overtimes: overtimeValue,
         workingHour: workingHour,
-        add10: add10 == "night" ? 10 : null
+        add10: add10 == 0 ? null : add10
       };
 
       await CheckSalarys(salaryData);
