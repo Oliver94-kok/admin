@@ -12,6 +12,9 @@ import { v7 as uuidv7 } from "uuid";
 import { auth } from "../../auth";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { AttendStatus } from "@prisma/client";
+import { branchAssistant } from "@/types/branchs";
+import { getNoClockOut } from "@/data/salary";
 // Extend Dayjs with UTC and Timezone support
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -64,7 +67,26 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
       if (duration == 0.5) {
         let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(startTime.format("YYYY-MM-DD")) } })
         if (attend) {
-          await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
+          let status;
+          let fine2;
+          if (attend.fine) {
+            status = AttendStatus.Half_Day_Late
+          } else if (attend.clockIn == null || attend.clockOut == null) {
+            let fine200 = branchAssistant.find((e) => e === shift?.branch)
+            if (fine200) {
+              fine2 = 200;
+            } else {
+              fine2 = await getNoClockOut(
+                attend.userId,
+                new Date().getMonth() + 1,
+                new Date().getFullYear()
+              );
+            }
+            status = AttendStatus.Half_Day_NoClockIn_Out
+          } else {
+            status = AttendStatus.Half_Day
+          }
+          await db.attends.update({ where: { id: attend.id }, data: { status, fine2, leaveId: leave.id } })
           await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
           return { success: "Leave has been approve" }
         }
@@ -96,9 +118,38 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
       // Loop through dates
       let currentDate = startTime2;
       let d = leave.duration == null ? duration : leave.duration;
-      console.log("🚀 ~ ApproveLeaveV2 ~ durattion:", d)
+      let startHalfDay;
+      if (d % 1 === 0.5) {
+        let [hourOut, minuteOut] = shift.clockOut!.split(':').map(Number)
+        let [hourIn, minuteIn] = shift.clockIn!.split(':').map(Number);
+        let result = (hourOut - hourIn) / 2
+        let result2 = Math.abs(result)
+        let newtoday = startTime.set('hours', hourIn).set("minutes", minuteIn).add(result2, 'h')
+        console.log("🚀 ~ POST ~ newtoday:", newtoday)
+        let isSame = startTime.isSame(newtoday);
+        if (isSame) {
+          startHalfDay = true
+        }
+      }
       while (currentDate.isSameOrBefore(endTime2)) {
-        console.log("🚀 ~ ApproveLeaveV2 ~ currentDate:", currentDate, currentDate.format("YYYY-MM-DD"))
+        if (startHalfDay) {
+          console.log('duration', d, currentDate.format("YYYY-MM-DD"))
+          let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
+          if (attend) {
+
+            await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
+          } else {
+
+            await db.attends.create({
+              data: {
+                userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")), status: "Half_Day", leaveId: leave.id
+              }
+            });
+          }
+          startHalfDay = false
+          d -= 0.5;
+          currentDate = currentDate.add(1, 'day');
+        }
         if (d == 0.5) {
           let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
           if (attend) {
@@ -141,7 +192,26 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     if (leave.duration == 0.5) {
       let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(startTime.format("YYYY-MM-DD")) } })
       if (attend) {
-        await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
+        let status;
+        let fine2;
+        if (attend.fine) {
+          status = AttendStatus.Half_Day_Late
+        } else if (attend.clockIn == null || attend.clockOut == null) {
+          let fine200 = branchAssistant.find((e) => e === shift?.branch)
+          if (fine200) {
+            fine2 = 200;
+          } else {
+            fine2 = await getNoClockOut(
+              attend.userId,
+              new Date().getMonth() + 1,
+              new Date().getFullYear()
+            );
+          }
+          status = AttendStatus.Half_Day_NoClockIn_Out
+        } else {
+          status = AttendStatus.Half_Day
+        }
+        await db.attends.update({ where: { id: attend.id }, data: { status, fine2, leaveId: leave.id } })
         await db.leave.update({ where: { id: leave.id }, data: { status: "Approve" } })
         return { success: "Leave has been approve" }
       }
@@ -174,10 +244,39 @@ export const ApproveLeaveV2 = async (status: "Approve" | "Reject", id: string) =
     // Loop through dates
     let currentDate = startTime2;
     let d = leave.duration!;
-
+    let startHalfDay;
+    if (d % 1 === 0.5) {
+      let [hourOut, minuteOut] = shift.clockOut!.split(':').map(Number)
+      let [hourIn, minuteIn] = shift.clockIn!.split(':').map(Number);
+      let result = (hourOut - hourIn) / 2
+      let result2 = Math.abs(result)
+      let newtoday = startTime.set('hours', hourIn).set("minutes", minuteIn).add(result2, 'h')
+      console.log("🚀 ~ POST ~ newtoday:", newtoday)
+      let isSame = startTime.isSame(newtoday);
+      if (isSame) {
+        startHalfDay = true
+      }
+    }
     while (currentDate.isSameOrBefore(endTime2)) {
       // Do something with the current date
-
+      if (startHalfDay) {
+        console.log('duration', d, currentDate.format("YYYY-MM-DD"))
+        let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
+        if (attend) {
+          console.log('have', d, currentDate.format("YYYY-MM-DD"))
+          await db.attends.update({ where: { id: attend.id }, data: { status: "Half_Day", leaveId: leave.id } })
+        } else {
+          console.log('not', d, currentDate.format("YYYY-MM-DD"))
+          await db.attends.create({
+            data: {
+              userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")), status: "Half_Day", leaveId: leave.id
+            }
+          });
+        }
+        startHalfDay = false
+        d -= 0.5;
+        currentDate = currentDate.add(1, 'day');
+      }
       if (d == 0.5) {
         let attend = await db.attends.findFirst({ where: { userId: leave.userId, dates: new Date(currentDate.format("YYYY-MM-DD")) } })
         if (attend) {

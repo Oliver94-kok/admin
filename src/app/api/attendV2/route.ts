@@ -61,7 +61,7 @@ export const PATCH = async (req: Request): Promise<Response> => {
         //   throw new Error("No clock-in record found");
         // }
 
-        if (attendance?.status === AttendStatus.Full_Attend) {
+        if (attendance?.status === AttendStatus.Full_Attend || attendance?.status === AttendStatus.Late || attendance?.status === AttendStatus.No_ClockIn_ClockOut || attendance?.status === AttendStatus.No_clockIn_ClockOut_Late) {
             throw new Error("You have already clocked out");
         }
         return await processClockOut(userId, attendance!, location, notify);

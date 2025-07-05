@@ -107,38 +107,56 @@ export const CheckSalarys = async ({
     let newOverTime = salary.overTimeHour! + overtimes!;
     var data;
     if (fineLate) {
+      let overTimeAdd10 = 0;
+      if (add10 != null) {
+        overTimeAdd10 = salary.overTime! + add10
+      }
       var newFineLAte = salary.fineLate! + fineLate;
       data = {
         fineLate: newFineLAte,
         workingDay: newWorkingDay,
         overTimeHour: newOverTime,
+        overTime: overTimeAdd10
       };
       await db.salary.update({ where: { id: salary.id }, data });
       return;
     }
     if (fineNoClockIn) {
+      let overTimeAdd10 = 0;
+      if (add10 != null) {
+        overTimeAdd10 = salary.overTime! + add10
+      }
       var newfineNoClockIn = salary.fineNoClockIn! + fineNoClockIn;
       data = {
         fineNoClockIn: newfineNoClockIn,
         workingDay: newWorkingDay,
         overTimeHour: newOverTime,
+        overTime: overTimeAdd10
       };
       await db.salary.update({ where: { id: salary.id }, data });
       return;
     }
     if (fineNoClockOut) {
+      let overTimeAdd10 = 0;
+      if (add10 != null) {
+        overTimeAdd10 = salary.overTime! + add10
+      }
       var newfineNoClockOut = salary.fineNoClockOut! + fineNoClockOut;
       data = {
         fineNoClockOut: newfineNoClockOut,
         workingDay: newWorkingDay,
         overTimeHour: newOverTime,
+        overTime: overTimeAdd10
       };
       await db.salary.update({ where: { id: salary.id }, data });
       return;
     }
     let overTimeAdd10 = 0;
+    console.log("🚀 ~check salary add10:", add10)
     if (add10 != null) {
-      overTimeAdd10 = salary.overTime! + 10
+
+      overTimeAdd10 = salary.overTime! + add10
+      console.log("🚀 ~ overTimeAdd10:", overTimeAdd10)
     }
     data = {
       workingDay: newWorkingDay,

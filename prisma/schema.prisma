@@ -22,6 +22,7 @@ enum UserRole {
   MANAGER_D
   MANAGER_E
   SWManager
+  Manager_Ocean
 }
 
 enum AttendStatus {
@@ -34,6 +35,8 @@ enum AttendStatus {
   Late
   OffDay
   Half_Day
+  Half_Day_Late
+  Half_Day_NoClockIn_Out
 }
 
 enum LocationUserStatus {

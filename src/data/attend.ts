@@ -653,22 +653,28 @@ export async function processClockOut(
   if (!shift?.clockOut || !shift?.branch) {
     throw new Error(`No shift found for user ${userId}`);
   }
-
+  let [hournightshift, minuteNight] = shift.clockOut!.split(':').map(Number);
+  let newToday;
+  if (hournightshift >= 0 && hournightshift <= 9) {
+    newToday = today.subtract(1, "days")
+  } else {
+    newToday = today
+  }
   const shiftOut = TimeUtils.createDateFromTimeString(
-    today.toDate(),
+    newToday.toDate(),
     shift.clockOut,
     "out"
   );
   let fine200 = branchAssistant.find((e) => e === shift.branch)
-  // let add10 = checkShift(shift.clockIn!)
-  // Handle clock out for No_ClockIn case user274
-  if (attendance === null || attendance.clockIn === null) {
+  let office = shift.branch == "小off" ? true : false;
+  console.log("🚀 ~ office:", office)
+  if (attendance === null) {
 
-    return await handleNoClockInCase(userId, attendance, location, today, fine200);
+    return await handleNoClockInCase(userId, attendance, location, today, fine200, shiftOut, office);
   }
 
   // Handle normal clock out case
-  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today);
+  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today, office);
 }
 
 async function handleNoClockInCase(
@@ -677,10 +683,13 @@ async function handleNoClockInCase(
   location: string | undefined,
   today: dayjs.Dayjs,
   fine200: string | undefined,
-
+  shiftOut: Date,
+  office: boolean
 ): Promise<Response> {
+  console.log("masuk sini ", office)
   // Update attendance record
   const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
+  let ot = await calculateOvertimeHours(shiftOut, today)
   if (attendance == null) {
     const result = await db.attends.create({
       data: {
@@ -688,6 +697,7 @@ async function handleNoClockInCase(
         dates: today.toDate(),
         clockOut: today.toISOString(),
         status: AttendStatus.No_ClockIn_ClockOut,
+        overtime: ot,
         locationOut: location || null,
         fine2: fine200 ? Number(fine200) : fine2
       }
@@ -696,6 +706,7 @@ async function handleNoClockInCase(
     await db.attends.update({
       where: { id: attendance.id }, data: {
         clockOut: today.toISOString(),
+        overtime: ot,
         status: AttendStatus.No_ClockIn_ClockOut,
         locationOut: location || null,
         fine: null,
@@ -703,17 +714,32 @@ async function handleNoClockInCase(
       }
     })
   }
-  let add10 = await calculateShiftAllowance(attendance.clockIn, today.toDate(), true)
 
+  let add10 = await calculateShiftAllowance(attendance != null ? attendance.clockIn : null, today.toDate(), true)
+  console.log("🚀 ~ add10:", add10)
+  let newot;
+  if (office) {
+    console.log("🚀 ~ office:if", office)
+    newot = ot * 10
+    console.log("🚀 ~ newot:if", newot)
+  } else {
+    console.log("🚀 ~ add10:if", add10)
+    if (add10 == 0) {
+
+      newot = null;
+    } else {
+      newot = add10
+    }
+  }
   // Update salary calculations
   const salaryData: AttendanceSalaryData = {
     userId,
     fineLate: null,
     fineNoClockIn: fine200 ? Number(fine200) : fine2,
     fineNoClockOut: null,
-    overtimes: 0,
+    overtimes: ot,
     workingHour: null,
-    add10: add10 == 0 ? null : add10
+    add10: newot
   };
 
   await CheckSalarys(salaryData);
@@ -728,8 +754,9 @@ async function handleNormalClockOut(
   notify: NotifyData,
   shiftOut: Date,
   today: dayjs.Dayjs,
-
+  office: boolean
 ): Promise<Response> {
+  console.log("masuk sana ")
   if (!attendance.clockIn) {
     throw new Error("Clock-in time is missing");
   }
@@ -765,7 +792,7 @@ async function handleNormalClockOut(
         fineNoClockOut: null,
         overtimes: overtimeValue,
         workingHour: workingHour,
-        add10: add10 == 0 ? null : add10
+        add10: office ? overtimeValue * 10 : (add10 == 0 ? null : add10)
       };
 
       await CheckSalarys(salaryData);

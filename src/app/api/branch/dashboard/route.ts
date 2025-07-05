@@ -13,5 +13,6 @@ export const GET = async (req: Request) => {
   const teamD = data.filter((d) => d.team === "D");
   const teamE = data.filter((e) => e.team === "E");
   const teamSW = data.filter((e) => e.team === "SW");
-  return Response.json({ teamA, teamB, teamC, teamD, teamE, teamSW }, { status: 200 });
+  const teamOcean = data.filter((e) => e.team === "Ocean");
+  return Response.json({ teamA, teamB, teamC, teamD, teamE, teamSW, teamOcean }, { status: 200 });
 };

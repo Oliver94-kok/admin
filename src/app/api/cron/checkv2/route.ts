@@ -216,8 +216,6 @@ async function processActiveAttendances(activeAttendances: Attends[]): Promise<P
                         currentYear
                     );
                 }
-
-
                 // Update the attendance record
                 await db.attends.update({
                     where: { id: attend.id },
