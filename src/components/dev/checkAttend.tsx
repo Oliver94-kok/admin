@@ -1,34 +1,89 @@
 'use client'
+import { CalculateOverTime } from "@/action/dev/calOverTime"
 import { attendCheck } from "@/action/dev/checkAttend"
 import { useState } from "react"
 
-
 export const CheckAttend = () => {
-    const [date, setDate] = useState("")
+    const [type, setType] = useState("")
+    const [month, setMonth] = useState("")
+    const [year, setYear] = useState("")
+
     const check = async () => {
         try {
-            attendCheck({ date: "2025-03-10" }).then((data) => {
-                console.log("🚀 ~ attendCheck ~ data:", data)
+            if (!year || !month) {
+                alert("Please select both year and month");
+                return;
+            }
 
-            })
+            // Convert to numbers
+            const yearNum = parseInt(year);
+            const monthNum = parseInt(month);
+
+            // First day is always the 1st of the month
+            const firstDay = new Date(yearNum, monthNum - 1, 1);
+
+            // Last day: go to next month and back one day
+            const lastDay = new Date(yearNum, monthNum, 0);
+
+            // Format dates as YYYY-MM-DD
+            const formatDate = (date: Date) => {
+                const pad = (num: number) => num.toString().padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+            };
+
+            const firstDayFormatted = formatDate(firstDay);
+            const lastDayFormatted = formatDate(lastDay);
+
+            console.log("First day:", firstDayFormatted);
+            console.log("Last day:", lastDayFormatted);
+            let result = await CalculateOverTime(type == 'Office' ? 'Office' : "nightshift", firstDay, lastDay)
+            console.log("🚀 ~ check ~ result:", result)
+
         } catch (error) {
-            console.log("🚀 ~ check ~ error:", error)
-
+            console.log("🚀 ~ check ~ error:", error);
         }
     }
     return (
         <>
             <div className="flex flex-col space-y-4">
-                Check duplicate attend by date
+                calculate Overtime
                 <div>
-                    <label htmlFor="">Date</label>
-                    <input
-                        type="text"
-                        onChange={(e) => setDate(e.target.value)}
-                        className="w-full rounded-[7px] border border-stroke bg-transparent px-5 py-2.5 outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-                        placeholder="YYYY-MM-DD"
-                    />
-
+                    <label htmlFor="">Year</label>
+                    <select
+                        className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary active:border-primary disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                    >
+                        <option value="">Select year</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="">Month</label>
+                    <select
+                        className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary active:border-primary disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+                        value={month}
+                        onChange={(e) => setMonth(e.target.value)}
+                    >
+                        <option value="">Select month</option>
+                        {Array.from({ length: 12 }, (_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                                {new Date(0, i).toLocaleString('en-US', { month: "long" })}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <select
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                        className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary active:border-primary disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+                    >
+                        <option value="">Select</option>
+                        <option value='nightshift'>Night shift</option>
+                        <option value='Office'>Office</option>
+                    </select>
                 </div>
                 <button onClick={check} className=" bg-blue-700 rounded-lg w-full text-white">Check</button>
             </div>

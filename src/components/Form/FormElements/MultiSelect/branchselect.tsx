@@ -1,6 +1,6 @@
 "use client";
 import { typeData } from "@/components/Tables/BranchATable";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface BranchSelectGroupProps {
   onSendData: (type: typeData, data: string) => void;
@@ -17,6 +17,9 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
   const changeTextColor = () => {
     setIsOptionSelected(true);
   };
+  useEffect(() => {
+    setSelectedOption(initialValue);
+  }, [initialValue]);
 
   return (
     <div>
@@ -50,6 +53,12 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
           </option>
           <option value="E" className="text-dark-5 dark:text-dark-6">
             E
+          </option>
+          <option value="SW" className="text-dark-5 dark:text-dark-6">
+            SW
+          </option>
+          <option value="Ocean" className="text-dark-5 dark:text-dark-6">
+            Ocean
           </option>
         </select>
 

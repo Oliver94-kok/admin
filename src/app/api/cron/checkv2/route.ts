@@ -100,7 +100,7 @@ export const POST = async (req: Request) => {
             db.attends.findMany({ where: { dates: todayDate, status: "Active" } }) as Promise<Attends[]>,
             db.attends.findMany({
                 where: {
-                    dates: todayDate, clockIn: null, clockOut: null, status: {
+                    clockIn: null, clockOut: null, status: {
                         in: [
                             'No_ClockIn_ClockOut',
                             "No_clockIn_ClockOut_Late"
@@ -217,9 +217,19 @@ async function processActiveAttendances(activeAttendances: Attends[]): Promise<P
                     );
                 }
                 // Update the attendance record
+                let status;
+                if (attend.clockIn == null && attend.clockOut == null) {
+                    status = AttendStatus.Absent
+                } else {
+                    if (attend.fine) {
+                        status = AttendStatus.No_clockIn_ClockOut_Late
+                    } else {
+                        status = AttendStatus.No_ClockIn_ClockOut
+                    }
+                }
                 await db.attends.update({
                     where: { id: attend.id },
-                    data: { status: attend.fine ? "No_clockIn_ClockOut_Late" : "No_ClockIn_ClockOut", fine2 }
+                    data: { status, fine2 }
                 });
 
                 // Update salary information
