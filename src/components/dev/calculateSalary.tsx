@@ -92,6 +92,8 @@ export const CalculateSalary = () => {
                             <option value="C">C</option>
                             <option value="D">D</option>
                             <option value="E">E</option>
+                            <option value="SW">SW</option>
+                            <option value="Ocean">Ocean</option>
                         </select>
                     </div>
                     {error && (<><p className="text-red-600">{error}</p></>)}

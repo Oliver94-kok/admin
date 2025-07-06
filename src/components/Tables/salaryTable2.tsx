@@ -470,15 +470,20 @@ export const SalaryTable2 = () => {
                 d.push(dd);
                 totals = totals + e.fine2!
             })
-            const lateNumbers: string = `No clock in or out * ${d.join(', ')} RM${totals}`;
+            data.dataAbsent.map((e) => {
+                let dd = e.dates.getDate();
+                d.push(dd)
+            })
+            let newtotal = totals + (data.dataAbsent.length * 100);
+            const lateNumbers: string = `No clock in or out * ${d.join(', ')} RM${newtotal}`;
             return lateNumbers
         } else if (type == "Absent") {
             data.dataAbsent.map((e) => {
                 let dd = e.dates.getDate();
                 d.push(dd)
             })
-            totals = data.dataAbsent.length * 100;
-            const lateNumbers: string = `Absent * ${d.join(', ')} RM${totals}`;
+            // totals = data.dataAbsent.length * 100;
+            const lateNumbers: string = `Absent * ${d.join(', ')}`;
             return lateNumbers
         }
         return "1212"
