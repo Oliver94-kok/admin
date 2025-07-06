@@ -483,7 +483,7 @@ export const SalaryTable2 = () => {
                 d.push(dd)
             })
             // totals = data.dataAbsent.length * 100;
-            const lateNumbers: string = `Absent * ${d.join(', ')}`;
+            const lateNumbers: string = `Absent * `;
             return lateNumbers
         }
         return "1212"
