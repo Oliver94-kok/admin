@@ -626,7 +626,7 @@ export async function handleClockOut(
     console.log("🚀 ~ error:", error)
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     await Logging(userId, "Clock out", errorMessage);
-    throw error; // Re-throw to be caught by the main try-catch
+    throw error; // Re-throw to be caught by the main try-catch 274
   }
 }
 
@@ -666,6 +666,7 @@ export async function processClockOut(
     "out"
   );
   let fine200 = branchAssistant.find((e) => e === shift.branch)
+  console.log("🚀 ~ fine200:", fine200)
   let office = shift.branch == "小off" ? true : false;
   console.log("🚀 ~ office:", office)
   if (attendance === null) {
@@ -699,7 +700,7 @@ async function handleNoClockInCase(
         status: AttendStatus.No_ClockIn_ClockOut,
         overtime: ot,
         locationOut: location || null,
-        fine2: fine200 ? Number(fine200) : fine2
+        fine2: fine200 ? Number(200) : fine2
       }
     });
   } else {
@@ -710,7 +711,7 @@ async function handleNoClockInCase(
         status: AttendStatus.No_ClockIn_ClockOut,
         locationOut: location || null,
         fine: null,
-        fine2: fine200 ? Number(fine200) : fine2
+        fine2: fine200 ? Number(200) : fine2
       }
     })
   }
@@ -735,7 +736,7 @@ async function handleNoClockInCase(
   const salaryData: AttendanceSalaryData = {
     userId,
     fineLate: null,
-    fineNoClockIn: fine200 ? Number(fine200) : fine2,
+    fineNoClockIn: fine200 ? Number(200) : fine2,
     fineNoClockOut: null,
     overtimes: ot,
     workingHour: null,

@@ -2,6 +2,7 @@ import { CalculateSalary } from "./calculateSalary"
 import { CheckAttend } from "./checkAttend"
 import { ClockAttend } from "./clockAttend"
 import { ShiftClock } from "./clockShift"
+import { Fine } from "./fine"
 import { NoClockInorOut } from "./noClockInorOut"
 
 
@@ -31,6 +32,10 @@ export const ListAction = () => {
                 <div
                     className=" h-[22rem] w-[21rem] rounded-[10px] bg-white p-4 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:p-6 2xl:p-10">
                     <CheckAttend />
+                </div>
+                <div
+                    className=" h-[22rem] w-[21rem] rounded-[10px] bg-white p-4 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:p-6 2xl:p-10">
+                    <Fine />
                 </div>
             </div>
         </>

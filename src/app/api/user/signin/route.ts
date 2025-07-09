@@ -35,7 +35,7 @@ export const POST = async (req: Request) => {
     let branch = await db.branch.findMany({
       where: { team: user.AttendBranch?.team },
     });
-    let usersRole = ['user80', 'user77', 'user78', 'user79', 'user135 ', 'user136', 'user137', 'user187', 'user274']
+    let usersRole = ['user80', 'user77', 'user78', 'user79', 'user135 ', 'user136', 'user137', 'user187',]
     let roles = usersRole.find((e) => e === user?.username!);
 
     return Response.json({

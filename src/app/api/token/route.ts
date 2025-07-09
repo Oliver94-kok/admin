@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
-const TRACKER_USERNAMES = ['user80', 'user77', 'user78', 'user79', 'user135', 'user136', 'user137', 'user187', 'user274',].map(u => u.trim()); // Trim spaces
+const TRACKER_USERNAMES = ['user80', 'user77', 'user78', 'user79', 'user135', 'user136', 'user137', 'user187',].map(u => u.trim()); // Trim spaces
 
 async function processAndRespond(
   userForProcessing: { id: string; username: string; /* other fields needed from initial user lookup */ },

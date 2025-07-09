@@ -3,8 +3,9 @@ import { CalculateOverTime } from "@/action/dev/calOverTime"
 import { attendCheck } from "@/action/dev/checkAttend"
 import { useState } from "react"
 import { Loader2 } from "../common/loader2/loader2"
+import { calFineUser } from "@/action/dev/calFine"
 
-export const CheckAttend = () => {
+export const Fine = () => {
     const [type, setType] = useState("")
     const [month, setMonth] = useState("")
     const [year, setYear] = useState("")
@@ -39,7 +40,7 @@ export const CheckAttend = () => {
             const lastDayFormatted = formatDate(lastDay);
 
 
-            let result = await CalculateOverTime(type == 'Office' ? 'Office' : "nightshift", firstDay, lastDay)
+            let result = await calFineUser(firstDay, lastDay)
             if (result.error) {
                 setError(result.error)
                 return
@@ -58,7 +59,7 @@ export const CheckAttend = () => {
     return (
         <>
             <div className="flex flex-col space-y-4">
-                calculate Overtime
+                calculate Fine
                 {isloading ? <Loader2 /> : <>
                     <div>
                         <label htmlFor="">Year</label>
