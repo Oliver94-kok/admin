@@ -669,7 +669,7 @@ export async function processClockOut(
   console.log("🚀 ~ fine200:", fine200)
   let office = shift.branch == "小off" ? true : false;
   console.log("🚀 ~ office:", office)
-  if (attendance === null) {
+  if (attendance === null || attendance.clockIn == null) {
 
     return await handleNoClockInCase(userId, attendance, location, today, fine200, shiftOut, office);
   }
