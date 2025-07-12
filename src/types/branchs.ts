@@ -11,5 +11,5 @@ export interface BranchsUser {
 }
 
 export const branchAssistant = [
-  "助手A", "助手B", "助手C", "助手D", "助手E" , "店长E"
+  "助手A", "助手B", "助手C", "助手D", "助手E" 
 ]
