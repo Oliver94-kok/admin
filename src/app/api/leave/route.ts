@@ -23,14 +23,14 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: Request) => {
   // const requestBody = await req.json();
-  const { userId, reason, type, startDate, endDate, status, imgs, totalDay, notify, } =
+  const { userId, reason, type, startDate, endDate, status, img, totalDay, notify, } =
     await req.json();
 
   try {
     const users = await getUserById(userId);
     let imgname = "";
-    if (imgs) {
-      let result = await postImage(imgs, users?.username!, "leave");
+    if (img) {
+      let result = await postImage(img, users?.username!, "leave");
       if (result?.error)
         throw new Error("Error upload image")
       imgname = result?.success;
@@ -56,7 +56,7 @@ export const POST = async (req: Request) => {
     let data = {
       userId,
       reason,
-      type:englishType,
+      type: englishType,
       startDate: startTime.format("YYYY-MM-DD HH:mm"),
       endDate: endTime.format("YYYY-MM-DD HH:mm"),
       status,
