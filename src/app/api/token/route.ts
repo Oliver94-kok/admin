@@ -61,15 +61,15 @@ async function processAndRespond(
 export const POST = async (req: Request) => {
   try {
     const { token: tokenFromRequest, versionApp } = await req.json();
-    // if (!versionApp) {
-    //   return Response.json({ Error: "Version app not provided" }, { status: 400 });
-    // }
+    if (!versionApp) {
+      return Response.json({ Error: "Version app not provided" }, { status: 400 });
+    }
     if (!tokenFromRequest) {
       return Response.json({ Error: "Token not provided" }, { status: 400 });
     }
-    // if (versionApp != '1.1.4') {
-    //   return Response.json({ Error: "Version app not supported" }, { status: 400 });
-    // }
+    if (versionApp != '1.1.6') {
+      return Response.json({ Error: "Version app not supported" }, { status: 400 });
+    }
 
     // Find user by the token they provided (which should be the one in user.token)
     const user = await db.user.findFirst({ where: { token: tokenFromRequest } });

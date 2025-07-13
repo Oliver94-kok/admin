@@ -14,12 +14,12 @@ export const POST = async (req: Request) => {
   let userid
   try {
     const { username, password, versionApp } = await req.json();
-    // if (!versionApp) {
-    //   return Response.json({ Error: "Version app not provided " }, { status: 400 })
-    // }
-    // if (versionApp != '1.1.6') {
-    //   return Response.json({ Error: "Version app not supported" }, { status: 400 });
-    // }
+    if (!versionApp) {
+      return Response.json({ Error: "Version app not provided " }, { status: 400 })
+    }
+    if (versionApp != '1.1.6') {
+      return Response.json({ Error: "Version app not supported" }, { status: 400 });
+    }
     let user = await getUserByUsernameWithAttend(username);
     if (!user) throw new Error("User not exist");
     userid = user.id
