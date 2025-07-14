@@ -116,7 +116,15 @@ async function handleStaleActiveAttendances() {
 
       const attendanceDate = dayjs(attendance.dates);
       const [outHour, outMinute] = shift.clockOut.split(":").map(Number);
-      const shiftOutTime = attendanceDate.hour(outHour).minute(outMinute);
+      let shiftOutTime;
+      if (outHour >= 0 && outHour <= 7) {
+        shiftOutTime = attendanceDate.hour(outHour).minute(outMinute).add(1, 'day');
+        console.log("🚀 ~ GET ~ shiftOutTime if:", shiftOutTime)
+      } else {
+        shiftOutTime = attendanceDate.hour(outHour).minute(outMinute);
+        console.log("🚀 ~ GET ~ shiftOutTime else:", shiftOutTime)
+      }
+      // const shiftOutTime = attendanceDate.hour(outHour).minute(outMinute);
       const overtimeEndTime = shiftOutTime.add(4, "hour"); // 4-hour overtime buffer
 
       if (dayjs().isAfter(overtimeEndTime)) {
