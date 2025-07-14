@@ -475,6 +475,58 @@ export const getShiftIn = async () => {
     return null
   }
 }
+
+export async function handleHalfDataClockIn(alreadyClockIn: Attends, img?: string, location?: string, notice?: boolean, username?: string): Promise<Response> {
+  const today = dayjs();
+  const shift = await db.attendBranch.findFirst({ where: { userId: alreadyClockIn.userId } });
+  if (!shift?.clockIn) {
+    throw new Error(`No shift found for user ${alreadyClockIn.userId}`);
+  }
+  const shiftIn = TimeUtils.createDateFromTimeString(today.toDate(), shift.clockIn, "in");
+  const lateThreshold = dayjs(shiftIn).add(659, "second");
+  const isLate = today.isAfter(lateThreshold);
+  const lateOneHour = dayjs(shiftIn).add(2, 'hour')
+  const isToLate = today.isAfter(lateOneHour);
+  if (isToLate) {
+    return Response.json({ error: "To late clock in" }, { status: 400 });
+  }
+  let fine: number | null = null;
+  if (isLate) {
+    let fine200 = branchAssistant.find((e) => e === shift.branch)
+    if (fine200) {
+      fine = 200;
+    } else {
+      fine = await getAttendLate(alreadyClockIn.userId, today.month() + 1, today.year());
+    }
+
+  }
+
+  // Upload clock-in image
+  if (!img || !username) {
+    return Response.json({ error: "Image or username is missing" }, { status: 400 });
+  }
+
+  const imageResult = await postImage(img, username, "clock");
+  if (imageResult?.error) {
+    return Response.json({ error: "Error uploading image" }, { status: 400 });
+  }
+
+
+  const result = await db.attends.update({
+    where: {
+      id: alreadyClockIn.id
+    },
+    data: {
+      clockIn: today.toISOString(),
+      img: imageResult?.success,
+      fine: fine,
+      locationIn: location || null
+    }
+  });
+  return Response.json({ id: result.id, timeIn: result.clockIn }, { status: 201 });
+}
+
+
 export async function handleClockIn(
   userId: string,
   imgClockIn?: string,
@@ -494,7 +546,7 @@ export async function handleClockIn(
   const shiftIn = TimeUtils.createDateFromTimeString(today.toDate(), shift.clockIn, "in");
   const lateThreshold = dayjs(shiftIn).add(659, "second");
   const isLate = today.isAfter(lateThreshold);
-  const lateOneHour = dayjs(shiftIn).add(1, 'hour')
+  const lateOneHour = dayjs(shiftIn).add(2, 'hour')
   const isToLate = today.isAfter(lateOneHour);
   if (isToLate) {
     return Response.json({ error: "To late clock in" }, { status: 400 });

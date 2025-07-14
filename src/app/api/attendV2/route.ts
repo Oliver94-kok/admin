@@ -1,4 +1,4 @@
-import { checkClockIn, handleClockIn, processClockOut } from "@/data/attend";
+import { checkClockIn, handleClockIn, handleHalfDataClockIn, processClockOut } from "@/data/attend";
 import { Logging } from "@/data/log";
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db"
@@ -19,13 +19,18 @@ export const POST = async (req: Request) => {
         if (!user) {
             return Response.json({ error: "User not found" }, { status: 404 });
         }
+        console.log("🚀 ~ POST ~ alreadyClockIn:", alreadyClockIn)
         if (alreadyClockIn) {
+            if (alreadyClockIn?.status == "Half_Day") {
+                return handleHalfDataClockIn(alreadyClockIn, img, location, notice, user.username)
+            }
             return Response.json({ error: "User already clocked in" }, { status: 400 });
         }
         return handleClockIn(userId, img, location, notice, user.username)
     } catch (error) {
-        return Response.json({ Error: "Something went wrong" }, { status: 500 })
+        return Response.json({ error: "Something went wrong" }, { status: 500 })
     }
+
 }
 const notificationSchema = z.object({
     id: z.string().uuid(),
