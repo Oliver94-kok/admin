@@ -117,7 +117,7 @@ async function handleStaleActiveAttendances() {
       const attendanceDate = dayjs(attendance.dates);
       const [outHour, outMinute] = shift.clockOut.split(":").map(Number);
       let shiftOutTime;
-      if (outHour >= 0 && outHour <= 7) {
+      if (outHour >= 0 && outHour <= 9) {
         shiftOutTime = attendanceDate.hour(outHour).minute(outMinute).add(1, 'day');
         console.log("🚀 ~ GET ~ shiftOutTime if:", shiftOutTime)
       } else {
