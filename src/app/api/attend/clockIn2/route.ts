@@ -1,5 +1,8 @@
 import { isOffDay } from "@/data/attend";
+import { getNoClockOut } from "@/data/salary";
 import { db } from "@/lib/db";
+import { branchAssistant } from "@/types/branchs";
+import { AttendStatus } from "@prisma/client";
 import dayjs from "dayjs";
 
 const CLOCK_OUT_GRACE_PERIOD_HOURS = 4;
@@ -34,54 +37,49 @@ export const POST = async (req: Request) => {
       return Response.json({ Error: "No shift time found" }, { status: 400 })
     }
     if (activeAttendant) {
+      console.log("masuk activeAttendant");
+      const attendanceDate = dayjs(activeAttendant.dates);
+      const [outHour, outMinute] = usershift.clockOut.split(":").map(Number);
+      let shiftOutTime;
+      if (outHour >= 0 && outHour <= 9) {
+        // Overnight shift - add 1 day
+        shiftOutTime = attendanceDate.hour(outHour).minute(outMinute).add(1, 'day');
+        console.log("🚀 ~ Overnight shift end time:", shiftOutTime.format());
+      } else {
+        // Same day shift
+        shiftOutTime = attendanceDate.hour(outHour).minute(outMinute);
+        console.log("🚀 ~ Same day shift end time:", shiftOutTime.format());
+      }
 
-      let dateActive = dayjs(activeAttendant.dates);
-      if (dateActive.isSame(yesterday, 'day')) {
-        let shiftOut = usershift.clockOut.split(":").map(Number);
-        console.log("🚀 ~ POST ~ shiftOut:", shiftOut)
-        let shiftIn = usershift.clockIn.split(":").map(Number);
-        console.log("🚀 ~ POST ~ shiftIn:", shiftIn)
-        let isOvernightShift = shiftOut[0] < shiftIn[0];
-        console.log("🚀 ~ POST ~ isOvernightShift:", isOvernightShift)
-        let out;
-        if (isOvernightShift) {
-          // For overnight shifts, clock out is on the next day
-          out = dateActive
-            .add(1, 'day')  // Move to next day for clock out
-            .hour(shiftOut[0])  // Use actual clock out hour (e.g., 7 AM)
-            .minute(shiftOut[1])
-            .second(0);
+      const overtimeEndTime = shiftOutTime.add(4, "hour"); // 4-hour overtime buffer
+      const now = dayjs();
+      if (now.isAfter(overtimeEndTime)) {
+        console.log(("masuk lepas overtime"))
+        const fine = await getFineForNoClockOut(
+          activeAttendant.userId,
+          usershift.branch,
+          attendanceDate.toDate()
+        );
 
-          // Convert to UTC (Kuala Lumpur is UTC+8, so subtract 8 hours)
-          // out = out.subtract(8, 'hours');
-        } else {
-          // For regular day shifts, same day clock out
-          out = dateActive
-            .hour(shiftOut[0])
-            .minute(shiftOut[1])
-            .second(0);
-
-          // Convert to UTC
-          // out = out.subtract(8, 'hours');
-        }
-        console.log("🚀 ~ POST ~ dateActive: ", out.toISOString());
-        out = out.add(CLOCK_OUT_GRACE_PERIOD_HOURS, 'hours');
-
-        console.log("🚀 ~ POST ~ dateActive:4 ", out.toISOString());
-        console.log("🚀 ~ POST ~ isOvernightShift:", isOvernightShift);
-
-        let cannotClockout = dayjs().isAfter(out);
-        if (!cannotClockout) {
-          return Response.json({
-            id: activeAttendant.id,
-            status: activeAttendant.status,
-            shiftIn: activeAttendant.clockIn,
-            shiftOut: activeAttendant.clockOut,
-            locationIn: activeAttendant.locationIn,
-            locationOut: activeAttendant.locationOut,
-          }, { status: 200 });
-        }
-
+        await db.attends.update({
+          where: { id: activeAttendant.id },
+          data: {
+            status: AttendStatus.No_ClockIn_ClockOut,
+            fine2: fine
+          },
+        });
+        return Response.json({ status: "Not_Start_shift" }, { status: 200 });
+      }
+      else {
+        console.log(("masuk lepas xlepas"))
+        return Response.json({
+          id: activeAttendant.id,
+          status: activeAttendant.status,
+          shiftIn: activeAttendant.clockIn,
+          shiftOut: activeAttendant.clockOut,
+          locationIn: activeAttendant.locationIn,
+          locationOut: activeAttendant.locationOut,
+        }, { status: 200 });
       }
     }
     if (todayAttendant) {
@@ -111,5 +109,25 @@ export const POST = async (req: Request) => {
 
   } catch (error) {
     return Response.json(error, { status: 400 })
+  }
+}
+async function getFineForNoClockOut(
+  userId: string,
+  branch: string | null | undefined,
+  date: Date
+): Promise<number> {
+  try {
+    const isAssistantBranch = branchAssistant.find((b) => b === branch);
+    if (isAssistantBranch) {
+      return 200;
+    }
+
+    const fine = await getNoClockOut(userId, date.getMonth() + 1, date.getFullYear());
+    // Handle null case - return default fine if getNoClockOut returns null
+    return fine ?? 200;
+  } catch (error) {
+    console.error(`Error calculating fine for user ${userId}:`, error);
+    // Return default fine in case of error
+    return 200;
   }
 }
