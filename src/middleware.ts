@@ -31,9 +31,20 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-
-  // Create response early to allow modifications
   const response = NextResponse.next();
+  // Create response early to allow modifications
+  const allowedOrigins = [
+    'https://app.ocean00.com',
+    'https://www.ocean00.com',
+    'http://localhost:3000' // for development
+  ]
+
+  const origin = req.headers.get('origin')
+
+  if (allowedOrigins.includes(origin!)) {
+    response.headers.set('Access-Control-Allow-Origin', origin!)
+  }
+
   // response.headers.set('Access-Control-Allow-Origin', '*'); // Or specify your Flutter app's origin
   // response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   // response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
