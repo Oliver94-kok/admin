@@ -77,6 +77,8 @@ export default auth((req) => {
 
   // Early return for API authentication routes
   if (apiAuthPrefix.some(prefix => nextUrl.pathname.startsWith(prefix))) {
+    const authHeader = req.headers.get('Authorization')
+    console.log("🚀 ~ auth ~ authHeader:", authHeader)
     return response;
   }
 
