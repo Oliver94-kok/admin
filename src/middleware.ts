@@ -36,18 +36,20 @@ export default auth((req) => {
   const allowedOrigins = [
     'https://app.ocean00.com',
     'https://www.ocean00.com',
-    'http://localhost:3000' // for development
+    'http://localhost:3000', // for development
+    'http://localhost:3010'
   ]
 
   const origin = req.headers.get('origin')
 
-  if (allowedOrigins.includes(origin!)) {
-    response.headers.set('Access-Control-Allow-Origin', origin!)
-  }
+  // if (allowedOrigins.includes(origin!)) {
+  //   console.log(`Setting CORS headers for origin: ${origin}`);
+  //   response.headers.set('Access-Control-Allow-Origin', origin!)
+  // }
 
-  // response.headers.set('Access-Control-Allow-Origin', '*'); // Or specify your Flutter app's origin
-  // response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  // response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Allow-Origin', '*'); // Or specify your Flutter app's origin
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT,PATCH, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   // Handle locale detection and cookie setting
   try {
     if (!req.cookies.get('locale')) {
