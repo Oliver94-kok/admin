@@ -242,14 +242,14 @@ async function processAbsentUser(
       // This means the shift has started. If it's >1hr past start time, penalize.
       if (dayjs().isAfter(dayjs(shiftIn).add(1, "hour"))) {
         const fine = await getFineForNoClockOut(user.id, shift.branch, dateObject);
-        await db.attends.create({
-          data: {
-            userId: user.id,
-            dates: dateObject,
-            status: AttendStatus.No_ClockIn_ClockOut,
-            fine2: fine,
-          },
-        });
+        // await db.attends.create({
+        //   data: {
+        //     userId: user.id,
+        //     dates: dateObject,
+        //     status: AttendStatus.No_ClockIn_ClockOut,
+        //     fine2: fine,
+        //   },
+        // });
         return {
           userId: user.id,
           status: "marked_active_with_fine",
