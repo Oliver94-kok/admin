@@ -723,7 +723,7 @@ export async function processClockOut(
   console.log("🚀 ~ office:", office)
   if (attendance === null || attendance.clockIn == null) {
 
-    return await handleNoClockInCase(userId, attendance, location, today, fine200, shiftOut, office);
+    return await handleNoClockInCase(userId, attendance, location, newToday, fine200, shiftOut, office);
   }
 
   // Handle normal clock out case
@@ -743,12 +743,13 @@ async function handleNoClockInCase(
   // Update attendance record
   const fine2 = await getNoClockIn(userId, new Date().getMonth() + 1, new Date().getFullYear())
   let ot = await calculateOvertimeHours(shiftOut, today)
+  let t = new Date()
   if (attendance == null) {
     const result = await db.attends.create({
       data: {
         userId: userId,
         dates: today.toDate(),
-        clockOut: today.toISOString(),
+        clockOut: t,
         status: AttendStatus.No_ClockIn_ClockOut,
         overtime: ot,
         locationOut: location || null,
@@ -758,7 +759,7 @@ async function handleNoClockInCase(
   } else {
     await db.attends.update({
       where: { id: attendance.id }, data: {
-        clockOut: today.toISOString(),
+        clockOut: t,
         overtime: ot,
         status: AttendStatus.No_ClockIn_ClockOut,
         locationOut: location || null,

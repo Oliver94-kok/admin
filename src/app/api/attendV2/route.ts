@@ -28,6 +28,7 @@ export const POST = async (req: Request) => {
         }
         return handleClockIn(userId, img, location, notice, user.username)
     } catch (error) {
+        console.log("🚀 ~ POST ~ error:", error)
         return Response.json({ error: "Something went wrong" }, { status: 500 })
     }
 
