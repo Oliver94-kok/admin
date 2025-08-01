@@ -81,7 +81,8 @@ export const getDataUser = async (
             status: true,
             leaves: {
               select: {
-                type: true
+                type: true,
+                reason: true,
               }
             }
           },

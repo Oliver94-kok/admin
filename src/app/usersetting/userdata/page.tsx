@@ -25,7 +25,7 @@ export interface userExcel {
         dates: string;
         status: AttendStatus;
         img: string | null; // Optional property for the photo path
-        leaves: { type: string; } | null;
+        leaves: { type: string, reason: string; } | null;
     }[];
 }
 
@@ -188,7 +188,7 @@ const FormLayout = () => {
                 let ins = a.clockIn == null ? "No clock" : a.clockIn
                 let out = a.clockOut == null ? "No clock" : a.clockOut
                 if (a.status == "Leave") {
-                    addFormattedRows([`${a.dates}`, "in", `${a.leaves?.type}`, "out", `${a.leaves?.type}`]);
+                    addFormattedRows([`${a.dates}`, "in", `${a.leaves?.type}`, "out", `${a.leaves?.type}`, `${a.leaves?.reason}` || ""]);
                     worksheet.getCell(`C${currentRow}`).fill = {
                         type: 'pattern',
                         pattern: 'solid',
@@ -229,7 +229,7 @@ const FormLayout = () => {
                 currentRow++;
 
                 if (a.img) {
-                    imagePromises.push(addImageFromUrl(`https://image.ocean00.com${a.img}`, currentRow, 6));
+                    imagePromises.push(addImageFromUrl(`https://image.ocean00.com${a.img}`, currentRow, 7));
                 }
             }
 
