@@ -30,6 +30,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
   const session = useSession();
   const [dict, setDict] = useState<any>(null);
+  const [expanded, setExpanded] = useState(false);
 
   // Load dictionary based on locale
   useEffect(() => {
@@ -151,37 +152,34 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
-        className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0 duration-300 ease-linear" : "-translate-x-full"
-          }`}
+        className={`group h-screen w-20 hover:w-72.5 flex flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark transition-all duration-300`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5 xl:py-10">
+        <div className="flex items-center justify-center px-4 py-5.5">
           <Image
-            width={100}
+            width={32}
             height={32}
-            src={"/images/logo/icon.png"}
+            src="/images/logo/icon.png"
             alt="Logo"
             priority
-            className="dark:hidden"
-            style={{ width: "auto", height: "auto" }}
+            className="object-contain group-hover:hidden"
           />
           <Image
-            width={100}
+            width={128}
             height={32}
-            src={"/images/logo/icon.png"}
-            alt="Logo"
+            src="/images/logo/icon.png"
+            alt="Full Logo"
             priority
-            className="hidden dark:block"
-            style={{ width: "auto", height: "auto" }}
+            className="object-contain hidden group-hover:block"
           />
         </div>
 
         {/* Sidebar Menu */}
         <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
-          <nav className="mt-1 px-4 lg:px-6">
+          <nav className="mt-1 px-2">
             {menuGroups.map((group, groupIndex) => (
               <div key={groupIndex}>
-                <h3 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
+                <h3 className="mb-5 text-[0px] group-hover:text-sm font-medium text-dark-4 dark:text-dark-6 transition-all duration-200">
                   {group.name}
                 </h3>
                 <ul className="mb-6 flex flex-col gap-2">
