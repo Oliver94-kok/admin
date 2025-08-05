@@ -30,8 +30,34 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
   const session = useSession();
   const [dict, setDict] = useState<any>(null);
-  const [expanded, setExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // 监听 sidebar-close 事件（移动端点击后收起）
+  useEffect(() => {
+    const handleClose = () => setSidebarOpen(false);
+    window.addEventListener("sidebar-close", handleClose);
+    return () => window.removeEventListener("sidebar-close", handleClose);
+  }, [setSidebarOpen]);
+
+  // 根据路径自动展开对应菜单
+  useEffect(() => {
+    if (pathname.includes("usersetting")) {
+      setPageName("usersetting");
+    } else if (pathname.includes("dashboard")) {
+      setPageName("dashboard");
+    } else {
+      setPageName("");
+    }
+  }, [pathname, setPageName]);
   // Load dictionary based on locale
   useEffect(() => {
     const locale = getLocale(); // Get the valid locale
@@ -150,54 +176,107 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   ];
 
   return (
-    <ClickOutside onClick={() => setSidebarOpen(false)}>
-      <aside
-        className={`group h-screen w-20 hover:w-72.5 flex flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark transition-all duration-300`}
-      >
-        {/* Sidebar Header */}
-        <div className="flex items-center justify-center px-4 py-5.5">
-          <Image
-            width={32}
-            height={32}
-            src="/images/logo/icon.png"
-            alt="Logo"
-            priority
-            className="object-contain group-hover:hidden"
-          />
-          <Image
-            width={128}
-            height={32}
-            src="/images/logo/icon.png"
-            alt="Full Logo"
-            priority
-            className="object-contain hidden group-hover:block"
-          />
-        </div>
+    <>
+      {isMobile ? (
+        // 手机端：不使用 ClickOutside
+        <aside
+          id="sidebar"
+          aria-controls="sidebar"
+          className={`group h-screen flex flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark transition-all duration-300
+        ${sidebarOpen ? "w-72.5" : "w-0"}`}
+        >
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-center px-4 py-5.5">
+            <Image
+              width={sidebarOpen ? 64 : 32}
+              height={32}
+              src="/images/logo/icon.png"
+              alt="Logo"
+              priority
+              className="object-contain"
+            />
+          </div>
+          {/* Sidebar Menu */}
+          <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+            <nav className="mt-1 px-2">
+              {menuGroups.map((group, groupIndex) => (
+                <div key={groupIndex}>
+                  <h3 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6 transition-all duration-200">
+                    {group.name}
+                  </h3>
+                  <ul className="mb-6 flex flex-col gap-2">
+                    {group.menuItems.map((menuItem, menuIndex) => (
+                      <SidebarItem
+                        key={menuIndex}
+                        item={menuItem}
+                        pageName={pageName}
+                        setPageName={setPageName}
+                        isMobile={isMobile}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </div>
+        </aside>
+      ) : (
+        // 桌面端：用 ClickOutside 包裹
+        <ClickOutside onClick={() => setSidebarOpen(false)}>
+          <aside
+            id="sidebar"
+            aria-controls="sidebar"
+            onMouseLeave={() => setPageName("")}
+            className={`group h-screen flex flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark transition-all duration-300
+          w-20 hover:w-72.5`}
+          >
+            {/* Sidebar Header */}
+            <div className="flex items-center justify-center px-4 py-5.5">
+              <Image
+                width={32}
+                height={32}
+                src="/images/logo/icon.png"
+                alt="Logo"
+                priority
+                className={`object-contain ${isMobile ? "" : "group-hover:hidden"}`}
+              />
+              <Image
+                width={128}
+                height={32}
+                src="/images/logo/icon.png"
+                alt="Full Logo"
+                priority
+                className={`object-contain ${isMobile ? "hidden" : "hidden group-hover:block"}`}
+              />
+            </div>
 
-        {/* Sidebar Menu */}
-        <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
-          <nav className="mt-1 px-2">
-            {menuGroups.map((group, groupIndex) => (
-              <div key={groupIndex}>
-                <h3 className="mb-5 text-[0px] group-hover:text-sm font-medium text-dark-4 dark:text-dark-6 transition-all duration-200">
-                  {group.name}
-                </h3>
-                <ul className="mb-6 flex flex-col gap-2">
-                  {group.menuItems.map((menuItem, menuIndex) => (
-                    <SidebarItem
-                      key={menuIndex}
-                      item={menuItem}
-                      pageName={pageName}
-                      setPageName={setPageName}
-                    />
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
-        </div>
-      </aside>
-    </ClickOutside>
+            {/* Sidebar Menu */}
+            <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+              <nav className="mt-1 px-2">
+                {menuGroups.map((group, groupIndex) => (
+                  <div key={groupIndex}>
+                    <h3 className="mb-5 text-[0px] group-hover:text-sm font-medium text-dark-4 dark:text-dark-6 transition-all duration-200">
+                      {group.name}
+                    </h3>
+                    <ul className="mb-6 flex flex-col gap-2">
+                      {group.menuItems.map((menuItem, menuIndex) => (
+                        <SidebarItem
+                          key={menuIndex}
+                          item={menuItem}
+                          pageName={pageName}
+                          setPageName={setPageName}
+                          isMobile={isMobile}
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </nav>
+            </div>
+          </aside>
+        </ClickOutside>
+      )}
+    </>
   );
 };
 

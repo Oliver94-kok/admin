@@ -154,16 +154,14 @@ const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInter
   // If user has no access, show message
   if (totalPages === 0) {
     return (
-      <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto 
-           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+      <div className="responsive-container p-4 md:p-6 2xl:p-10 shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="text-center py-4">No access to any teams</div>
       </div>
     );
   }
   if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
   return (
-    <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10  h-auto
-           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+    <div className="responsive-container p-4 md:p-6 2xl:p-10 shadow-1 dark:bg-gray-dark dark:shadow-card">
       {/* Render the current team's table */}
       {currentTeamData && (
         <BranchATable

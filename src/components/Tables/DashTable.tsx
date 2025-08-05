@@ -94,10 +94,9 @@ const DashTable = ({ data, onDateChange, currentDate, dict }: DashTableProps) =>
   if (!dict) return <div>Loading...</div>; // Show a loading state until the dictionary is loaded
   return (
     <div
-      className="w-[1920px] min-w-[1280px]">
+      className="responsive-container shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div
-        className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
-           px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10">
+        className="responsive-container p-4 md:p-6 2xl:p-10 shadow-1 dark:bg-gray-dark dark:shadow-card">
         {/* Search Input */}
         <div className="mb-5 flex justify-between">
           <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">

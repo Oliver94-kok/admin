@@ -382,6 +382,24 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+plugins: [
+  function({ addUtilities }: { addUtilities: any }) {
+    addUtilities({
+      '.responsive-container': {
+        width: '100%',
+        maxWidth: '1920px',
+        minWidth: '320px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        height: 'auto',
+        minHeight: '720px',
+        borderRadius: '10px',
+        backgroundColor: '#ffffff',
+        padding: '2rem',
+        overflow: 'auto',
+      },
+    })
+  }
+]
 };
 export default config;

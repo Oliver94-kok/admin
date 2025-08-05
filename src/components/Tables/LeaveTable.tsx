@@ -63,6 +63,24 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [shiftTimeIn, setShiftTimein] = useState("")
   const [shiftTimeOut, setShiftTimeOut] = useState("")
   const [totaldays, setTotaldays] = useState(0);
+  const totalPages = Math.ceil(dataLeave.length / itemsPerPage);
+
+  const MAX_VISIBLE_PAGES = 30;
+
+  const getVisiblePages = () => {
+    if (totalPages <= MAX_VISIBLE_PAGES) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const startPage =
+      Math.floor((currentPage - 1) / MAX_VISIBLE_PAGES) * MAX_VISIBLE_PAGES + 1;
+    const endPage = Math.min(startPage + MAX_VISIBLE_PAGES - 1, totalPages);
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  };
+
+  const visiblePages = getVisiblePages();
+
   useEffect(() => {
     if (data) {
       setDataLeave(data);
@@ -151,7 +169,6 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     // }
     // return false; // Explicitly return false to avoid accidental inclusions
   });
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
@@ -281,8 +298,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
 
   return (
     <div
-      className="h-[1280px] w-[1920px] overflow-auto rounded-[10px] bg-white p-4 
-           px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card md:h-auto md:w-full md:p-6 2xl:p-10"
+      className="responsive-container shadow-1 dark:bg-gray-dark dark:shadow-card"
     >
       {/* Search Input */}
       <div className="mb-5 flex items-center justify-between flex-wrap gap-4">
@@ -681,36 +697,56 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       ))}
 
       {/* Pagination */}
-      <div className="flex justify-between px-7.5 py-7">
-        <div className="flex items-center">
+      <div className="flex items-center">
+        {/* Jump to First (<<) */}
+        {totalPages > MAX_VISIBLE_PAGES && currentPage > 1 && (
           <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+            onClick={() => setCurrentPage(1)}
+            className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
           >
-            {dict.dashboard.prev}
+            {"<<"}
           </button>
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white ${currentPage === i + 1 ? "bg-primary text-white" : ""
-                }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+        )}
+
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+        >
+          {dict.dashboard.prev}
+        </button>
+
+        {/* Page Numbers */}
+        {visiblePages.map((page) => (
           <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium 
+        ${currentPage === page ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
           >
-            {dict.dashboard.next}
+            {page}
           </button>
-        </div>
-        <p className="font-medium">
-          Showing {currentPage} of {totalPages} pages
-        </p>
+        ))}
+
+        {/* More button */}
+
+
+        {/* Next Button */}
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
+        >
+          {dict.dashboard.next}
+        </button>
+        {totalPages > MAX_VISIBLE_PAGES && visiblePages[visiblePages.length - 1] < totalPages && (
+          <button
+            onClick={() => setCurrentPage(visiblePages[visiblePages.length - 1] + 1)}
+            className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+          >
+            {">>"}
+          </button>
+        )}
       </div>
 
       {/* Render the image modal */}

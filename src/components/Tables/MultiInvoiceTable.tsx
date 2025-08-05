@@ -328,8 +328,7 @@ const MultiInvoiceTable = ({ datas }: MultiInvoiceProp) => {
     //     worksheet.mergeCells(start, end);
     // };
     return (
-        <div className="w-[1920px] h-[1280px] p-4 md:p-6 2xl:p-10 overflow-auto
-           md:w-full md:h-auto rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+        <div className="responsive-container p-4 md:p-6 2xl:p-10 shadow-1 dark:bg-gray-dark dark:shadow-card">
             {/* Header with Save PDF button */}
             <div className="header flex justify-between mb-5">
                 <h4 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
