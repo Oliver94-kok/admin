@@ -697,56 +697,61 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
       ))}
 
       {/* Pagination */}
-      <div className="flex items-center">
-        {/* Jump to First (<<) */}
-        {totalPages > MAX_VISIBLE_PAGES && currentPage > 1 && (
+      <div className="flex justify-between px-7.5 py-7">
+        <div className="flex items-center">
+          {/* Jump to First (<<) */}
+          {totalPages > MAX_VISIBLE_PAGES && currentPage > 1 && (
+            <button
+              onClick={() => setCurrentPage(1)}
+              className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+            >
+              {"<<"}
+            </button>
+          )}
+
           <button
-            onClick={() => setCurrentPage(1)}
-            className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            {"<<"}
+            {dict.dashboard.prev}
           </button>
-        )}
 
-        <button
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
-        >
-          {dict.dashboard.prev}
-        </button>
-
-        {/* Page Numbers */}
-        {visiblePages.map((page) => (
-          <button
-            key={page}
-            onClick={() => setCurrentPage(page)}
-            className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium 
+          {/* Page Numbers */}
+          {visiblePages.map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium 
         ${currentPage === page ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
-          >
-            {page}
-          </button>
-        ))}
+            >
+              {page}
+            </button>
+          ))}
 
-        {/* More button */}
+          {/* More button */}
 
 
-        {/* Next Button */}
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
-        >
-          {dict.dashboard.next}
-        </button>
-        {totalPages > MAX_VISIBLE_PAGES && visiblePages[visiblePages.length - 1] < totalPages && (
+          {/* Next Button */}
           <button
-            onClick={() => setCurrentPage(visiblePages[visiblePages.length - 1] + 1)}
-            className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex cursor-pointer items-center justify-center rounded-[3px] p-[7px] px-[7px] hover:bg-primary hover:text-white"
           >
-            {">>"}
+            {dict.dashboard.next}
           </button>
-        )}
+          {totalPages > MAX_VISIBLE_PAGES && visiblePages[visiblePages.length - 1] < totalPages && (
+            <button
+              onClick={() => setCurrentPage(visiblePages[visiblePages.length - 1] + 1)}
+              className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+            >
+              {">>"}
+            </button>
+          )}
+        </div>
+        <p className="font-medium">
+          Showing {currentPage} of {totalPages} pages
+        </p>
       </div>
 
       {/* Render the image modal */}

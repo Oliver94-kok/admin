@@ -29,6 +29,22 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
   const [selectedDate, setSelectedDate] = useState(
     dayjs().format("YYYY-MM-DD"),
   );
+  const MAX_VISIBLE_PAGES = 30;
+
+  const getVisiblePages = () => {
+    if (totalPages <= MAX_VISIBLE_PAGES) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const startPage =
+      Math.floor((currentPage - 1) / MAX_VISIBLE_PAGES) * MAX_VISIBLE_PAGES + 1;
+    const endPage = Math.min(startPage + MAX_VISIBLE_PAGES - 1, totalPages);
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  };
+
+  const visiblePages = getVisiblePages();
+
   useEffect(() => {
     if (data) {
       console.log("🚀 ~ useEffect ~ data:", data)
@@ -296,6 +312,15 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
         {/* Pagination */}
         <div className="flex justify-between px-7.5 py-7">
           <div className="flex items-center">
+            {/* Jump to First (<<) */}
+            {totalPages > MAX_VISIBLE_PAGES && currentPage > 1 && (
+              <button
+                onClick={() => setCurrentPage(1)}
+                className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+              >
+                {"<<"}
+              </button>
+            )}
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
@@ -313,6 +338,7 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
                 {i + 1}
               </button>
             ))}
+            {/* Next Button */}
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
@@ -320,6 +346,15 @@ const LocationTable = ({ data, onDateChange, currentDate, dict }: LocationTableP
             >
               {dict.dashboard.next}
             </button>
+            {totalPages > MAX_VISIBLE_PAGES && visiblePages[visiblePages.length - 1] < totalPages && (
+              <button
+                onClick={() => setCurrentPage(visiblePages[visiblePages.length - 1] + 1)}
+                className="mx-1 flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 px-[15px] font-medium hover:bg-primary hover:text-white"
+              >
+                {">>"}
+              </button>
+            )}
+
           </div>
           <p className="font-medium">
             Showing {currentPage} of {totalPages} pages
