@@ -36,6 +36,7 @@ import ExcelJS from 'exceljs';
 import LoadingButton from "../Buttons/loadingButton";
 import { addPerDay } from "@/action/addperDay";
 import { roleAdmin } from "@/lib/function";
+import { useRouter } from "next/navigation";
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -54,7 +55,15 @@ interface footerTotal {
     totalSal: number
 }
 export const SalaryTable2 = () => {
+
     const session = useSession();
+    const router = useRouter()
+    const isAssistantRole = ["ASSISTANT_A", "ASSISTANT_B", "ASSISTANT_C", "ASSISTANT_D", "ASSISTANT_E"].includes(
+        session.data?.user.role
+    );
+    if (isAssistantRole) {
+        router.push("/usersetting/branches")
+    }
     const [month, selectMonth] = useState(DateTime.now().toFormat('MM'));
     const [year, setYear] = useState(DateTime.now().toFormat('yyyy'));
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);

@@ -9,12 +9,19 @@ import { getDictionary } from "@/locales/dictionary";
 import axios from "axios";
 import useSWR from 'swr';
 import { useSession, SessionProvider } from 'next-auth/react';
+import { useRouter } from "next/navigation";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const Dashboard = () => {
     const session = useSession();
-
+    const router = useRouter()
+    const isAssistantRole = ["ASSISTANT_A", "ASSISTANT_B", "ASSISTANT_C", "ASSISTANT_D", "ASSISTANT_E"].includes(
+        session.data?.user.role
+    );
+    if (isAssistantRole) {
+        router.push("/usersetting/branches")
+    }
     const [selectedDate, setSelectedDate] = useState(DateTime.now().toFormat('yyyy-MM-dd'));
     const { data, error, isLoading } = useSWR(
         `/api/attend/dashboard?date=${selectedDate}&role=${session.data?.user.role}`,
