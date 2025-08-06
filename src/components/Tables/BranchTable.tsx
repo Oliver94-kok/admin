@@ -36,6 +36,7 @@ const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInter
   // Memoized accessible teams to avoid recalculating on every render
   const accessibleTeams = useMemo(() => {
     const userRole = session?.user?.role?.toLowerCase();
+    console.log("🚀 ~ BranchTable ~ userRole:", userRole)
     const allTeams = {
       'A': { data: A, team: "Team A", page: 1 },
       'B': { data: B, team: "Team B", page: 2 },
@@ -50,14 +51,19 @@ const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInter
       case 'admin':
         return Object.values(allTeams);
       case 'manager_a':
+      case 'assistant_a':
         return [allTeams['A']];
       case 'manager_b':
+      case 'assistant_b':
         return [allTeams['B']];
       case 'manager_c':
+      case 'assistant_c':
         return [allTeams['C']];
       case 'manager_d':
+      case 'assistant_d':
         return [allTeams['D']];
       case 'manager_e':
+      case 'assistant_e':
         return [allTeams['E']];
       case 'swmanager':
         return [allTeams['SW']];

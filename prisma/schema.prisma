@@ -72,24 +72,28 @@ model User {
 }
 
 model Attends {
-  id          String       @id @default(cuid())
-  dates       DateTime     @db.Date
-  clockIn     DateTime?
-  clockOut    DateTime?
-  workingHour Float?
-  img         String?
-  locationIn  String?
-  locationOut String?
-  overtime    Float?
-  fine        Float?
-  fine2       Float?
-  userId      String
-  leaveId     String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  status      AttendStatus @default(Active)
-  users       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  leaves      Leave?       @relation(fields: [leaveId], references: [id])
+  id                String       @id @default(cuid())
+  dates             DateTime     @db.Date
+  clockIn           DateTime?
+  clockOut          DateTime?
+  workingHour       Float?
+  img               String?
+  locationIn        String?
+  locationOut       String?
+  overtime          Float?
+  fine              Float?
+  fine2             Float?
+  userId            String
+  leaveId           String?
+  clockInLatitude   Float?
+  clockInLongitude  Float?
+  clockOutLatitude  Float?
+  clockOutLongitude Float?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  status            AttendStatus @default(Active)
+  users             User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaves            Leave?       @relation(fields: [leaveId], references: [id])
 }
 
 model Salary {
@@ -157,6 +161,7 @@ model Leave {
   startDate String
   endDate   String
   status    String
+  isDelete  Boolean   @default(false)
   duration  Float?
   img       String?
   createdAt DateTime  @default(now())

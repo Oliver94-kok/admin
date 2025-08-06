@@ -60,6 +60,50 @@ export const fullLeaveTypes = [
   '载送延迟',
 ];
 
+export const leaveTypeToShortCode: Record<string, string> = {
+  // Paid Leave group
+  "Paid leave": "PL",
+  "Cuti bergaji": "PL",
+  "带薪假": "PL",
+
+  // Unpaid Leave group
+  "Unpaid leave": "UP",
+  "Cuti tanpa gaji": "UP",
+  "无薪假": "UP",
+
+  // Emergency Leave group
+  "Emergency leave": "EL",
+  "紧急假": "EL",
+  "Cuti sakit (MC)": "MC", // assuming this maps to EL
+
+  // Bereavement Leave group
+  "Bereavement leave": "BL",
+  "Cuti berkabung": "BL",
+  "丧假": "BL",
+
+  // Medical Leave group
+  "Medical leave (MC)": "MC",
+  "病假 (MC)": "MC",
+
+  // Annual Leave group
+  "Annual leave": "AL",
+  "Cuti tahunan": "AL",
+  "年假": "AL",
+
+  // Forget Clock group
+  "Forget clock": "FC",
+  "Lupa clock": "FC",
+  "忘记打卡": "FC",
+
+  // Delivery Late group
+  "Delivery late": "DL",
+  "Penghantaran lewat": "DL",
+  "载送延迟": "DL",
+};
+
+
+
+
 export const leaveTypeMap: Record<string, string> = {
   "Paid leave": "Paid leave",
   "Cuti bergaji": "Paid leave",

@@ -170,9 +170,9 @@ export const POST = async (req: Request) => {
         userBatch.map(async (userId) => {
           try {
             // Prepare data in a more concise way
-            const data = Array.from({ length: 10 }, (_, index) => ({
+            const data = Array.from({ length: 6 }, (_, index) => ({
               userId,
-              month: index + 4, // Months 3-12
+              month: 7 + index, // Months 7 to 12
               year: 2025
             }));
 

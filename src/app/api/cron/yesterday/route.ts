@@ -227,8 +227,19 @@ async function processAbsentUser(
     const shiftResult = await attendanceService.cronAttendCheckShift(shiftIn, shiftOut);
 
     if (shiftResult.result === "absent" || shiftResult.result === "shift_ended") {
+      let fine200 = branchAssistant.find((e) => e === shift?.branch)
+      let fine2;
+      if (fine200) {
+        fine2 = 200;
+      } else {
+        fine2 = await getNoClockOut(
+          user.id,
+          new Date().getMonth() + 1,
+          new Date().getFullYear()
+        );
+      }
       await db.attends.create({
-        data: { userId: user.id, dates: dateObject, status: AttendStatus.Absent },
+        data: { userId: user.id, dates: dateObject, status: AttendStatus.No_ClockIn_ClockOut, fine2 },
       });
       return {
         userId: user.id,

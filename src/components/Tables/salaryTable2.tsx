@@ -30,7 +30,7 @@ import { AddShort, delShort } from "@/action/salaryShort";
 import { AddTransport, delTransport } from "@/action/salaryTransport";
 import { toast } from "react-toastify";
 import { useSalaryStore } from "@/lib/zudstand/salaryv2";
-import { AttendanceResult } from "@/types/salary2";
+import { AttendanceResult, AttendRecord } from "@/types/salary2";
 import { excelData } from "@/data/salary";
 import ExcelJS from 'exceljs';
 import LoadingButton from "../Buttons/loadingButton";
@@ -451,7 +451,33 @@ export const SalaryTable2 = () => {
         setIsFormOpen(false);
         setActivePopup(null);
     };
+    const formatLeaveSummary = (dataLeave: AttendRecord[]): string => {
+        const grouped: Record<string, number[]> = {};
 
+        // Collect days by leave type
+        for (const item of dataLeave) {
+            if (item.status === "Leave" && item.leaves?.type && item.dates) {
+                const date = new Date(item.dates);
+                const day = date.getDate(); // e.g., 7
+                const type = item.leaves.type;
+
+                if (!grouped[type]) {
+                    grouped[type] = [];
+                }
+                grouped[type].push(day);
+            }
+        }
+
+        // Deduplicate and sort days for each type
+        Object.keys(grouped).forEach(key => {
+            grouped[key] = Array.from(new Set(grouped[key])).sort((a, b) => a - b);
+        });
+
+        // Format to "PL 7,8 UL 10,11"
+        return Object.entries(grouped)
+            .map(([type, days]) => `${type} ${days.join(',')}`)
+            .join(' ');
+    };
     // Function to handle printing of selected entries
     const getDate = (data: AttendanceResult, type: string, perDay: number) => {
         let d: number[] = []
@@ -482,8 +508,9 @@ export const SalaryTable2 = () => {
                 let dd = e.dates.getDate();
                 d.push(dd)
             })
+            let re = formatLeaveSummary(data.dataLeave)
             // totals = data.dataAbsent.length * 100;
-            const lateNumbers: string = `Absent * `;
+            const lateNumbers: string = `Absent *  ${re}`;
             return lateNumbers
         }
         return "1212"
@@ -642,6 +669,7 @@ export const SalaryTable2 = () => {
                 const totalCell = worksheet.getCell(`M${startRowIndex + 4}`);
                 const advance = worksheet.getCell(`H${startRowIndex + 4}`);
                 const short = worksheet.getCell(`I${startRowIndex + 4}`);
+
                 if (total < 0) {
                     totalCell.font = {
                         color: { argb: 'FFFF0000' } // Red for negative values
@@ -692,10 +720,27 @@ export const SalaryTable2 = () => {
                 worksheet.getCell(`A${startRowIndex + 5}`).font = {
                     color: { argb: 'FFFF0000' },
                 }
-                worksheet.getCell(`G${startRowIndex + 4}`).font = {
-                    color: { argb: 'FFFF0000' },
-                };
-                // Set row height for specific rows
+                // worksheet.getCell(`G${startRowIndex + 4}`).font = {
+                //     color: { argb: 'FFFF0000' },
+                // };
+                worksheet.addConditionalFormatting({
+                    ref: `G${startRowIndex + 4}:G${startRowIndex + 4}`,
+                    rules: [
+                        {
+                            type: 'cellIs',
+                            operator: 'lessThan',
+                            formulae: [0],
+                            style: {
+                                font: {
+                                    color: { argb: 'FFFF0000' },
+                                    bold: true
+                                }
+                            },
+                            priority: 1
+                        }
+                    ]
+                });
+                // Set row height for specific rows 
                 worksheet.getRow(startRowIndex + 1).height = 53.25; // Header row height
                 worksheet.getRow(startRowIndex + 2).height = 53.25; // Sub-header row height
                 worksheet.getRow(startRowIndex + 3).height = 53.25; // Data row height

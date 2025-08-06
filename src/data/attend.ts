@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { AttendsInterface } from "@/types/attendents";
 import { DateTime } from "luxon";
-import { calculateShiftAllowance, calculateTotalSalaryUser, CheckSalarys, createSalary, getAttendLate, getNoClockIn, getSalaryByUserId } from "./salary";
+import { calculateShiftAllowance, calculateShiftAllowance2, calculateTotalSalaryUser, CheckSalarys, createSalary, getAttendLate, getNoClockIn, getSalaryByUserId } from "./salary";
 import { Attends, AttendStatus } from "@prisma/client";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -476,7 +476,7 @@ export const getShiftIn = async () => {
   }
 }
 
-export async function handleHalfDataClockIn(alreadyClockIn: Attends, img?: string, location?: string, notice?: boolean, username?: string): Promise<Response> {
+export async function handleHalfDataClockIn(alreadyClockIn: Attends, longitude?: number, latitude?: number, img?: string, location?: string, notice?: boolean, username?: string,): Promise<Response> {
   const today = dayjs();
   const shift = await db.attendBranch.findFirst({ where: { userId: alreadyClockIn.userId } });
   if (!shift?.clockIn) {
@@ -520,7 +520,9 @@ export async function handleHalfDataClockIn(alreadyClockIn: Attends, img?: strin
       clockIn: today.toISOString(),
       img: imageResult?.success,
       fine: fine,
-      locationIn: location || null
+      locationIn: location || null,
+      clockInLatitude: latitude,
+      clockInLongitude: longitude
     }
   });
   return Response.json({ id: result.id, timeIn: result.clockIn }, { status: 201 });
@@ -529,10 +531,12 @@ export async function handleHalfDataClockIn(alreadyClockIn: Attends, img?: strin
 
 export async function handleClockIn(
   userId: string,
+  longitude?: number, latitude?: number,
   imgClockIn?: string,
   location?: string,
   notify?: boolean,
-  username?: string
+  username?: string,
+
 ): Promise<Response> {
   const today = dayjs();
 
@@ -551,6 +555,8 @@ export async function handleClockIn(
   if (isToLate) {
     return Response.json({ error: "To late clock in" }, { status: 400 });
   }
+  let add10 = await calculateShiftAllowance2(shift.clockOut!, "shiftIn")
+
   let fine: number | null = null;
   if (isLate) {
     let fine200 = branchAssistant.find((e) => e === shift.branch)
@@ -586,10 +592,18 @@ export async function handleClockIn(
       clockIn: today.toISOString(),
       img: imageResult?.success,
       fine: fine,
-      locationIn: location || null
+      locationIn: location || null,
+      clockInLatitude: latitude,
+      clockInLongitude: longitude
     }
   });
-
+  if (add10 != 0) {
+    let salary = await db.salary.findFirst({ where: { userId, month: new Date().getMonth() + 1, year: new Date().getFullYear() } })
+    if (!salary) {
+      return Response.json({ error: "Salary not found" }, { status: 400 });
+    }
+    await db.salary.update({ where: { id: salary.id }, data: { overTime: salary.overTime! + add10 } })
+  }
   // Send notifications
   await Promise.all([
     notify ? notificationClock(userId, notify) : Promise.resolve(),
@@ -695,8 +709,10 @@ interface NotifyData {
 export async function processClockOut(
   userId: string,
   attendance: Attends,
+  // latitude?: number, longitude?: number,
   location?: string,
-  notify?: NotifyData
+  notify?: NotifyData,
+
 ): Promise<Response> {
   const today = dayjs();
 
@@ -722,12 +738,11 @@ export async function processClockOut(
   let office = shift.branch == "小off" ? true : false;
   console.log("🚀 ~ office:", office)
   if (attendance === null || attendance.clockIn == null) {
-
-    return await handleNoClockInCase(userId, attendance, location, newToday, fine200, shiftOut, office);
+    return await handleNoClockInCase(userId, attendance, location, newToday, fine200, shift.clockOut, office,);
   }
 
   // Handle normal clock out case
-  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today, office);
+  return await handleNormalClockOut(userId, attendance, location, notify!, shiftOut, today, office,);
 }
 
 async function handleNoClockInCase(
@@ -736,8 +751,8 @@ async function handleNoClockInCase(
   location: string | undefined,
   today: dayjs.Dayjs,
   fine200: string | undefined,
-  shiftOut: Date,
-  office: boolean
+  shiftOut: string,
+  office: boolean, latitude?: number, longitude?: number,
 ): Promise<Response> {
   console.log("masuk sini ", office)
   // Update attendance record
@@ -753,7 +768,9 @@ async function handleNoClockInCase(
         status: AttendStatus.No_ClockIn_ClockOut,
         overtime: ot,
         locationOut: location || null,
-        fine2: fine200 ? Number(200) : fine2
+        fine2: fine200 ? Number(200) : fine2,
+        clockOutLatitude: latitude,
+        clockOutLongitude: longitude
       }
     });
   } else {
@@ -764,22 +781,22 @@ async function handleNoClockInCase(
         status: AttendStatus.No_ClockIn_ClockOut,
         locationOut: location || null,
         fine: null,
-        fine2: fine200 ? Number(200) : fine2
+        fine2: fine200 ? Number(200) : fine2,
+        clockOutLatitude: latitude,
+        clockOutLongitude: longitude
       }
     })
   }
 
-  let add10 = await calculateShiftAllowance(attendance != null ? attendance.clockIn : null, today.toDate(), true)
+  // let add10 = await calculateShiftAllowance(attendance != null ? attendance.clockIn : null, today.toDate(), true)
+  let add10 = await calculateShiftAllowance2(shiftOut, "shiftOut")
   console.log("🚀 ~ add10:", add10)
   let newot;
   if (office) {
-    console.log("🚀 ~ office:if", office)
     newot = ot * 10
-    console.log("🚀 ~ newot:if", newot)
   } else {
-    console.log("🚀 ~ add10:if", add10)
-    if (add10 == 0) {
 
+    if (add10 == 0) {
       newot = null;
     } else {
       newot = add10
@@ -808,7 +825,7 @@ async function handleNormalClockOut(
   notify: NotifyData,
   shiftOut: Date,
   today: dayjs.Dayjs,
-  office: boolean
+  office: boolean, latitude?: number, longitude?: number,
 ): Promise<Response> {
   console.log("masuk sana ")
   if (!attendance.clockIn) {
@@ -830,6 +847,8 @@ async function handleNormalClockOut(
       const updatedAttendance = await tx.attends.update({
         where: { id: attendance.id },
         data: {
+          clockOutLatitude: latitude,
+          clockOutLongitude: longitude,
           clockOut: today.toISOString(),
           workingHour: workingHour,
           overtime: overtimeValue,
@@ -837,7 +856,7 @@ async function handleNormalClockOut(
           status: attendance.status == "Half_Day" ? "Half_Day" : attendance.fine ? AttendStatus.Late : AttendStatus.Full_Attend
         }
       });
-      let add10 = await calculateShiftAllowance(attendance.clockIn, today.toDate(), true)
+      // let add10 = await calculateShiftAllowance(attendance.clockIn, today.toDate(), true)
       // Update salary calculations
       const salaryData: AttendanceSalaryData = {
         userId,
@@ -846,7 +865,7 @@ async function handleNormalClockOut(
         fineNoClockOut: null,
         overtimes: overtimeValue,
         workingHour: workingHour,
-        add10: office ? overtimeValue * 10 : (add10 == 0 ? null : add10)
+        add10: office ? overtimeValue * 10 : null
       };
 
       await CheckSalarys(salaryData);

@@ -103,13 +103,15 @@ export const CheckSalarys = async ({
   let salary = await getSalaryByUserId(userId);
   if (salary) {
     let newWorkingDay = salary.workingDay! + 1;
-    console.log("🚀 ~ newWorkingDay:", newWorkingDay);
+
     let newOverTime = salary.overTimeHour! + overtimes!;
     var data;
     if (fineLate) {
       let overTimeAdd10 = 0;
       if (add10 != null) {
         overTimeAdd10 = salary.overTime! + add10
+      } else {
+        overTimeAdd10 = salary.overTime!
       }
       var newFineLAte = salary.fineLate! + fineLate;
       data = {
@@ -125,6 +127,8 @@ export const CheckSalarys = async ({
       let overTimeAdd10 = 0;
       if (add10 != null) {
         overTimeAdd10 = salary.overTime! + add10
+      } else {
+        overTimeAdd10 = salary.overTime!
       }
       var newfineNoClockIn = salary.fineNoClockIn! + fineNoClockIn;
       data = {
@@ -140,6 +144,8 @@ export const CheckSalarys = async ({
       let overTimeAdd10 = 0;
       if (add10 != null) {
         overTimeAdd10 = salary.overTime! + add10
+      } else {
+        overTimeAdd10 = salary.overTime!
       }
       var newfineNoClockOut = salary.fineNoClockOut! + fineNoClockOut;
       data = {
@@ -157,6 +163,8 @@ export const CheckSalarys = async ({
 
       overTimeAdd10 = salary.overTime! + add10
       console.log("🚀 ~ overTimeAdd10:", overTimeAdd10)
+    } else {
+      overTimeAdd10 = salary.overTime!
     }
     data = {
       workingDay: newWorkingDay,
@@ -731,6 +739,52 @@ export const calculateShiftAllowance = async (
 
     return 0; // No allowance if conditions are not met
 
+  } catch (error) {
+    console.error("Error calculating shift allowance:", error);
+    return 0;
+  }
+};
+
+export const calculateShiftAllowance2 = async (
+  shift: string,
+  type: "shiftIn" | "shiftOut"
+): Promise<number> => {
+  try {
+    // If shift is missing or invalid
+    if (!shift || !shift.includes(':')) {
+      return 0;
+    }
+
+    const [hourStr, minuteStr] = shift.split(':');
+    const Hour = Number(hourStr);
+    const Minute = Number(minuteStr);
+
+    // Validate parsed values
+    if (isNaN(Hour) || Hour < 0 || Hour > 23 || isNaN(Minute) || Minute < 0 || Minute > 59) {
+      return 0;
+    }
+
+    if (type === "shiftIn") {
+      if (Hour === 15 || Hour === 16) {
+        return 5; // RM5 for 15:00 or 16:00
+      }
+      if (Hour >= 17 && Hour <= 23) {
+        return 10; // RM10 for 17:00 - 23:59
+      }
+      return 0;
+    }
+
+    if (type === "shiftOut") {
+      if (Hour === 3 || Hour === 4) {
+        return 5; // RM5 for 03:00 or 04:00
+      }
+      if (Hour >= 5 && Hour <= 11) {
+        return 10; // RM10 for 05:00 - 11:59
+      }
+      return 0;
+    }
+
+    return 0; // Fallback
   } catch (error) {
     console.error("Error calculating shift allowance:", error);
     return 0;

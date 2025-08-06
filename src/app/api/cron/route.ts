@@ -90,10 +90,22 @@ export const POST = async (req: Request) => {
           ) {
             let attend = await db.attends.findFirst({ where: { userId: absentUser.id, dates: today.toDate() } })
             if (attend) throw new Error("existing data")
+            let fine200 = branchAssistant.find((e) => e === shift?.branch)
+            let fine2;
+            if (fine200) {
+              fine2 = 200;
+            } else {
+              fine2 = await getNoClockOut(
+                absentUser.id,
+                new Date().getMonth() + 1,
+                new Date().getFullYear()
+              );
+            }
             const attendanceData = {
               userId: absentUser.id,
               dates: today.toDate(),
-              status: AttendStatus.Absent,
+              status: AttendStatus.No_ClockIn_ClockOut,
+              fine2
             };
 
             await db.attends.create({

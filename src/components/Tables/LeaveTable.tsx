@@ -19,6 +19,7 @@ import Select from 'react-select'
 import { AddLeaveUser, AddUserLeave } from "@/action/addLeave";
 import { IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { deleteLeave } from "@/action/deleteLeave";
 interface LeaveTableInterface {
   data: LeavesInterface[];
 }
@@ -178,34 +179,16 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
 
   const handleDelete = async (leaveId: string) => {
     try {
-      const checkResponse = await fetch(`/api/leave/${leaveId}/check`, {
-        method: "GET",
-      });
-      const checkData = await checkResponse.json();
-
-      if (checkData.hasPreviousData) {
-        const restoreResponse = await fetch(`/api/leave/${leaveId}/restore`, {
-          method: "POST",
-        });
-        const restoreData = await restoreResponse.json();
-
-        if (restoreData.success) {
-          toast.success("Leave restored successfully", { position: "top-center" });
-        } else {
-          toast.error("Failed to restore leave", { position: "top-center" });
-        }
-      } else {
-        const deleteResponse = await fetch(`/api/leave/${leaveId}`, {
-          method: "DELETE",
-        });
-        const deleteData = await deleteResponse.json();
-
-        if (deleteData.success) {
-          toast.success("Leave deleted successfully", { position: "top-center" });
-        } else {
-          toast.error("Failed to delete leave", { position: "top-center" });
-        }
+      const result = await deleteLeave(leaveId);
+      if (result?.error) {
+        toast.error(result.error)
+        return
       }
+      if (result.success) {
+        toast.success("success delete leave")
+        return
+      }
+      console.log("🚀 ~ handleDelete ~ result:", result)
     } catch (error) {
       toast.error("An error occurred", { position: "top-center" });
       console.error(error);
@@ -697,7 +680,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                   >
                     {leave.status === "Approve" ? "Approved" : "Rejected"}
                   </span>
-                  <button
+                  {leave.status === "Approve" && <button
                     onClick={() => {
                       setDeleteId(leave.id);
                       setCurrentAction("Delete");
@@ -706,7 +689,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                     className="p-1 hover:bg-red-200 rounded-full"
                   >
                     <IconTrash className="w-4 h-4 text-red-600" />
-                  </button>
+                  </button>}
                 </div>
               </>
             )}

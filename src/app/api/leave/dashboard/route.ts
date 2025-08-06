@@ -9,6 +9,7 @@ export const GET = async (req: NextRequest) => {
   if (role == "ADMIN") {
     data = await db.leave.findMany({
       where: {
+        isDelete: false,
         users: {
           isDelete: false,
         },

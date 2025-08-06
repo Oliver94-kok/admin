@@ -9,17 +9,21 @@ interface AttendBranch {
 }
 
 // Define interfaces for the nested result data
-interface AttendRecord {
+export interface AttendRecord {
   status: string;
   dates: Date; // ISO date string
   fine: number | null;
   fine2: number | null;
+  leaves: {
+    type: string;
+  } | null;
 }
 
 export interface AttendanceResult {
   dataLate: AttendRecord[];
   No_ClockIn_ClockOut: AttendRecord[];
   dataAbsent: AttendRecord[];
+  dataLeave: AttendRecord[]
   totalFine: number;
   totalDays: number;
   attendanceRate: number;

@@ -1,11 +1,13 @@
 import dayjs from "dayjs";
 import { db } from "./db";
+import { fullLeaveTypes, leaveTypeToShortCode } from "@/types/leave";
 
 type AttendanceResult = {
   dataAbsent: AttendRecord[];
   No_ClockIn_ClockOut: AttendRecord[];
   notClockOut: AttendRecord[];
   dataLate: AttendRecord[];
+  dataLeave: AttendRecord[]
   totalFine: number;
   totalDays: number;
   attendanceRate: number;
@@ -17,6 +19,9 @@ type AttendRecord = {
   dates: Date;
   fine: number | null;
   fine2: number | null;
+  leaves: {
+    type: string;
+  } | null;
 };
 
 // Define attendance status enum for type safety
@@ -25,7 +30,8 @@ enum AttendanceStatus {
   No_ClockIn_ClockOut = "No_ClockIn_ClockOut",
   ABSENT = "Absent",
   No_clockIn_ClockOut_Late = "No_clockIn_ClockOut_Late",
-  Half_Day = "Half_Day"
+  Half_Day = "Half_Day",
+  Leave = 'Leave'
 }
 
 export const getAllresultAttend = async (
@@ -58,7 +64,12 @@ export const getAllresultAttend = async (
         status: true,
         dates: true,
         fine: true,
-        fine2: true
+        fine2: true,
+        leaves: {
+          select: {
+            type: true
+          }
+        }
       },
     });
 
@@ -87,6 +98,10 @@ export const getAllresultAttend = async (
           case AttendanceStatus.ABSENT:
             acc.dataAbsent.push(record);
             break;
+          case AttendanceStatus.Leave:
+            const r = getListLeave(record)
+            acc.dataLeave.push(r);
+            break;
         }
         return acc;
       },
@@ -95,6 +110,7 @@ export const getAllresultAttend = async (
         No_ClockIn_ClockOut: [] as AttendRecord[],
         notClockOut: [] as AttendRecord[],
         dataAbsent: [] as AttendRecord[],
+        dataLeave: [] as AttendRecord[]
       },
     );
 
@@ -117,4 +133,18 @@ export const getAllresultAttend = async (
     console.error("Error fetching attendance records:", error);
     throw new Error("Failed to fetch attendance records");
   }
+};
+const getListLeave = (record: AttendRecord) => {
+  if (record.leaves?.type) {
+    const name = shortName(record.leaves.type);
+    record.leaves.type = name ?? record.leaves.type; // fallback to original if shortName returns undefined
+  }
+  return record;
+};
+
+
+
+// Your shortName function
+const shortName = (name: string): string | undefined => {
+  return leaveTypeToShortCode[name];
 };
