@@ -21,6 +21,11 @@ enum UserRole {
   MANAGER_C
   MANAGER_D
   MANAGER_E
+  ASSISTANT_A
+  ASSISTANT_B
+  ASSISTANT_C
+  ASSISTANT_D
+  ASSISTANT_E
   SWManager
   Manager_Ocean
 }

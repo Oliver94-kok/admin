@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { getUserLeave } from "@/data/user";
 import Select from 'react-select'
 import { AddLeaveUser, AddUserLeave } from "@/action/addLeave";
+import { IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 interface LeaveTableInterface {
   data: LeavesInterface[];
@@ -43,7 +44,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const session = useSession();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [currentAction, setCurrentAction] = useState<"Approve" | "Reject" | null>("Approve");
+  const [currentAction, setCurrentAction] = useState<"Approve" | "Reject" | "Delete" | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [dict, setDict] = useState<any>(null); // State to hold the dictionary
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,8 +65,9 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [shiftTimeOut, setShiftTimeOut] = useState("")
   const [totaldays, setTotaldays] = useState(0);
   const totalPages = Math.ceil(dataLeave.length / itemsPerPage);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const MAX_VISIBLE_PAGES = 30;
+  const MAX_VISIBLE_PAGES = 20;
 
   const getVisiblePages = () => {
     if (totalPages <= MAX_VISIBLE_PAGES) {
@@ -174,7 +176,41 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     currentPage * itemsPerPage,
   );
 
+  const handleDelete = async (leaveId: string) => {
+    try {
+      const checkResponse = await fetch(`/api/leave/${leaveId}/check`, {
+        method: "GET",
+      });
+      const checkData = await checkResponse.json();
 
+      if (checkData.hasPreviousData) {
+        const restoreResponse = await fetch(`/api/leave/${leaveId}/restore`, {
+          method: "POST",
+        });
+        const restoreData = await restoreResponse.json();
+
+        if (restoreData.success) {
+          toast.success("Leave restored successfully", { position: "top-center" });
+        } else {
+          toast.error("Failed to restore leave", { position: "top-center" });
+        }
+      } else {
+        const deleteResponse = await fetch(`/api/leave/${leaveId}`, {
+          method: "DELETE",
+        });
+        const deleteData = await deleteResponse.json();
+
+        if (deleteData.success) {
+          toast.success("Leave deleted successfully", { position: "top-center" });
+        } else {
+          toast.error("Failed to delete leave", { position: "top-center" });
+        }
+      }
+    } catch (error) {
+      toast.error("An error occurred", { position: "top-center" });
+      console.error(error);
+    }
+  };
 
   const handleConfirmOpen = (action: "Approve" | "Reject", id: string) => {
     setLeaveId(id);
@@ -654,13 +690,23 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
               </>
             ) : (
               <>
-                <div>
-                  <p
-                    className={`font-bold ${leave.status === "Approve" ? "text-green-600" : "text-red-600"}`}
+                <div className="inline-flex items-center  px-3 py-1 rounded-full">
+                  <span
+                    className={`font-bold mr-2 ${leave.status === "Approve" ? "text-green-600" : "text-red-600"
+                      }`}
                   >
-                    This request has been{" "}
-                    {leave.status === "Approve" ? "approved" : "rejected"}.
-                  </p>
+                    {leave.status === "Approve" ? "Approved" : "Rejected"}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setDeleteId(leave.id);
+                      setCurrentAction("Delete");
+                      setIsConfirmOpen(true);
+                    }}
+                    className="p-1 hover:bg-red-200 rounded-full"
+                  >
+                    <IconTrash className="w-4 h-4 text-red-600" />
+                  </button>
                 </div>
               </>
             )}
@@ -668,9 +714,12 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
             {/* Confirmation Modal */}
             <Modal isOpen={isConfirmOpen} onClose={handleConfirmClose}>
               <div className="p-5 text-center">
-                <p className="mb-4">
-                  Are you sure you want to {currentAction} this leave request?
+                <p className="mb-4 font-bold">
+                  {currentAction === "Delete"
+                    ? "Are you sure you want to delete this leave request?"
+                    : `Are you sure you want to ${currentAction} this leave request?`}
                 </p>
+
                 <div className="mt-6 flex items-center justify-end space-x-4">
                   <button
                     onClick={handleConfirmClose}
@@ -678,10 +727,15 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                   >
                     {dict.leave.cancel}
                   </button>
+
                   <button
                     onClick={() => {
-                      handleConfirm(); // Call confirm logic
-                      setCurrentAction(currentAction); // Update the current action
+                      if (currentAction === "Delete" && deleteId) {
+                        handleDelete(deleteId);
+                      } else {
+                        handleConfirm();
+                      }
+                      setIsConfirmOpen(false);
                     }}
                     className="btn btn-primary rounded-[5px] bg-green-500 px-6 py-2 font-medium text-white hover:bg-opacity-90"
                   >
