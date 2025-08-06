@@ -476,7 +476,7 @@ export const getShiftIn = async () => {
   }
 }
 
-export async function handleHalfDataClockIn(alreadyClockIn: Attends, longitude?: number, latitude?: number, img?: string, location?: string, notice?: boolean, username?: string,): Promise<Response> {
+export async function handleHalfDataClockIn(alreadyClockIn: Attends, img?: string, location?: string, notice?: boolean, username?: string,): Promise<Response> {
   const today = dayjs();
   const shift = await db.attendBranch.findFirst({ where: { userId: alreadyClockIn.userId } });
   if (!shift?.clockIn) {
@@ -521,8 +521,6 @@ export async function handleHalfDataClockIn(alreadyClockIn: Attends, longitude?:
       img: imageResult?.success,
       fine: fine,
       locationIn: location || null,
-      clockInLatitude: latitude,
-      clockInLongitude: longitude
     }
   });
   return Response.json({ id: result.id, timeIn: result.clockIn }, { status: 201 });
@@ -531,7 +529,6 @@ export async function handleHalfDataClockIn(alreadyClockIn: Attends, longitude?:
 
 export async function handleClockIn(
   userId: string,
-  longitude?: number, latitude?: number,
   imgClockIn?: string,
   location?: string,
   notify?: boolean,
@@ -593,8 +590,6 @@ export async function handleClockIn(
       img: imageResult?.success,
       fine: fine,
       locationIn: location || null,
-      clockInLatitude: latitude,
-      clockInLongitude: longitude
     }
   });
   if (add10 != 0) {
@@ -709,7 +704,6 @@ interface NotifyData {
 export async function processClockOut(
   userId: string,
   attendance: Attends,
-  // latitude?: number, longitude?: number,
   location?: string,
   notify?: NotifyData,
 
@@ -752,7 +746,7 @@ async function handleNoClockInCase(
   today: dayjs.Dayjs,
   fine200: string | undefined,
   shiftOut: string,
-  office: boolean, latitude?: number, longitude?: number,
+  office: boolean,
 ): Promise<Response> {
   console.log("masuk sini ", office)
   // Update attendance record
@@ -769,8 +763,7 @@ async function handleNoClockInCase(
         overtime: ot,
         locationOut: location || null,
         fine2: fine200 ? Number(200) : fine2,
-        clockOutLatitude: latitude,
-        clockOutLongitude: longitude
+
       }
     });
   } else {
@@ -782,8 +775,7 @@ async function handleNoClockInCase(
         locationOut: location || null,
         fine: null,
         fine2: fine200 ? Number(200) : fine2,
-        clockOutLatitude: latitude,
-        clockOutLongitude: longitude
+
       }
     })
   }
@@ -825,7 +817,7 @@ async function handleNormalClockOut(
   notify: NotifyData,
   shiftOut: Date,
   today: dayjs.Dayjs,
-  office: boolean, latitude?: number, longitude?: number,
+  office: boolean,
 ): Promise<Response> {
   console.log("masuk sana ")
   if (!attendance.clockIn) {
@@ -847,8 +839,6 @@ async function handleNormalClockOut(
       const updatedAttendance = await tx.attends.update({
         where: { id: attendance.id },
         data: {
-          clockOutLatitude: latitude,
-          clockOutLongitude: longitude,
           clockOut: today.toISOString(),
           workingHour: workingHour,
           overtime: overtimeValue,
