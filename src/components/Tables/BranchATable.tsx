@@ -65,6 +65,7 @@ export const BranchATable = ({
   const [userTeam, setUserTeam] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [branchUsers, setBranchUsers] = useState<BranchsUser[]>([]);
   const [days, setDays] = useState<string[]>([])
   const itemsPerPage = 300;
   const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
@@ -79,6 +80,7 @@ export const BranchATable = ({
 
     return nameMatch || usernameMatch;
   }
+
 
   );
   console.log("🚀 ~ filteredData:", filteredData)
@@ -104,31 +106,42 @@ export const BranchATable = ({
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
-  const onSendData = (type: typeData, data: string) => {
-    switch (type) {
-      case typeData.BRANCH:
-        setSelectBranch(data);
-        break;
-      case typeData.TEAM:
-        setTeamSelect(data)
-        break;
-      case typeData.CLOCKIN:
-        setClockIn(data);
-        break;
-      case typeData.CLOCKOUT:
-        setClockOut(data);
-        break;
-      case typeData.OFFDAY:
-        console.log("onsend off", data);
-        setOffDay(data);
-        break;
-      // case typeData.STARTON:
-      //   console.log("onsend off", data);
-      //   setStartOn(data);
-      //   break;
-      // default:
-      //   break;
-    }
+  const onSendData = (type: typeData, data: string, userId: string) => {
+    setBranchUsers((prev) =>
+      prev.map((user) =>
+        user.userId === userId
+          ? {
+            ...user,
+            ...(type === typeData.BRANCH && { branch: data }),
+            ...(type === typeData.TEAM && { team: data }),
+            ...(type === typeData.CLOCKIN && { clockIn: data }),
+            ...(type === typeData.CLOCKOUT && { clockOut: data }),
+            ...(type === typeData.OFFDAY && { offDay: data }),
+          }
+          : user
+      )
+    );
+  };
+
+  useEffect(() => {
+    setBranchUsers(data); // ✅ props.data 变化时同步到本地状态
+  }, [data]);
+
+  const handleOpenConfirm = (userId: string) => {
+    const latestUser = branchUsers.find((u) => u.userId === userId);
+    if (!latestUser) return;
+
+    setIdBranch(latestUser.id);
+    setName(latestUser.users?.name || "");
+    setUserTeam(latestUser.team);
+    setClockIn(latestUser.clockIn || "-");
+    setClockOut(latestUser.clockOut || "-");
+    setSelectBranch(latestUser.branch || "");
+    setIsConfirmOpen(true);
+  };
+
+  const handleSuccessUpdate = () => {
+    refresh(); // ✅ 父组件传来的 refresh，触发 SWR mutate
   };
 
   const submit = async () => {
@@ -160,7 +173,7 @@ export const BranchATable = ({
       if (data.success) {
         console.log(data.success);
         setIsConfirmOpen(false);
-        refresh();
+        handleSuccessUpdate();
         toast.success("success update data", {
           position: "top-center",
         });
@@ -362,7 +375,7 @@ export const BranchATable = ({
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
               <BranchSelectGroup
-                onSendData={onSendData}
+                onSendData={(type, value) => onSendData(type, value, teamA.userId)}
                 initialValue={teamA.team}
               />
             </p>
@@ -371,7 +384,7 @@ export const BranchATable = ({
             <p className="text-xs font-medium text-dark dark:text-dark-6">
               Branch: <span className="text-primary font-bold">{teamA.branch}</span>
               <BranchsSelectGroup
-                onSendData={onSendData}
+                onSendData={(type, value) => onSendData(type, value, teamA.userId)}
                 initialValue={teamA.branch!}
                 data={databranch}
               />
@@ -380,7 +393,7 @@ export const BranchATable = ({
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
               <ClockinSelectGroup
-                onSendData={onSendData}
+                onSendData={(type, value) => onSendData(type, value, teamA.userId)}
                 initialValue={teamA.clockIn ? teamA.clockIn : "-"}
               />
             </p>
@@ -388,7 +401,7 @@ export const BranchATable = ({
           <div className="col-span-1 flex items-center justify-center">
             <p className="text-body-sm font-medium text-dark dark:text-dark-6">
               <ClockoutSelectGroup
-                onSendData={onSendData}
+                onSendData={(type, value) => onSendData(type, value, teamA.userId)}
                 initialValue={teamA.clockOut ? teamA.clockOut : "-"}
               />
             </p>
@@ -445,13 +458,8 @@ export const BranchATable = ({
 
           <div className="col-span-1 flex items-center justify-center">
             <button
-              onClick={() => {
-                setIdBranch(teamA.id);
-                setName(teamA.users?.name!);
-                setUserTeam(teamA.team);
-                setIsConfirmOpen(true);
-              }}
-              className="rounded-full border border-primary px-5  py-1 text-primary lg:px-10 xl:px-5"
+              onClick={() => handleOpenConfirm(teamA.userId)}
+              className="rounded-full border border-primary px-5 py-1 text-primary lg:px-10 xl:px-5"
             >
               {dict.leave.confirm}
             </button>

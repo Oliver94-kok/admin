@@ -21,12 +21,16 @@ const OTPopupv2: React.FC<OtPopupv2Props> = ({ isOpen, onClose, onAddItem, data,
 
     const handleAddItem = () => {
         if (inputValue.trim()) {
-            const confirmAdd = window.confirm(dict.salary.addthis);
-            if (confirmAdd) {
-                onAddItem(inputValue.trim(), data.id!, type);
-                setInputValue('');
-            }
+            onAddItem(inputValue.trim(), data.id!, type);
+            setInputValue('');
         }
+        // if (inputValue.trim()) {
+        //     const confirmAdd = window.confirm(dict.salary.addthis);
+        //     if (confirmAdd) {
+        //         onAddItem(inputValue.trim(), data.id!, type);
+        //         setInputValue('');
+        //     }
+        // }
     };
 
     useEffect(() => {

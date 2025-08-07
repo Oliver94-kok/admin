@@ -20,12 +20,16 @@ const ShortPopupv2: React.FC<ShortPopupv2Props> = ({ isOpen, onClose, onAddItem,
 
     const handleAddItem = () => {
         if (inputValue.trim()) {
-            const confirmAdd = window.confirm(dict.salary.addthis);
-            if (confirmAdd) {
-                onAddItem(inputValue.trim(), data.id!, type);
-                setInputValue('');
-            }
+            onAddItem(inputValue.trim(), data.id!, type);
+            setInputValue('');
         }
+        // if (inputValue.trim()) {
+        //     const confirmAdd = window.confirm(dict.salary.addthis);
+        //     if (confirmAdd) {
+        //         onAddItem(inputValue.trim(), data.id!, type);
+        //         setInputValue('');
+        //     }
+        // }
     };
 
     useEffect(() => {

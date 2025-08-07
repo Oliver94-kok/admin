@@ -21,12 +21,16 @@ const TransportPopupv2: React.FC<TransportPopupv2Props> = ({ isOpen, onClose, on
 
     const handleAddItem = () => {
         if (inputValue.trim()) {
-            const confirmAdd = window.confirm(dict.salary.addthis);
-            if (confirmAdd) {
-                onAddItem(inputValue.trim(), data.id!, type);
-                setInputValue('');
-            }
+            onAddItem(inputValue.trim(), data.id!, type);
+            setInputValue('');
         }
+        // if (inputValue.trim()) {
+        //     const confirmAdd = window.confirm(dict.salary.addthis);
+        //     if (confirmAdd) {
+        //         onAddItem(inputValue.trim(), data.id!, type);
+        //         setInputValue('');
+        //     }
+        // }
     };
 
     useEffect(() => {
