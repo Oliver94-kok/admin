@@ -28,6 +28,7 @@ enum UserRole {
   ASSISTANT_E
   SWManager
   Manager_Ocean
+  Manager_Office
 }
 
 enum AttendStatus {

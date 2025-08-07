@@ -17,7 +17,7 @@ dayjs.extend(isSameOrBefore);
 
 // --- Configuration Constants ---
 const OFFICE_BRANCH_NAME = "小off";
-const NIGHT_SHIFT_TEAMS = ['A', 'B', 'C', 'D', 'E', 'SW', 'Ocean'];
+const NIGHT_SHIFT_TEAMS = ['A', 'B', 'C', 'D', 'E', 'SW', 'Ocean', 'Office']; 
 const BATCH_SIZE = 10; // For processing users in chunks to avoid overwhelming the DB
 const LOCAL_TIMEZONE = 'Asia/Kuala_Lumpur';
 const OFFICE_WORK_HOURS = 6;

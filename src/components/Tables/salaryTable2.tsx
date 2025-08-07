@@ -917,6 +917,7 @@ export const SalaryTable2 = () => {
                                 <option value="E">E</option>
                                 <option value="SW">SW</option>
                                 <option value="Ocean">Ocean</option>
+                                <option value="Office">Office</option>
                             </select>
                         </>
                     ) : (<></>)}

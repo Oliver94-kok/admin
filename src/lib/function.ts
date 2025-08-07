@@ -335,6 +335,8 @@ export const roleAdmin = async (role: string) => {
       return "SW";
     case "manager_ocean":
       return "Ocean";
+    case "manager_office":
+      return "Office";
     case "assistant_a":
       return "A";
     case "assistant_b":

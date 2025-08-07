@@ -19,6 +19,7 @@ interface BranchTableInterface {
   E: BranchsUser[];
   SW: BranchsUser[];
   Ocean: BranchsUser[]
+  Office: BranchsUser[];
   refreshData: () => void;
 }
 
@@ -28,7 +29,7 @@ interface TeamData {
   page: number;
 }
 
-const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInterface) => {
+const BranchTable = ({ A, B, C, D, E, SW, Ocean, Office, refreshData }: BranchTableInterface) => {
   const { data: session } = useSession();
   const [dict, setDict] = useState<any>(null);
   const [branch, setBranch] = useState<{ id: string; code: string, team: string }[] | null>(null);
@@ -44,7 +45,8 @@ const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInter
       'D': { data: D, team: "Team D", page: 4 },
       'E': { data: E, team: "Team E", page: 5 },
       'SW': { data: SW, team: "Team SW", page: 6 },
-      'Ocean': { data: Ocean, team: "Team Ocean", page: 7 }
+      'Ocean': { data: Ocean, team: "Team Ocean", page: 7 },
+      'Office': { data: Office, team: "Team Office", page: 8 } // Add Office team
     };
 
     switch (userRole) {
@@ -69,10 +71,12 @@ const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInter
         return [allTeams['SW']];
       case 'manager_ocean':
         return [allTeams['Ocean']]
+      case 'manager_office':
+        return [allTeams['Office']]
       default:
         return [];
     }
-  }, [session, A, B, C, D, E, SW, Ocean]);
+  }, [session, A, B, C, D, E, SW, Ocean, Office]);
 
   // Initialize current page with the first accessible team's page
   const [currentPage, setCurrentPage] = useState(() =>
@@ -94,6 +98,8 @@ const BranchTable = ({ A, B, C, D, E, SW, Ocean, refreshData }: BranchTableInter
         return "SW";
       case "Team Ocean":
         return "Ocean";
+      case "Team Office":
+        return "Office";
       default:
         return "A"
     }

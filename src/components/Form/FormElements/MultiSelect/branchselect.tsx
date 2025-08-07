@@ -60,6 +60,9 @@ const BranchSelectGroup: React.FC<BranchSelectGroupProps> = ({
           <option value="Ocean" className="text-dark-5 dark:text-dark-6">
             Ocean
           </option>
+          <option value="Office" className="text-dark-5 dark:text-dark-6">
+            Office
+          </option>
         </select>
 
         <span className="absolute right-4 top-1/2 -translate-y-1/2 transform text-dark-4 dark:text-dark-6">

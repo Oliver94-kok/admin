@@ -140,6 +140,7 @@ const FormLayout = () => {
                   <option value={"E"}>E</option>
                   <option value="SW">SW</option>
                   <option value="Ocean">Ocean</option>
+                  <option value="Office">Office</option>
                 </select>
               </div></>) : (<></>)}
               <div className="mb-4.5">

@@ -20,7 +20,7 @@ const BATCH_DELAY_MS = 1000;
  */
 export const calFineUser = async (startDate: Date, endDate: Date) => {
     try {
-        const teams = ["A", "B", "C", "D", "E", "SW", "Ocean"];
+        const teams = ["A", "B", "C", "D", "E", "SW", "Ocean", "Office"];
         // Process all teams concurrently and wait for all promises to resolve.
         await Promise.all(teams.map(team => fineUserForTeam(team, startDate, endDate)));
 
