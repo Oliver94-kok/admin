@@ -316,7 +316,29 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
     return totalDays;
   }
 
+  const deleteButton = (d: string, id: string) => {
+    const date = dayjs(d);
+    const today = dayjs();
 
+    // Show delete button only if the date is *after* today (i.e., future date)
+    if (date.isAfter(today)) {
+      return (
+        <button
+          onClick={() => {
+            setDeleteId(id);
+            setCurrentAction("Delete");
+            setIsConfirmOpen(true);
+          }}
+          className="p-1 hover:bg-red-200 rounded-full"
+        >
+          <IconTrash className="w-4 h-4 text-red-600" />
+        </button>
+      );
+    }
+
+    // Return null or nothing if the date is today or in the past
+    return null;
+  };
 
   return (
     <div
@@ -683,16 +705,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
                   >
                     {leave.status === "Approve" ? "Approved" : "Rejected"}
                   </span>
-                  {leave.status === "Approve" && <button
-                    onClick={() => {
-                      setDeleteId(leave.id);
-                      setCurrentAction("Delete");
-                      setIsConfirmOpen(true);
-                    }}
-                    className="p-1 hover:bg-red-200 rounded-full"
-                  >
-                    <IconTrash className="w-4 h-4 text-red-600" />
-                  </button>}
+                  {leave.status === "Approve" && deleteButton(leave.startDate, leave.id)}
                 </div>
               </>
             )}
