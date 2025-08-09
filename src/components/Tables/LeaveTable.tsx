@@ -185,7 +185,10 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
         return
       }
       if (result.success) {
-        toast.success("success delete leave")
+        toast.success("success delete leave", {
+          position: "top-center",
+        });
+        mutate('/api/leaves');
         return
       }
       console.log("🚀 ~ handleDelete ~ result:", result)
