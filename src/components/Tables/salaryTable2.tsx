@@ -742,7 +742,6 @@ export const SalaryTable2 = () => {
                             style: {
                                 font: {
                                     color: { argb: 'FFFF0000' },
-                                    bold: true
                                 }
                             },
                             priority: 1
