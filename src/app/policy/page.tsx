@@ -5,58 +5,62 @@ export default function PolicyPage() {
             <p><strong>Effective Date:</strong> June 1, 2025</p>
 
             <p>
-                At <strong>Attendant App</strong>, we take your privacy seriously. This Privacy Policy outlines how we handle your information.
+                At <strong>Workentry</strong>, we take your privacy seriously.
+                This Privacy Policy explains how we collect, use, and protect your information when you use our application.
             </p>
 
             <h2>1. Information We Collect</h2>
-            <p>We do not collect or store any personal information from users unless explicitly provided for attendance purposes.</p>
-            <p>We may store:</p>
+            <p>We only collect and store personal information necessary for attendance purposes, which may include:</p>
             <ul>
                 <li>Basic user identifiers (e.g., name, username) for attendance tracking</li>
-                <li>Timestamp and location (if enabled) during clock-in/out</li>
+                <li>Timestamps and location (if enabled) during clock-in/out</li>
             </ul>
 
             <h2>2. How We Use the Information</h2>
-            <p>The information collected is used solely for:</p>
+            <p>The information we collect is used solely for:</p>
             <ul>
                 <li>Attendance tracking</li>
-                <li>Reporting for internal company use</li>
+                <li>Generating internal company reports</li>
             </ul>
-            <p>We do not share, sell, or disclose your data to third parties.</p>
+            <p>We do not sell, share, or disclose your personal data to third parties.</p>
 
             <h2>3. Location Data</h2>
             <p>
-                If you enable location services, we may collect GPS coordinates during clock-in/out to validate attendance.
-                This data is not shared externally and is only used to improve app functionality.
+                If you enable location services, we may collect GPS coordinates during clock-in/out to verify attendance.
+                This data is used internally and is never shared with external parties.
             </p>
 
             <h2>4. Data Security</h2>
             <p>
-                We implement standard security measures to protect the data stored within the app.
-                However, no method of data transmission over the internet or device storage is 100% secure.
+                We implement industry-standard security measures to protect the information stored within our systems.
+                However, please note that no method of transmission over the internet or device storage can be guaranteed to be 100% secure.
             </p>
 
             <h2>5. Third-Party Services</h2>
             <p>
-                Our app does not integrate with third-party advertising or analytics tools. No external services collect user data.
+                Workentry does not integrate with third-party advertising or analytics tools.
+                No external service collects your data through our app.
             </p>
 
             <h2>6. Children’s Privacy</h2>
             <p>
-                This app is intended for professional use only and is not targeted at children under 13.
+                This application is intended for professional and workplace use only and is not directed toward children under 13 years of age.
                 We do not knowingly collect any data from children.
             </p>
 
             <h2>7. Changes to This Policy</h2>
             <p>
-                We may update this policy as needed. You will be notified of any significant changes via the app or our website.
+                We may update this Privacy Policy from time to time.
+                Any significant changes will be communicated through the app or our official channels.
             </p>
 
             <h2>8. Contact Us</h2>
             <p>
-                If you have any questions or concerns about this Privacy Policy, please contact us at:
+                If you have any questions or concerns regarding this Privacy Policy or your data, please contact us at:
                 <br />
                 📧 <strong>Email:</strong> <a href="mailto:webocean00@gmail.com">webocean00@gmail.com</a>
+                <br />
+                📌 <strong>App Name:</strong> Workentry
             </p>
         </div>
     );
