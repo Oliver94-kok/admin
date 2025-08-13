@@ -67,6 +67,7 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   const [totaldays, setTotaldays] = useState(0);
   const totalPages = Math.ceil(dataLeave.length / itemsPerPage);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const MAX_VISIBLE_PAGES = 20;
 
@@ -211,39 +212,47 @@ const LeaveTable = ({ data }: LeaveTableInterface) => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedUser || !startDate || !endDate || !leaveType || !reason) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-    if (totaldays == 0) {
-      alert("Leave day is 0");
-      return;
-    }
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-    const newLeave: AddUserLeave = {
-      userId: selectedUser,
-      startDate,
-      endDate,
-      duration: totaldays,
-      leaveType,
-      reason,
-    };
-    const result = await AddLeaveUser(newLeave)
-    if (result.error) {
-      toast.error(result.error, { position: "top-center" })
+    try {
+      if (!selectedUser || !startDate || !endDate || !leaveType || !reason) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+      if (totaldays == 0) {
+        alert("Leave day is 0");
+        return;
+      }
+
+      const newLeave: AddUserLeave = {
+        userId: selectedUser,
+        startDate,
+        endDate,
+        duration: totaldays,
+        leaveType,
+        reason,
+      };
+
+      const result = await AddLeaveUser(newLeave);
+      if (result.error) {
+        toast.error(result.error, { position: "top-center" });
+      }
+      if (result.Success) {
+        toast.success('Success add leave', { position: "top-center" });
+
+        setStartDate(null);
+        setEndDate(null);
+        setTotaldays(0);
+        setReason('');
+        setLeaveType('');
+        setIsModalOpen(false);
+      }
+    } finally {
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 3000);
     }
-    if (result.Success) {
-      toast.success('Success add leave', { position: "top-center" })
-      setStartDate(null);
-      setEndDate(null);
-      setTotaldays(0);
-      setReason('');
-      setLeaveType('')
-
-      setIsModalOpen(false);
-    }
-
-
   };
 
   const handleConfirm = async () => {

@@ -77,7 +77,7 @@ const Header = (props: {
             {/* Dark Mode Toggle */}
             <DarkModeSwitcher />
             {/* Notification Menu Area */}
-            <DropdownNotification />
+            {/* <DropdownNotification /> */}
             {/* Language Selector */}
             <HeaderLocale currentLocale={locale} />
           </ul>
