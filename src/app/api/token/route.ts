@@ -61,13 +61,14 @@ async function processAndRespond(
 export const POST = async (req: Request) => {
   try {
     const { token: tokenFromRequest, versionApp } = await req.json();
+    const minVersion = '1.1.6';
     if (!versionApp) {
       return Response.json({ Error: "Version app not provided" }, { status: 400 });
     }
     if (!tokenFromRequest) {
       return Response.json({ Error: "Token not provided" }, { status: 400 });
     }
-    if (versionApp != '1.1.6') {
+    if (!versionGte(versionApp, minVersion)) {
       return Response.json({ Error: "Version app not supported" }, { status: 400 });
     }
 
@@ -117,3 +118,12 @@ export const POST = async (req: Request) => {
     return Response.json({ Error: message }, { status: (error instanceof Error && 'statusCode' in error) ? (error as any).statusCode : 500 });
   }
 };
+function versionGte(a: string, b: string): boolean {
+  const [maj1, min1, patch1] = a.split('.').map(Number);
+  const [maj2, min2, patch2] = b.split('.').map(Number);
+
+  return (
+    maj1 > maj2 ||
+    (maj1 === maj2 && (min1 > min2 || (min1 === min2 && patch1 >= patch2)))
+  );
+}
